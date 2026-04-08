@@ -9,12 +9,13 @@ public abstract class Item extends Entity{
     protected double currentPrice;
     protected String status;
     
-    public Item(String id,String name, double startingPrice, double currentPrice, String status){
+    public Item(String id,String name, double startingPrice, double currentPrice, String status,String description){
         super(id);
         this.name = name;
         this.startingPrice = startingPrice;
         this.currentPrice =  currentPrice;
         this.status = status;
+        this.desription = description;
     }
     public String getName(){
         return name;
