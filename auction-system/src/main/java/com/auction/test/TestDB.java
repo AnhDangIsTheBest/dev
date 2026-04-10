@@ -1,11 +1,13 @@
+package com.auction.test;
+
+import com.auction.config.DBConnection;
+
 public class TestDB {
     public static void main(String[] args) {
-        try {
-            var conn = DBConnection.getConnection();
-            System.out.println("THANH CONG");
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (DBConnection.getConnection() != null) {
+            System.out.println("Connected!");
+        } else {
+            System.out.println("Failed!");
         }
     }
 }
