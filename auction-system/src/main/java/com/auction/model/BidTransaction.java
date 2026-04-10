@@ -1,9 +1,10 @@
 package com.auction.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class BidTransaction{
+public class BidTransaction implements Serializable{
     private String transactionId; // id phiên đấu giá
     private String auctionId; // ID cuộc đấu giá( tồn tại lâu dài đến theo sản phẩm)
     private String bidderId; // ID người đấu giá
