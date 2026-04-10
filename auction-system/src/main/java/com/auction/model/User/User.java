@@ -23,6 +23,7 @@ public abstract class User extends Entity {
     public String getFullname(){
         return fullname;
     }
+    public String getPassword() { return password;}
     public abstract String getRole();
     @Override 
     public String display(){
