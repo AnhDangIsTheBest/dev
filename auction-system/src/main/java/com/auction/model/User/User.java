@@ -5,6 +5,7 @@ public abstract class User extends Entity {
     protected String username,email;
     protected String password;
     protected String fullname;
+    public User(){};
     public User(String id, String username, String email,String password, String fullname){
         super(id);
         this.username = username;
@@ -19,7 +20,11 @@ public abstract class User extends Entity {
     public String getEmail(){
         return email;
     }
-    
+
+    public String getPassword() {return password; }
+
+    public String getId() {return id; }
+
     public String getFullname(){
         return fullname;
     }
@@ -33,7 +38,7 @@ public abstract class User extends Entity {
         this.username = newUsername;
     }
     public void setPassword(String newPassword){
-        this.password = password;
+        this.password = newPassword;
     }
     public void setFullName(String fullName){
         this.fullname = fullName;
