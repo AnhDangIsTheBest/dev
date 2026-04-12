@@ -23,6 +23,7 @@ public class Vehicle extends Item {
     public String getVehicleModel(){ return vehicleModel;}
     public int getYear(){ return year;}
     public int getMileage(){ return mileage;}
+    public String getVehicleType() { return vehicleType;}
 
     @Override
     public String display(){

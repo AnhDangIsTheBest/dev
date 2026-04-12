@@ -8,7 +8,7 @@ public abstract class Item extends Entity{
     protected double startingPrice;
     protected double currentPrice;
     protected String status;
-    
+
     public Item(String id,String name, double startingPrice, double currentPrice, String status,String description){
         super(id);
         this.name = name;
@@ -40,7 +40,7 @@ public abstract class Item extends Entity{
     @Override
     public String display(){
         return String.format("[ %s ] %s - %s | Giá khời điểm: %.1f | Tình trạng: %s",getType(),desription,startingPrice,status);
-        
+
     }
 
 }

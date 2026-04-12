@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "TestItemDAO",
+      "request": "launch",
+      "mainClass": "com.auction.test.TestItemDAO",
+      "projectName": ""
+    },
+    {
+      "type": "java",
       "name": "Launch Main",
       "request": "launch",
       "mainClass": "com.auction.ui.Main",

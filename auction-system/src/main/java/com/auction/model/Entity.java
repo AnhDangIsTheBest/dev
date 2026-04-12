@@ -7,6 +7,8 @@ public  abstract class Entity implements Serializable{
         this.id  = id;
     }
 
+    public String getId(){return id;}
+
     public abstract String display();
 
 }
