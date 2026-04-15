@@ -39,7 +39,8 @@ public abstract class Item extends Entity{
 
     @Override
     public String display(){
-        return String.format("[ %s ] %s - %s | Giá khời điểm: %.1f | Tình trạng: %s",getType(),desription,startingPrice,status);
+        return String.format("[ %s ] %s | Giá khởi điểm: %.1f | Tình trạng: %s",
+        getType(), desription, startingPrice, status);
 
     }
 

@@ -1,25 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
-    <modelVersion>4.0.0</modelVersion>
+<modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.auction</groupId>
-    <artifactId>online-auction-system</artifactId>
-    <version>1.0-SNAPSHOT</version>
+<groupId>com.auction</groupId>
+<artifactId>online-auction-system</artifactId>
+<version>1.0-SNAPSHOT</version>
 
+<<<<<<< HEAD
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>21</javafx.version> <!-- 🔥 thêm dòng này -->
     </properties>
+=======
+>>>>>>> bcff7f7f88313b1ec42f6398cf81dc381582a4c1
 
-    <dependencies>
-        <!-- MySQL -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.3.0</version>
-        </dependency>
+        <!-- Cấu hình Java -->
+<properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>21.0.2</javafx.version>
+</properties>
 
+<<<<<<< HEAD
         <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -33,6 +37,23 @@
             <version>${javafx.version}</version>
         </dependency>
     </dependencies>
+=======
+        <!-- Thư viện -->
+<dependencies>
+    <!-- MySQL -->
+    <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>8.3.0</version>
+    </dependency>
+    <!-- JavaFx -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+</dependencies>
+>>>>>>> bcff7f7f88313b1ec42f6398cf81dc381582a4c1
 
     <build>
         <plugins>
@@ -41,7 +62,11 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
+<<<<<<< HEAD
                     <mainClass>com.auction.ui.Main</mainClass>
+=======
+                    <mainClass>com.auction.Main</mainClass>
+>>>>>>> bcff7f7f88313b1ec42f6398cf81dc381582a4c1
                 </configuration>
             </plugin>
         </plugins>
