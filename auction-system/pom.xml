@@ -8,11 +8,8 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-<<<<<<< HEAD
-        <javafx.version>21.0.2</javafx.version>
-=======
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
+        <javafx.version>21</javafx.version> <!-- 🔥 thêm dòng này -->
     </properties>
 
     <dependencies>
@@ -27,42 +24,24 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-<<<<<<< HEAD
             <version>${javafx.version}</version>
-=======
-            <version>21</version>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
         </dependency>
 
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-<<<<<<< HEAD
             <version>${javafx.version}</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-
-            <!--  JavaFX Maven Plugin  -->
-=======
-            <version>21</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-<<<<<<< HEAD
-                    <mainClass>com.auction.Main</mainClass>
-=======
                     <mainClass>com.auction.ui.Main</mainClass>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
                 </configuration>
             </plugin>
         </plugins>
