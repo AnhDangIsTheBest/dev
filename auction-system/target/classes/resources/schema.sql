@@ -19,22 +19,22 @@ CREATE TABLE items (
 
     -- Electronics
                        brand VARCHAR(100),
-                       model VARCHAR(100),
-                       warranty INT,
+                        model VARCHAR(100),
+                        warranty INT,
 
-    -- Vehicle
-                       vehicle_model VARCHAR(100),
-                       year INT,
-                       mileage INT,
-                       vehicle_type VARCHAR(100),
+        -- Vehicle
+                        vehicle_model VARCHAR(100),
+                        year INT,
+                        mileage INT,
+                        vehicle_type VARCHAR(100),
 
-    -- Art
-                       artist VARCHAR(100),
-                       year_created INT,
-                       material VARCHAR(100),
+        -- Art
+                        artist VARCHAR(100),
+                        year_created INT,
+                        material VARCHAR(100),
 
-    -- Other
-                       category VARCHAR(100),
+        -- Other
+                        category VARCHAR(100),
 
                        FOREIGN KEY (seller_id) REFERENCES users(id)
 );
@@ -45,7 +45,7 @@ CREATE TABLE auctions (
                           start_time DATETIME NOT NULL,
                           end_time DATETIME NOT NULL,
                           current_price DOUBLE NOT NULL,
-                          status ENUM('OPEN','RUNNING','FINISHED','PAID','CANCELED') DEFAULT 'OPEN',
+                          status ENUM('OPEN','RUNNING','FINISHED','PAID','CANCELLED') DEFAULT 'OPEN',
 
                           FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
