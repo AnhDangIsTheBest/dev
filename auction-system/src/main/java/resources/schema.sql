@@ -45,7 +45,7 @@ CREATE TABLE auctions (
                           start_time DATETIME NOT NULL,
                           end_time DATETIME NOT NULL,
                           current_price DOUBLE NOT NULL,
-                          status ENUM('OPEN','RUNNING','FINISHED','PAID','CANCELED') DEFAULT 'OPEN',
+                          status ENUM('OPEN','RUNNING','FINISHED','PAID','CANCELLED') DEFAULT 'OPEN',
 
                           FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );

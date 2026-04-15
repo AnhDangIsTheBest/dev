@@ -1,68 +1,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
-    <modelVersion>4.0.0</modelVersion>
+<modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.auction</groupId>
-    <artifactId>online-auction-system</artifactId>
-    <version>1.0-SNAPSHOT</version>
+<groupId>com.auction</groupId>
+<artifactId>online-auction-system</artifactId>
+<version>1.0-SNAPSHOT</version>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-<<<<<<< HEAD
-        <javafx.version>21.0.2</javafx.version>
-=======
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
-    </properties>
 
-    <dependencies>
-        <!-- MySQL -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.3.0</version>
-        </dependency>
+        <!-- Cấu hình Java -->
+<properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>21.0.2</javafx.version>
+</properties>
 
-        <!-- JavaFX -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-<<<<<<< HEAD
-            <version>${javafx.version}</version>
-=======
-            <version>21</version>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
-        </dependency>
-
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-<<<<<<< HEAD
-            <version>${javafx.version}</version>
-        </dependency>
-    </dependencies>
-    <build>
-        <plugins>
-
-            <!--  JavaFX Maven Plugin  -->
-=======
-            <version>21</version>
-        </dependency>
-    </dependencies>
+        <!-- Thư viện -->
+<dependencies>
+    <!-- MySQL -->
+    <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>8.3.0</version>
+    </dependency>
+    <!-- JavaFx -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+</dependencies>
 
     <build>
         <plugins>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-<<<<<<< HEAD
                     <mainClass>com.auction.Main</mainClass>
-=======
-                    <mainClass>com.auction.ui.Main</mainClass>
->>>>>>> 77434fe206a2a417660256aadaf6b6f99e50a1c5
                 </configuration>
             </plugin>
         </plugins>
