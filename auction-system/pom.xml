@@ -5,15 +5,6 @@
 <artifactId>online-auction-system</artifactId>
 <version>1.0-SNAPSHOT</version>
 
-<<<<<<< HEAD
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>21</javafx.version> <!-- 🔥 thêm dòng này -->
-    </properties>
-=======
->>>>>>> bcff7f7f88313b1ec42f6398cf81dc381582a4c1
 
         <!-- Cấu hình Java -->
 <properties>
@@ -23,21 +14,6 @@
     <javafx.version>21.0.2</javafx.version>
 </properties>
 
-<<<<<<< HEAD
-        <!-- JavaFX -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-    </dependencies>
-=======
         <!-- Thư viện -->
 <dependencies>
     <!-- MySQL -->
@@ -53,7 +29,6 @@
         <version>${javafx.version}</version>
     </dependency>
 </dependencies>
->>>>>>> bcff7f7f88313b1ec42f6398cf81dc381582a4c1
 
     <build>
         <plugins>
@@ -62,11 +37,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-<<<<<<< HEAD
-                    <mainClass>com.auction.ui.Main</mainClass>
-=======
                     <mainClass>com.auction.Main</mainClass>
->>>>>>> bcff7f7f88313b1ec42f6398cf81dc381582a4c1
                 </configuration>
             </plugin>
         </plugins>
