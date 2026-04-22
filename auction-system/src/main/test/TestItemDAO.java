@@ -14,10 +14,10 @@ public class TestItemDAO {
         Item item = new OtherItem(
                 null,
                 "Sách cổ",
+                90000,
                 100000,
-                100000,
-                "AVAILABLE",
-                "Sách xuất bản năm 1980",
+                "OLD",
+                "Sách xuất bản năm 2026",
                 "Book"
         );
 
