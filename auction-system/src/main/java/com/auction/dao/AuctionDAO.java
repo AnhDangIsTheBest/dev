@@ -3,9 +3,9 @@ package com.auction.dao;
 import com.auction.model.Auction;
 import com.auction.model.Auction.AuctionStatus;
 import com.auction.model.Item.Item;
-import com.auction.config.DBConnection;
 import com.auction.model.Item.OtherItem;
-
+import com.auction.config.DBConnection;
+ 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -175,8 +175,16 @@ public class AuctionDAO {
         LocalDateTime et  = rs.getTimestamp("end_time").toLocalDateTime();
         AuctionStatus status = AuctionStatus.valueOf(rs.getString("status"));
  
-        // Tạo Item placeholder – có thể thay bằng ItemDAO.getItemById(itemId)
-        Item item = new OtherItem(String.valueOf(itemId), null,0,0,null,null,null);
+        // Tạo Item placeholder – bạn có thể thay bằng ItemDAO.getItemById(itemId)
+        Item item = new OtherItem(
+                String.valueOf(itemId),
+                "Unknown",
+                curPrice,
+                curPrice,
+                "UNKNOWN",
+                "",
+                "General"
+        );
         item.setStartingPrice(curPrice);
  
         Auction auction = new Auction(
