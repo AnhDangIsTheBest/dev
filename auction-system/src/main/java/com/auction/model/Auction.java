@@ -52,22 +52,21 @@ public class Auction implements Serializable{
         this.snipeExtendSeconds = snipeExtendSeconds;
         this.autoBidConfigs = new LinkedHashMap<>();
     }
-
     public String getAuctionId(){ return auctionId;}
     public Item getItem(){ return item;}
-    public String getLeadBidderId(){ return leadBidderId;}
-    public String getLeadBidderName() { return leadBidderName;}
+    public synchronized String getLeadBidderId(){ return leadBidderId;}
+    public synchronized String getLeadBidderName() { return leadBidderName;}
     public LocalDateTime getStartTime(){ return startTime;}
-    public LocalDateTime getEndTime(){ return endTime;}
-    public AuctionStatus getStatus() { return status;}
+    public synchronized LocalDateTime getEndTime(){ return endTime;}
+    public synchronized AuctionStatus getStatus() { return status;}
     public List<BidTransaction> getBidHistory(){ return bidHistory;}
     public boolean isAntiSnipingEnabled(){ return antiSnipingEnable;}
     public int snipeWindowSeconds(){ return snipeWindowSeconds;}
     public int snipeExtendSeconds(){ return snipeExtendSeconds;}
     public Map<String,AutoBidConfig> getAutoBidConfigs(){ return autoBidConfigs;}
 
-    public void setStatus(AuctionStatus status){ this.status = status;}
-    public void setEndTime(LocalDateTime endTime){ this.endTime =  endTime;}
+    public synchronized void setStatus(AuctionStatus status){ this.status = status;}
+    public synchronized void setEndTime(LocalDateTime endTime){ this.endTime =  endTime;}
 
     public long getSecondRemaining(){ // thời gian còn lại trước khi phiên đấu giá kết thúc
         if (status != AuctionStatus.RUNNING){ return 0;}
@@ -75,7 +74,7 @@ public class Auction implements Serializable{
         return Math.max(0,remaining);
     }
 
-    public void applyBid(BidTransaction lead){ // Update leader
+    public synchronized void applyBid(BidTransaction lead){ // Update leader
         this.currentPrice = lead.getAmount();
         this.leadBidderId  = lead.getBidderId();
         this.leadBidderName = lead.getBidderName();
@@ -86,12 +85,12 @@ public class Auction implements Serializable{
         }
     }
 
-    public void addAutoBidConfig(AutoBidConfig newConfig){
+    public synchronized void addAutoBidConfig(AutoBidConfig newConfig){
         autoBidConfigs.put(newConfig.getBidderId(),newConfig);
     }
 
 
-    public void removeAutoBidConfig(String bidderId){
+    public synchronized void  removeAutoBidConfig(String bidderId){
         autoBidConfigs.remove(bidderId);
     }
 

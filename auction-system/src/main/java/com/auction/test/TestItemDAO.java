@@ -17,7 +17,7 @@ public class TestItemDAO {
                 90000,
                 100000,
                 "OLD",
-                "Sách xuất bản năm 2026",
+                "Sách xuất bản năm 2029",
                 "Book"
         );
 
