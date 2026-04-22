@@ -174,7 +174,7 @@ public class AuctionDAO {
         LocalDateTime et  = rs.getTimestamp("end_time").toLocalDateTime();
         AuctionStatus status = AuctionStatus.valueOf(rs.getString("status"));
  
-        // Tạo Item placeholder – bạn có thể thay bằng ItemDAO.getItemById(itemId)
+        // Tạo Item placeholder – có thể thay bằng ItemDAO.getItemById(itemId)
         Item item = new Item(String.valueOf(itemId));
         item.setStartingPrice(curPrice);
  
