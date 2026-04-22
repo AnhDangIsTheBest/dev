@@ -1,6 +1,6 @@
 package com.auction.ui;
 
-import com.sun.jfx.incubator.scene.control.richtext.FxPathBuilder;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
