@@ -3,6 +3,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "com.auction.Main",
+      "projectName": "online-auction-system"
+    },
+    {
+      "type": "java",
+      "name": "TestUserDAO",
+      "request": "launch",
+      "mainClass": "com.auction.test.TestUserDAO",
+      "projectName": "online-auction-system"
+    },
+    {
+      "type": "java",
       "name": "TestDB",
       "request": "launch",
       "mainClass": "com.auction.test.TestDB",

@@ -1,5 +1,6 @@
 {
   "java.project.referencedLibraries": [
     "javafx-sdk-21.0.10/lib/**/*.jar"
-  ]
+  ],
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -39,7 +39,8 @@
 </dependencies>
 
     <build>
-        <plugins>
+        <plugins> 
+        <!-- Maven javafx plugin -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
