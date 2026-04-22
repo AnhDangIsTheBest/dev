@@ -12,6 +12,6 @@ public class AfterLogin {
     @FXML
     public void userLogout(ActionEvent event) throws IOException {
         Main m = new Main();
-        m.changeScene("login.fxml");
+        m.changeScene("login");
     }
 }

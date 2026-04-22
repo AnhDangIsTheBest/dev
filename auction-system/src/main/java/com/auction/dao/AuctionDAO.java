@@ -3,6 +3,7 @@ package com.auction.dao;
 import com.auction.model.Auction;
 import com.auction.model.Auction.AuctionStatus;
 import com.auction.model.Item.Item;
+import com.auction.model.Item.OtherItem;
 import com.auction.config.DBConnection;
  
 import java.sql.*;
@@ -175,7 +176,15 @@ public class AuctionDAO {
         AuctionStatus status = AuctionStatus.valueOf(rs.getString("status"));
  
         // Tạo Item placeholder – bạn có thể thay bằng ItemDAO.getItemById(itemId)
-        Item item = new Item(String.valueOf(itemId));
+        Item item = new OtherItem(
+                String.valueOf(itemId),
+                "Unknown",
+                curPrice,
+                curPrice,
+                "UNKNOWN",
+                "",
+                "General"
+        );
         item.setStartingPrice(curPrice);
  
         Auction auction = new Auction(
