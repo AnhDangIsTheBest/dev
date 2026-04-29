@@ -1,94 +1,99 @@
 package com.auction.test;
 
 import com.auction.dao.UserDAO;
-import com.auction.model.User.User;
+import com.auction.model.User.Admin;
 import com.auction.model.User.Bidder;
+import com.auction.model.User.Seller;
+import com.auction.model.User.User;
 
 import java.util.List;
 
 public class TestUserDAO {
     public static void main(String[] args) {
         UserDAO dao = new UserDAO();
+        String suffix = String.valueOf(System.currentTimeMillis());
 
-        System.out.println("===== TEST USERDAO =====");
+        String bidderId = "BID" + suffix.substring(suffix.length() - 8);
+        String sellerId = "SEL" + suffix.substring(suffix.length() - 8);
+        String adminId = "ADM" + suffix.substring(suffix.length() - 8);
 
-        // 1. Insert
-        User newUser = new Bidder("0", "dangtest", "", "", "123456", 0.0, 0, 0);
-        boolean inserted = dao.insert(newUser);
-        System.out.println("Insert: " + inserted);
+        String bidderUsername = "dang_bidder_" + suffix;
+        String sellerUsername = "dang_seller_" + suffix;
+        String adminUsername = "dang_admin_" + suffix;
 
-        // 2. Get all
-        System.out.println("\n===== GET ALL USERS =====");
+        System.out.println("===== TEST USER DAO =====");
+
+        User bidder = new Bidder(
+                bidderId,
+                bidderUsername,
+                bidderUsername + "@test.com",
+                "Dang Bidder",
+                "123456",
+                1_000_000,
+                0,
+                0
+        );
+
+        User seller = new Seller(
+                sellerId,
+                sellerUsername,
+                sellerUsername + "@test.com",
+                "123456",
+                "Dang Seller",
+                0,
+                0
+        );
+
+        User admin = new Admin(
+                adminId,
+                adminUsername,
+                adminUsername + "@test.com",
+                "123456",
+                "Dang Admin",
+                "SUPER"
+        );
+
+        System.out.println("\n--- 1. INSERT ---");
+        System.out.println("Insert bidder: " + dao.insert(bidder));
+        System.out.println("Insert seller: " + dao.insert(seller));
+        System.out.println("Insert admin : " + dao.insert(admin));
+
+        System.out.println("\n--- 2. FIND BY ID ---");
+        User found = dao.findById(bidderId);
+        System.out.println(found != null ? found.display() + " | ID = " + found.getId() : "Not found");
+
+        System.out.println("\n--- 3. LOGIN ---");
+        User loginUser = dao.login(bidderUsername, "123456");
+        System.out.println(loginUser != null ? "Login OK: " + loginUser.display() : "Login failed");
+
+        System.out.println("\n--- 4. GET ALL ---");
         List<User> users = dao.getAll();
+        System.out.println("Total users: " + users.size());
         for (User u : users) {
-            System.out.println(u.display() + " | ID = " + u.getId());
+            System.out.println("  " + u.display() + " | ID = " + u.getId());
         }
 
-        // 3. Login
-        System.out.println("\n===== LOGIN TEST =====");
-        User loginUser = dao.login("dangtest", "123456");
-        if (loginUser != null) {
-            System.out.println("Login thanh cong: " + loginUser.display() + " | ID = " + loginUser.getId());
-        } else {
-            System.out.println("Login that bai");
-        }
+        System.out.println("\n--- 5. UPDATE USER ---");
+        User updatedBidder = new Bidder(
+                bidderId,
+                bidderUsername + "_updated",
+                bidderUsername + "_updated@test.com",
+                "Dang Bidder Updated",
+                "999999",
+                2_000_000,
+                5,
+                1
+        );
+        System.out.println("Update: " + dao.update(updatedBidder));
 
-        // 4. Tìm id của user vừa tạo để update/delete
-        int foundId = -1;
-        for (User u : users) {
-            if (u.getUsername().equals("dangtest")) {
-                foundId = Integer.parseInt(u.getId());
-                break;
-            }
-        }
+        System.out.println("\n--- 6. LOGIN AFTER UPDATE ---");
+        User updatedLogin = dao.login(bidderUsername + "_updated", "999999");
+        System.out.println(updatedLogin != null ? "Login OK: " + updatedLogin.display() : "Login failed");
 
-        // Nếu chưa thấy trong list cũ thì load lại
-        if (foundId == -1) {
-            users = dao.getAll();
-            for (User u : users) {
-                if (u.getUsername().equals("dangtest")) {
-                    foundId = Integer.parseInt(u.getId());
-                    break;
-                }
-            }
-        }
-
-        // 5. Update
-        System.out.println("\n===== UPDATE TEST =====");
-        if (foundId != -1) {
-            boolean updated = dao.update(foundId, "dangupdated", "999999", "BIDDER");
-            System.out.println("Update: " + updated);
-        } else {
-            System.out.println("Khong tim thay ID cua user dangtest de update");
-        }
-
-        // 6. Login lại sau update
-        System.out.println("\n===== LOGIN AFTER UPDATE =====");
-        User updatedLogin = dao.login("dangupdated", "999999");
-        if (updatedLogin != null) {
-            System.out.println("Login sau update thanh cong: " + updatedLogin.display() + " | ID = " + updatedLogin.getId());
-        } else {
-            System.out.println("Login sau update that bai");
-        }
-
-        // 7. Delete
-        System.out.println("\n===== DELETE TEST =====");
-        if (updatedLogin != null) {
-            int deleteId = Integer.parseInt(updatedLogin.getId());
-            boolean deleted = dao.delete(deleteId);
-            System.out.println("Delete: " + deleted);
-        } else {
-            System.out.println("Khong co user de delete");
-        }
-
-        // 8. Check lại sau delete
-        System.out.println("\n===== CHECK AFTER DELETE =====");
-        User deletedCheck = dao.login("dangupdated", "999999");
-        if (deletedCheck == null) {
-            System.out.println("Delete thanh cong, user khong con trong DB");
-        } else {
-            System.out.println("Delete that bai, user van con: " + deletedCheck.display());
-        }
+        System.out.println("\n--- 7. DELETE TEST USERS ---");
+        System.out.println("Delete bidder: " + dao.delete(bidderId));
+        System.out.println("Delete seller: " + dao.delete(sellerId));
+        System.out.println("Delete admin : " + dao.delete(adminId));
 
         System.out.println("\n===== DONE =====");
     }

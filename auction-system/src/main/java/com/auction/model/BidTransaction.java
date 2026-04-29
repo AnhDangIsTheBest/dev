@@ -39,7 +39,7 @@ public class BidTransaction implements Serializable{
     }
 
     public String getFormattedTimeDay(){ 
-        return timeStamp.format(DateTimeFormatter.ofPattern("dd/mm/yyyy"));
+        return timeStamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
     @Override
     public String toString(){

@@ -33,7 +33,7 @@ public class AutoBidConfig implements Serializable, Comparable<AutoBidConfig> {
 
         @Override 
         public String toString(){ 
-            return String.format("AutoBid[%s(%s): max = %.0f |  inc = %.of]",bidderName,bidderId,maxBid,increment);
+            return String.format("AutoBid[%s(%s): max = %.0f |  inc = %.0f]",bidderName,bidderId,maxBid,increment);
             
         }
 

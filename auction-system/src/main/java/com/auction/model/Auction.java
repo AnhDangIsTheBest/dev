@@ -1,8 +1,6 @@
 package com.auction.model;
 import com.auction.model.Item.Item;
-
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,6 +56,7 @@ public class Auction implements Serializable{
     public synchronized String getLeadBidderName() { return leadBidderName;}
     public LocalDateTime getStartTime(){ return startTime;}
     public synchronized LocalDateTime getEndTime(){ return endTime;}
+    public synchronized double getCurrentPrice() { return currentPrice;}
     public synchronized AuctionStatus getStatus() { return status;}
     public List<BidTransaction> getBidHistory(){ return bidHistory;}
     public boolean isAntiSnipingEnabled(){ return antiSnipingEnable;}
@@ -67,6 +66,7 @@ public class Auction implements Serializable{
 
     public synchronized void setStatus(AuctionStatus status){ this.status = status;}
     public synchronized void setEndTime(LocalDateTime endTime){ this.endTime =  endTime;}
+    public synchronized void setCurrentPrice(double price){ this.currentPrice = price;}
 
     public long getSecondRemaining(){ // thời gian còn lại trước khi phiên đấu giá kết thúc
         if (status != AuctionStatus.RUNNING){ return 0;}
