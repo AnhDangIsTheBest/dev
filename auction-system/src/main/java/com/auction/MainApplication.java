@@ -1,6 +1,7 @@
 package com.auction;
 
 <<<<<<< HEAD
+import javafx.fxml.FXMLLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
