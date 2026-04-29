@@ -6,18 +6,13 @@ import com.auction.model.Item.Electronics;
 import com.auction.model.Item.Item;
 import com.auction.model.Item.OtherItem;
 import com.auction.model.Item.Vehicle;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class ItemDAO {
 
     public boolean insert(Item item, String sellerId) {
-        String id = item.getId() != null && !item.getId().isBlank()
-                ? item.getId()
-                : UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         String sql = """
                 INSERT INTO items (
@@ -29,7 +24,7 @@ public class ItemDAO {
             conn.setAutoCommit(false);
 
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, id);
+                ps.setString(1, item.getId());
                 ps.setString(2, item.getName());
                 ps.setString(3, item.getDescription());
                 ps.setString(4, dbType(item));
@@ -40,7 +35,7 @@ public class ItemDAO {
                 ps.executeUpdate();
             }
 
-            insertSpecific(conn, id, item);
+            insertSpecific(conn, item.getId(), item);
             conn.commit();
             return true;
         } catch (SQLException e) {
@@ -226,7 +221,7 @@ public class ItemDAO {
                     INSERT INTO item_electronics (item_id, brand, model, warranty)
                     VALUES (?, ?, ?, ?)
                     """)) {
-                ps.setString(1, itemId);
+                ps.setString(1, e.getId());
                 ps.setString(2, e.getBrand());
                 ps.setString(3, e.getModel());
                 ps.setInt(4, e.getWarranty());

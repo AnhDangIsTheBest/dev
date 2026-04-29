@@ -5,7 +5,7 @@ import java.util.UUID;
 public class ItemFactory {
 
     public enum ItemType{
-        ELECTRONICS,ART,VEHICLE,OTHERITEAM;
+        ELECTRONICS,ART,VEHICLE,OTHERITEM;
     }
 
     // Tao san pham
@@ -83,7 +83,7 @@ public class ItemFactory {
                         extraParams.length > 4 ? extraParams[4] : "CAR" // type
                 );
 
-            case OTHERITEAM:
+            case OTHERITEM:
                 return createOtherItem(
                         name,
                         startingPrice,

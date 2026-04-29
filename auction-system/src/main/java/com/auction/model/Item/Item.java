@@ -3,7 +3,7 @@ package com.auction.model.Item;
 import com.auction.model.Entity;
 
 public abstract class Item extends Entity{
-    protected String desription;
+    protected String description;
     protected String name;
     protected double startingPrice;
     protected double currentPrice;
@@ -15,7 +15,7 @@ public abstract class Item extends Entity{
         this.startingPrice = startingPrice;
         this.currentPrice =  currentPrice;
         this.status = status;
-        this.desription = description;
+        this.description = description;
     }
     public String getName(){
         return name;
@@ -28,8 +28,8 @@ public abstract class Item extends Entity{
 
     public abstract String getType();
     public void setName(String name){this.name = name; }
-    public String getDescription(){ return desription;}
-    public void setDescription(String description){ this.desription = description;}
+    public String getDescription(){ return description;}
+    public void setDescription(String description){ this.description = description;}
     public double getStartingPrice(){ return startingPrice;}
     public void setStartingPrice(double price){ this.startingPrice = price;}
     public String getStatus(){ return status;}
@@ -40,7 +40,7 @@ public abstract class Item extends Entity{
     @Override
     public String display(){
         return String.format("[ %s ] %s | Giá khởi điểm: %.1f | Tình trạng: %s",
-        getType(), desription, startingPrice, status);
+        getType(), description, startingPrice, status);
 
     }
 

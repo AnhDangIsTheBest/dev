@@ -220,7 +220,9 @@ public class AuctionDAO {
                 snipeWindowSeconds,
                 snipeExtendSeconds
         );
+        auction.setCurrentPrice(currentPrice);
         auction.setStatus(status);
+        auction.setEndTime(endTime);
 
         // Constructor Auction hiện tại đang bỏ qua leadBidder/currentPrice truyền vào.
         // Tạm đồng bộ lại bằng applyBid nếu DB có leader.
