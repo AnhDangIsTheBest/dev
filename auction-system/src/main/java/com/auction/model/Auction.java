@@ -58,6 +58,7 @@ public class Auction implements Serializable{
     public synchronized String getLeadBidderName() { return leadBidderName;}
     public LocalDateTime getStartTime(){ return startTime;}
     public synchronized LocalDateTime getEndTime(){ return endTime;}
+    public synchronized double getCurrentPrice() { return currentPrice;}
     public synchronized AuctionStatus getStatus() { return status;}
     public List<BidTransaction> getBidHistory(){ return bidHistory;}
     public boolean isAntiSnipingEnabled(){ return antiSnipingEnable;}

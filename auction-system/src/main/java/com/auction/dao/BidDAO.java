@@ -1,172 +1,145 @@
 package com.auction.dao;
 
-import com.auction.model.BidTransaction;
 import com.auction.config.DBConnection;
+import com.auction.model.BidTransaction;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BidDAO {
 
-    public int placeBid(BidTransaction bid) {
+    public String placeBid(BidTransaction bid) {
         String sql = """
-                INSERT INTO bids (auction_id, bidder_id, amount, bid_time)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO bid_transactions (
+                    id, auction_id, bidder_id, bidder_name, amount, bid_time, is_auto_bid
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        String id = bid.getTransactionId() != null && !bid.getTransactionId().isBlank()
+                ? bid.getTransactionId()
+                : UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-            ps.setInt(1, Integer.parseInt(bid.getAuctionId()));
-            ps.setInt(2, Integer.parseInt(bid.getBidderId()));
-            ps.setDouble(3, bid.getAmount());
-            ps.setTimestamp(4, Timestamp.valueOf(bid.getLocalDateTime()));
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, id);
+            ps.setString(2, bid.getAuctionId());
+            ps.setString(3, bid.getBidderId());
+            ps.setString(4, bid.getBidderName());
+            ps.setDouble(5, bid.getAmount());
+            ps.setTimestamp(6, Timestamp.valueOf(bid.getLocalDateTime()));
+            ps.setBoolean(7, bid.isAutoBid());
 
             ps.executeUpdate();
-
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) return keys.getInt(1);
-
+            return id;
         } catch (SQLException e) {
             System.err.println("[BidDAO] placeBid lỗi: " + e.getMessage());
+            return null;
         }
-        return -1;
     }
 
-    // ─────────────────────────────────────────────
-    //  READ
-    // ─────────────────────────────────────────────
-
-    /** Lấy toàn bộ lịch sử bid của một phiên đấu giá, sắp xếp theo thời gian. */
-    public List<BidTransaction> getBidsByAuction(int auctionId) {
+    public List<BidTransaction> getBidsByAuction(String auctionId) {
         String sql = """
-                SELECT b.id, b.auction_id, b.bidder_id, u.username,
-                       b.amount, b.bid_time
-                FROM bids b
-                JOIN users u ON u.id = b.bidder_id
-                WHERE b.auction_id = ?
-                ORDER BY b.bid_time ASC
+                SELECT * FROM bid_transactions
+                WHERE auction_id = ?
+                ORDER BY bid_time ASC
                 """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, auctionId);
+            ps.setString(1, auctionId);
             return mapResultSet(ps.executeQuery());
-
         } catch (SQLException e) {
             System.err.println("[BidDAO] getBidsByAuction lỗi: " + e.getMessage());
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 
-    /** Lấy bid cao nhất (leader) của một phiên đấu giá. */
-    public BidTransaction getLeadBid(int auctionId) {
+    public BidTransaction getLeadBid(String auctionId) {
         String sql = """
-                SELECT b.id, b.auction_id, b.bidder_id, u.username,
-                       b.amount, b.bid_time
-                FROM bids b
-                JOIN users u ON u.id = b.bidder_id
-                WHERE b.auction_id = ?
-                ORDER BY b.amount DESC, b.bid_time ASC
+                SELECT * FROM bid_transactions
+                WHERE auction_id = ?
+                ORDER BY amount DESC, bid_time ASC
                 LIMIT 1
                 """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, auctionId);
+            ps.setString(1, auctionId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
-
         } catch (SQLException e) {
             System.err.println("[BidDAO] getLeadBid lỗi: " + e.getMessage());
         }
         return null;
     }
 
-    /** Lấy tất cả bid của một người dùng (xem lịch sử cá nhân). */
-    public List<BidTransaction> getBidsByBidder(int bidderId) {
+    public List<BidTransaction> getBidsByBidder(String bidderId) {
         String sql = """
-                SELECT b.id, b.auction_id, b.bidder_id, u.username,
-                       b.amount, b.bid_time
-                FROM bids b
-                JOIN users u ON u.id = b.bidder_id
-                WHERE b.bidder_id = ?
-                ORDER BY b.bid_time DESC
+                SELECT * FROM bid_transactions
+                WHERE bidder_id = ?
+                ORDER BY bid_time DESC
                 """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, bidderId);
+            ps.setString(1, bidderId);
             return mapResultSet(ps.executeQuery());
-
         } catch (SQLException e) {
             System.err.println("[BidDAO] getBidsByBidder lỗi: " + e.getMessage());
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 
-    /** Đếm số lượt bid của một phiên đấu giá. */
-    public int countBids(int auctionId) {
-        String sql = "SELECT COUNT(*) FROM bids WHERE auction_id = ?";
+    public int countBids(String auctionId) {
+        String sql = "SELECT COUNT(*) FROM bid_transactions WHERE auction_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, auctionId);
+            ps.setString(1, auctionId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
-
         } catch (SQLException e) {
             System.err.println("[BidDAO] countBids lỗi: " + e.getMessage());
         }
         return 0;
     }
 
-    /** Kiểm tra người dùng đã bid trong phiên này chưa. */
-    public boolean hasBidded(int auctionId, int bidderId) {
-        String sql = "SELECT 1 FROM bids WHERE auction_id = ? AND bidder_id = ? LIMIT 1";
+    public boolean hasBidded(String auctionId, String bidderId) {
+        String sql = "SELECT 1 FROM bid_transactions WHERE auction_id = ? AND bidder_id = ? LIMIT 1";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, auctionId);
-            ps.setInt(2, bidderId);
+            ps.setString(1, auctionId);
+            ps.setString(2, bidderId);
             return ps.executeQuery().next();
-
         } catch (SQLException e) {
             System.err.println("[BidDAO] hasBidded lỗi: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
-    // ─────────────────────────────────────────────
-    //  DELETE
-    // ─────────────────────────────────────────────
-
-    /** Xoá toàn bộ bid của một phiên (thường dùng khi huỷ auction). */
-    public boolean deleteBidsByAuction(int auctionId) {
-        String sql = "DELETE FROM bids WHERE auction_id = ?";
+    public boolean deleteBidsByAuction(String auctionId) {
+        String sql = "DELETE FROM bid_transactions WHERE auction_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, auctionId);
+            ps.setString(1, auctionId);
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             System.err.println("[BidDAO] deleteBidsByAuction lỗi: " + e.getMessage());
+            return false;
         }
-        return false;
     }
-
-    // ─────────────────────────────────────────────
-    //  HELPERS
-    // ─────────────────────────────────────────────
 
     private List<BidTransaction> mapResultSet(ResultSet rs) throws SQLException {
         List<BidTransaction> list = new ArrayList<>();
@@ -175,14 +148,14 @@ public class BidDAO {
     }
 
     private BidTransaction mapRow(ResultSet rs) throws SQLException {
-        String transId   = String.valueOf(rs.getInt("id"));
-        String auctionId = String.valueOf(rs.getInt("auction_id"));
-        String bidderId  = String.valueOf(rs.getInt("bidder_id"));
-        String bidderName = rs.getString("username");
-        double amount    = rs.getDouble("amount");
-        LocalDateTime ts = rs.getTimestamp("bid_time").toLocalDateTime();
+        String transactionId = rs.getString("id");
+        String auctionId = rs.getString("auction_id");
+        String bidderId = rs.getString("bidder_id");
+        String bidderName = rs.getString("bidder_name");
+        double amount = rs.getDouble("amount");
+        LocalDateTime timeStamp = rs.getTimestamp("bid_time").toLocalDateTime();
+        boolean isAutoBid = rs.getBoolean("is_auto_bid");
 
-        // isAutoBid không lưu trong DB → mặc định false khi đọc từ DB
-        return new BidTransaction(transId, auctionId, bidderId, bidderName, amount, ts, false);
+        return new BidTransaction(transactionId, auctionId, bidderId, bidderName, amount, timeStamp, isAutoBid);
     }
 }

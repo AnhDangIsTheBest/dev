@@ -8,13 +8,12 @@ public class DBConnection {
     private static final String USER = "avnadmin";
     private static final String PASSWORD = "AVNS_H8nWIUDmI3M0krkJZMz";
 
-    public static Connection getConnection() {
+    public static Connection getConnection() throws java.sql.SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (ClassNotFoundException e) {
+            throw new java.sql.SQLException("MySQL Driver not found", e);
         }
     }
 }

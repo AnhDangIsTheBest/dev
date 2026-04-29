@@ -1,16 +1,6 @@
 package com.auction;
 
-<<<<<<< HEAD
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class MainApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(MainApplication.class, args);
-    }
-}
-=======
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,7 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MainApplication {
+public class MainApplication extends Application {
     private static Stage stg;
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -34,4 +24,3 @@ public class MainApplication {
         stg.getScene().setRoot(pane);
     }
 }
->>>>>>> e4bb7a658ceae4d65ed25324242fcf2a0f1351d5
