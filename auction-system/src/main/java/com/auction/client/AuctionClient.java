@@ -86,9 +86,11 @@ public class AuctionClient {
         return send(SocketMessage.request(Action.LOGOUT));
     }
 
-    public SocketMessage register(Object user) {
+    public SocketMessage register(String userType, String username, String password) {
         return send(SocketMessage.request(Action.REGISTER)
-                .put("user", user));
+                .put("userType", userType)
+                .put("username", username)
+                .put("password", password));
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -144,39 +146,31 @@ public class AuctionClient {
     //  BID
     // ══════════════════════════════════════════════════════════════
 
-    public SocketMessage placeBid(String auctionId, String bidderId,
-                                  String bidderName, double amount) {
+    public SocketMessage placeBid(String auctionId, double amount) {
         return send(SocketMessage.request(Action.PLACE_BID)
                 .put("auctionId", auctionId)
-                .put("bidderId", bidderId)
-                .put("bidderName", bidderName)
                 .put("amount", amount));
     }
 
-    public SocketMessage registerAutoBid(String auctionId, String bidderId,
-                                         String bidderName, double maxBid, double increment) {
+    public SocketMessage registerAutoBid(String auctionId, double maxBid, double increment) {
         return send(SocketMessage.request(Action.REGISTER_AUTO_BID)
                 .put("auctionId", auctionId)
-                .put("bidderId", bidderId)
-                .put("bidderName", bidderName)
                 .put("maxBid", maxBid)
                 .put("increment", increment));
     }
 
-    public SocketMessage cancelAutoBid(String auctionId, String bidderId) {
+    public SocketMessage cancelAutoBid(String auctionId) {
         return send(SocketMessage.request(Action.CANCEL_AUTO_BID)
-                .put("auctionId", auctionId)
-                .put("bidderId", bidderId));
+                .put("auctionId", auctionId));
     }
 
     // ══════════════════════════════════════════════════════════════
     //  ITEM
     // ══════════════════════════════════════════════════════════════
 
-    public SocketMessage createItem(Object item, String sellerId) {
+    public SocketMessage createItem(Object item) {
         return send(SocketMessage.request(Action.CREATE_ITEM)
-                .put("item", item)
-                .put("sellerId", sellerId));
+                .put("item", item));
     }
 
     public SocketMessage updateItem(Object item) {
@@ -189,9 +183,8 @@ public class AuctionClient {
                 .put("itemId", itemId));
     }
 
-    public SocketMessage getItemsBySeller(String sellerId) {
-        return send(SocketMessage.request(Action.GET_ITEMS_BY_SELLER)
-                .put("sellerId", sellerId));
+    public SocketMessage getMyItems() {
+        return send(SocketMessage.request(Action.GET_ITEMS_BY_SELLER));
     }
 
     // ══════════════════════════════════════════════════════════════

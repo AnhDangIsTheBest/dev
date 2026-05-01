@@ -1,16 +1,16 @@
 package com.auction.network.server;
 
-import com.auction.dao.AuctionDAO;
-import com.auction.dao.BidDAO;
-import com.auction.dao.ItemDAO;
-import com.auction.dao.UserDAO;
+import com.auction.service.ItemService;
+import com.auction.service.UserService;
 import com.auction.model.Auction;
 import com.auction.model.Item.Item;
 import com.auction.model.User.User;
 import com.auction.network.protocol.SocketMessage;
 import com.auction.network.protocol.SocketMessage.Action;
 import com.auction.service.AuctionService;
+import com.auction.service.AuthService;
 import com.auction.service.BidService;
+import com.auction.exception.AuthenticationException;
 
 import java.io.*;
 import java.net.Socket;
@@ -31,9 +31,10 @@ public class ClientHandler implements Runnable {
 
     // Services & DAOs
     private final AuctionService auctionService = new AuctionService();
-    private final BidService bidService         = new BidService();
-    private final UserDAO userDAO               = new UserDAO();
-    private final ItemDAO itemDAO               = new ItemDAO();
+    private final BidService     bidService     = new BidService();
+    private final AuthService    authService    = new AuthService();
+    private final UserService userService = new UserService();
+    private final ItemService itemService = new ItemService();
 
     // Thông tin client hiện tại (sau khi login)
     private User currentUser = null;
@@ -48,7 +49,6 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            // ObjectOutputStream PHẢI tạo trước ObjectInputStream (tránh deadlock)
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             in  = new ObjectInputStream(socket.getInputStream());
@@ -62,7 +62,6 @@ public class ClientHandler implements Runnable {
             }
 
         } catch (EOFException | java.net.SocketException e) {
-            // Client ngắt kết nối bình thường
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("[ClientHandler] Lỗi: " + e.getMessage());
         } finally {
@@ -111,7 +110,7 @@ public class ClientHandler implements Runnable {
     }
 
     // ══════════════════════════════════════════════════════════════
-    //  AUTH
+    //  AUTH 
     // ══════════════════════════════════════════════════════════════
 
     private SocketMessage handleLogin(SocketMessage msg) {
@@ -121,13 +120,18 @@ public class ClientHandler implements Runnable {
         if (username == null || password == null)
             return SocketMessage.error(Action.LOGIN, "Thiếu username hoặc password");
 
-        User user = userDAO.login(username, password);
-        if (user == null)
-            return SocketMessage.error(Action.LOGIN, "Sai tên đăng nhập hoặc mật khẩu");
+        try {
+            User user = authService.login(username, password);
+            if (user == null)
+                return SocketMessage.error(Action.LOGIN, "Sai tên đăng nhập hoặc mật khẩu");
 
-        this.currentUser = user;
-        return SocketMessage.ok(Action.LOGIN, "Đăng nhập thành công")
-                .put("user", user);
+            this.currentUser = user;
+            return SocketMessage.ok(Action.LOGIN, "Đăng nhập thành công")
+                    .put("user", user);
+
+        } catch (AuthenticationException e) {
+            return SocketMessage.error(Action.LOGIN, e.getMessage());
+        }
     }
 
     private SocketMessage handleLogout() {
@@ -136,16 +140,42 @@ public class ClientHandler implements Runnable {
         return SocketMessage.ok(Action.LOGOUT, "Đã đăng xuất");
     }
 
+    /**
+     * Client gửi kèm theo payload:
+     *   "userType" : "BIDDER" hoặc "SELLER"
+     *   "username" : String
+     *   "password" : String
+     *
+     * AuthService sẽ kiểm tra trùng username và tạo đúng loại user.
+     */
     private SocketMessage handleRegister(SocketMessage msg) {
-        User user = (User) msg.get("user");
-        if (user == null)
-            return SocketMessage.error(Action.REGISTER, "Thiếu thông tin người dùng");
+    String userType = msg.getString("userType");
+    String username = msg.getString("username");
+    String password = msg.getString("password");
 
-        boolean ok = userDAO.insert(user);
-        return ok
-                ? SocketMessage.ok(Action.REGISTER, "Đăng ký thành công")
-                : SocketMessage.error(Action.REGISTER, "Đăng ký thất bại (username/email đã tồn tại?)");
+    if (userType == null || userType.isBlank()) {
+        return SocketMessage.error(Action.REGISTER, "Thiếu userType");
     }
+
+    if (username == null || username.isBlank()
+            || password == null || password.isBlank()) {
+        return SocketMessage.error(Action.REGISTER, "Thiếu username hoặc password");
+    }
+
+    boolean ok;
+
+    if ("SELLER".equalsIgnoreCase(userType)) {
+        ok = authService.registerSeller(username, password);
+    } else if ("BIDDER".equalsIgnoreCase(userType)) {
+        ok = authService.registerBidder(username, password);
+    } else {
+        return SocketMessage.error(Action.REGISTER, "userType không hợp lệ, chỉ nhận BIDDER hoặc SELLER");
+    }
+
+    return ok
+            ? SocketMessage.ok(Action.REGISTER, "Đăng ký thành công")
+            : SocketMessage.error(Action.REGISTER, "Đăng ký thất bại, username đã tồn tại?");
+}
 
     // ══════════════════════════════════════════════════════════════
     //  AUCTION
@@ -242,47 +272,66 @@ public class ClientHandler implements Runnable {
     // ══════════════════════════════════════════════════════════════
 
     private SocketMessage handlePlaceBid(SocketMessage msg) {
-        if (!isLoggedIn()) return requireLogin(Action.PLACE_BID);
+    if (!isLoggedIn()) return requireLogin(Action.PLACE_BID);
 
-        String auctionId  = msg.getString("auctionId");
-        String bidderId   = msg.getString("bidderId");
-        String bidderName = msg.getString("bidderName");
-        double amount     = msg.getDouble("amount");
+    String auctionId = msg.getString("auctionId");
+    double amount    = msg.getDouble("amount");
 
-        try {
-            String bidId = bidService.placeManualBid(auctionId, bidderId, bidderName, amount);
-            if (bidId == null)
-                return SocketMessage.error(Action.PLACE_BID, "Đặt giá thất bại");
-
-            // Broadcast cho tất cả client đang xem phiên này
-            Auction updated = auctionService.getAuctionById(auctionId);
-            server.broadcastToWatchers(auctionId,
-                    SocketMessage.ok(Action.BROADCAST_BID_UPDATE, "Có bid mới!")
-                            .put("auction", updated)
-                            .put("bidderName", bidderName)
-                            .put("amount", amount));
-
-            return SocketMessage.ok(Action.PLACE_BID, "Đặt giá thành công").put("bidId", bidId);
-
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return SocketMessage.error(Action.PLACE_BID, e.getMessage());
-        }
+    if (auctionId == null || auctionId.isBlank()) {
+        return SocketMessage.error(Action.PLACE_BID, "Thiếu auctionId");
     }
+
+    if (amount <= 0) {
+        return SocketMessage.error(Action.PLACE_BID, "Số tiền bid phải lớn hơn 0");
+    }
+
+    String bidderId = currentUser.getId();
+    String bidderName = currentUser.getUsername(); 
+
+    try {
+        String bidId = bidService.placeManualBid(auctionId, bidderId, bidderName, amount);
+
+        if (bidId == null) {
+            return SocketMessage.error(Action.PLACE_BID, "Đặt giá thất bại");
+        }
+
+        Auction updated = auctionService.getAuctionById(auctionId);
+
+        server.broadcastToWatchers(auctionId,
+                SocketMessage.ok(Action.BROADCAST_BID_UPDATE, "Có bid mới!")
+                        .put("auction", updated)
+                        .put("bidderName", bidderName)
+                        .put("amount", amount));
+
+        return SocketMessage.ok(Action.PLACE_BID, "Đặt giá thành công")
+                .put("bidId", bidId);
+
+    } catch (IllegalArgumentException | IllegalStateException e) {
+        return SocketMessage.error(Action.PLACE_BID, e.getMessage());
+    }
+}
 
     private SocketMessage handleRegisterAutoBid(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.REGISTER_AUTO_BID);
 
-        String auctionId  = msg.getString("auctionId");
-        String bidderId   = msg.getString("bidderId");
-        String bidderName = msg.getString("bidderName");
-        double maxBid     = msg.getDouble("maxBid");
-        double increment  = msg.getDouble("increment");
+        String auctionId = msg.getString("auctionId");
+        double maxBid    = msg.getDouble("maxBid");
+        double increment = msg.getDouble("increment");
+
+        if (auctionId == null || auctionId.isBlank()) {
+            return SocketMessage.error(Action.REGISTER_AUTO_BID, "Thiếu auctionId");
+        }
+
+        String bidderId = currentUser.getId();
+        String bidderName = currentUser.getUsername();
 
         try {
             boolean ok = bidService.registerAutoBid(auctionId, bidderId, bidderName, maxBid, increment);
+
             return ok
                     ? SocketMessage.ok(Action.REGISTER_AUTO_BID, "Đăng ký auto bid thành công")
                     : SocketMessage.error(Action.REGISTER_AUTO_BID, "Đăng ký thất bại");
+
         } catch (IllegalArgumentException e) {
             return SocketMessage.error(Action.REGISTER_AUTO_BID, e.getMessage());
         }
@@ -290,9 +339,17 @@ public class ClientHandler implements Runnable {
 
     private SocketMessage handleCancelAutoBid(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.CANCEL_AUTO_BID);
+
         String auctionId = msg.getString("auctionId");
-        String bidderId  = msg.getString("bidderId");
+
+        if (auctionId == null || auctionId.isBlank()) {
+            return SocketMessage.error(Action.CANCEL_AUTO_BID, "Thiếu auctionId");
+        }
+
+        String bidderId = currentUser.getId();
+
         boolean ok = bidService.cancelAutoBid(auctionId, bidderId);
+
         return ok
                 ? SocketMessage.ok(Action.CANCEL_AUTO_BID, "Hủy auto bid thành công")
                 : SocketMessage.error(Action.CANCEL_AUTO_BID, "Hủy thất bại");
@@ -304,40 +361,71 @@ public class ClientHandler implements Runnable {
 
     private SocketMessage handleCreateItem(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.CREATE_ITEM);
-        Item item     = (Item) msg.get("item");
-        String seller = msg.getString("sellerId");
-        if (item == null || seller == null)
-            return SocketMessage.error(Action.CREATE_ITEM, "Thiếu item hoặc sellerId");
 
-        boolean ok = itemDAO.insert(item, seller);
-        return ok
-                ? SocketMessage.ok(Action.CREATE_ITEM, "Tạo item thành công").put("itemId", item.getId())
-                : SocketMessage.error(Action.CREATE_ITEM, "Tạo item thất bại");
+        Item item = (Item) msg.get("item");
+
+        try {
+            String sellerId = currentUser.getId();
+
+            boolean ok = itemService.createItem(item, sellerId);
+
+            return ok
+                    ? SocketMessage.ok(Action.CREATE_ITEM, "Tạo item thành công").put("itemId", item.getId())
+                    : SocketMessage.error(Action.CREATE_ITEM, "Tạo item thất bại");
+
+        } catch (IllegalArgumentException e) {
+            return SocketMessage.error(Action.CREATE_ITEM, e.getMessage());
+        }
     }
 
     private SocketMessage handleUpdateItem(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.UPDATE_ITEM);
+
         Item item = (Item) msg.get("item");
-        if (item == null) return SocketMessage.error(Action.UPDATE_ITEM, "Thiếu item");
-        boolean ok = itemDAO.update(item);
-        return ok
-                ? SocketMessage.ok(Action.UPDATE_ITEM, "Cập nhật thành công")
-                : SocketMessage.error(Action.UPDATE_ITEM, "Cập nhật thất bại");
+
+        try {
+            boolean ok = itemService.updateItem(item);
+
+            return ok
+                    ? SocketMessage.ok(Action.UPDATE_ITEM, "Cập nhật thành công")
+                    : SocketMessage.error(Action.UPDATE_ITEM, "Cập nhật thất bại");
+
+        } catch (IllegalArgumentException e) {
+            return SocketMessage.error(Action.UPDATE_ITEM, e.getMessage());
+        }
     }
 
     private SocketMessage handleDeleteItem(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.DELETE_ITEM);
+
         String itemId = msg.getString("itemId");
-        boolean ok = itemDAO.delete(itemId);
-        return ok
-                ? SocketMessage.ok(Action.DELETE_ITEM, "Xóa item thành công")
-                : SocketMessage.error(Action.DELETE_ITEM, "Xóa thất bại");
+
+        try {
+            boolean ok = itemService.deleteItem(itemId);
+
+            return ok
+                    ? SocketMessage.ok(Action.DELETE_ITEM, "Xóa item thành công")
+                    : SocketMessage.error(Action.DELETE_ITEM, "Xóa thất bại");
+
+        } catch (IllegalArgumentException e) {
+            return SocketMessage.error(Action.DELETE_ITEM, e.getMessage());
+        }
     }
 
     private SocketMessage handleGetItemsBySeller(SocketMessage msg) {
-        String sellerId = msg.getString("sellerId");
-        List<Item> items = itemDAO.getItemsBySeller(sellerId);
-        return SocketMessage.ok(Action.GET_ITEMS_BY_SELLER, "OK").put("items", items);
+        if (!isLoggedIn()) return requireLogin(Action.GET_ITEMS_BY_SELLER);
+
+        try {
+            String sellerId = currentUser.getId();
+
+            List<Item> items = itemService.getItemsBySeller(sellerId);
+
+            return SocketMessage.ok(Action.GET_ITEMS_BY_SELLER, "OK")
+                    .put("items", items);
+
+        } catch (IllegalArgumentException e) {
+            return SocketMessage.error(Action.GET_ITEMS_BY_SELLER, e.getMessage());
+        }
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -346,29 +434,46 @@ public class ClientHandler implements Runnable {
 
     private SocketMessage handleGetAllUsers() {
         if (!isLoggedIn()) return requireLogin(Action.GET_ALL_USERS);
-        List<User> users = userDAO.getAll();
-        return SocketMessage.ok(Action.GET_ALL_USERS, "OK").put("users", users);
+
+        List<User> users = userService.getAllUsers();
+
+        return SocketMessage.ok(Action.GET_ALL_USERS, "OK")
+                .put("users", users);
     }
 
     private SocketMessage handleUpdateUser(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.UPDATE_USER);
+
         User user = (User) msg.get("user");
-        if (user == null) return SocketMessage.error(Action.UPDATE_USER, "Thiếu user");
-        boolean ok = userDAO.update(user);
-        return ok
-                ? SocketMessage.ok(Action.UPDATE_USER, "Cập nhật thành công")
-                : SocketMessage.error(Action.UPDATE_USER, "Cập nhật thất bại");
+
+        try {
+            boolean ok = userService.updateUser(user);
+
+            return ok
+                    ? SocketMessage.ok(Action.UPDATE_USER, "Cập nhật thành công")
+                    : SocketMessage.error(Action.UPDATE_USER, "Cập nhật thất bại");
+
+        } catch (IllegalArgumentException e) {
+            return SocketMessage.error(Action.UPDATE_USER, e.getMessage());
+        }
     }
 
     private SocketMessage handleDeleteUser(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.DELETE_USER);
-        String userId = msg.getString("userId");
-        boolean ok = userDAO.delete(userId);
-        return ok
-                ? SocketMessage.ok(Action.DELETE_USER, "Xóa user thành công")
-                : SocketMessage.error(Action.DELETE_USER, "Xóa thất bại");
-    }
 
+        String userId = msg.getString("userId");
+
+        try {
+            boolean ok = userService.deleteUser(userId);
+
+            return ok
+                    ? SocketMessage.ok(Action.DELETE_USER, "Xóa user thành công")
+                    : SocketMessage.error(Action.DELETE_USER, "Xóa thất bại");
+
+        } catch (IllegalArgumentException e) {
+            return SocketMessage.error(Action.DELETE_USER, e.getMessage());
+        }
+    }
     // ══════════════════════════════════════════════════════════════
     //  UTILITIES
     // ══════════════════════════════════════════════════════════════

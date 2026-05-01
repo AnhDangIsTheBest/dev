@@ -5,7 +5,6 @@ import com.auction.model.User.Admin;
 import com.auction.model.User.Bidder;
 import com.auction.model.User.Seller;
 import com.auction.model.User.User;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,24 +107,6 @@ public class UserDAO {
             ps.setString(5, user.getRole());
             fillRoleFieldsForUpdate(ps, user);
             ps.setString(12, user.getId());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("[UserDAO] update lỗi: " + e.getMessage());
-            return false;
-        }
-    }
-
-    // Giữ lại hàm cũ để code cũ không vỡ.
-    public boolean update(String id, String username, String password, String role) {
-        String sql = "UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, username);
-            ps.setString(2, password);
-            ps.setString(3, role);
-            ps.setString(4, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("[UserDAO] update lỗi: " + e.getMessage());
