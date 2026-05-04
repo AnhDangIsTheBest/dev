@@ -1,21 +1,25 @@
 package com.auction;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-public class MainApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(MainApplication.class, args);
-    }
-}
-=======
-=======
+import java.io.IOException;
+
+//@SpringBootApplication
+//public class MainApplication {
+//    public static void main(String[] args) {
+//        SpringApplication.run(MainApplication.class, args);
+//    }
+//}
+
 import javafx.application.Application;
->>>>>>> 6316a19aeaab5b2d831aedc51a6cbec506ebfee8
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
