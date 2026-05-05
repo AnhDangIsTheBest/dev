@@ -4,7 +4,7 @@
 <?import javafx.scene.chart.*?>
 <SplitPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.auction.client.controller.AuctionsController"
+           fx:controller="com.auction.network.client.controller.AuctionsController"
            dividerPositions="0.45"
            style="-fx-background-color: #0a0b0f; -fx-padding: 16;">
 

@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.auction.client.controller.MainController"
+            fx:controller="com.auction.network.client.controller.MainController"
             style="-fx-background-color: #0a0b0f;">
 
     <!-- TOP BAR -->

@@ -4,7 +4,7 @@
 <?import javafx.geometry.Insets?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.auction.client.controller.LoginController"
+      fx:controller="com.auction.network.client.controller.LoginController"
       alignment="CENTER" spacing="0"
       style="-fx-background-color: #0a0b0f;">
 
