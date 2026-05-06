@@ -19,6 +19,8 @@ public class Login {
     private Button button;
     @FXML
     private Label checkPass;
+    @FXML
+    private Button registerButton;
 
     public void userLogin(ActionEvent event) throws IOException {
         checkLogin();
@@ -28,12 +30,15 @@ public class Login {
         Main m = new Main();
         if (username.getText().toString().equals("nam") && password.getText().toString().equals("123")) {
             checkPass.setText("Login success!");
-            m.changeScene("afterLogin.fxml");
+            m.changeScene("afterLogin");
         } else if ( username.getText().isEmpty() || password.getText().isEmpty()){
             checkPass.setText("Nhập đủ vào");
         }
         else{
             checkPass.setText("Thông tin không chính xác");
         }
+    }
+    @FXML
+    private void handleRegister() {
     }
 }

@@ -9,20 +9,29 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Main extends Application {
-    private static Stage stg;
+    private static Stage primaryStage;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        stg = primaryStage;
-        primaryStage.setResizable(false);
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
-        primaryStage.setTitle("76 auction");
-        primaryStage.setScene(new Scene(root, 600, 400));
-        primaryStage.show();
+    public void start(Stage stage) throws Exception {
+        primaryStage = stage;
+        changeScene("login2");
+        stage.setTitle("Auction76");
+        stage.setMinWidth(900);
+        stage.setMinHeight(650);
+        stage.show();
     }
 
     public void changeScene(String fxml) throws IOException {
-        Parent pane = FXMLLoader.load(getClass().getResource("/fxml/" + fxml));
-        stg.getScene().setRoot(pane);
+        String path = "/fxml/" + fxml + ".fxml";
+        Parent root = FXMLLoader.load(Main.class.getResource(path));
+        Scene scene = primaryStage.getScene();
+        if (scene == null) {
+            scene = new Scene(root, 1000, 700);
+            scene.getStylesheets().add(
+                    Main.class.getResource("/css/style.css").toExternalForm());
+            primaryStage.setScene(scene);
+        } else {
+            scene.setRoot(root);
+        }
     }
 }
