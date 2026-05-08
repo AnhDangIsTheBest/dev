@@ -9,7 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Auction implements Serializable{
     public enum AuctionStatus{
-        PENDING, OPEN, RUNNING, FINISHED, PAID, CANCELED;
+        OPEN, RUNNING, FINISHED, PAID, CANCELED;
     }
     private String auctionId;
     private Item item;
