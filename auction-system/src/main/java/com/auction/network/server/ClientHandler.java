@@ -10,12 +10,15 @@ import com.auction.network.protocol.SocketMessage.Action;
 import com.auction.service.AuctionService;
 import com.auction.service.AuthService;
 import com.auction.service.BidService;
+import com.auction.dao.AuctionDAO;
+import com.auction.dao.BidDAO;
 import com.auction.exception.AuthenticationException;
 
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mỗi client kết nối được gán một ClientHandler chạy trên thread riêng.
@@ -93,6 +96,7 @@ public class ClientHandler implements Runnable {
             case PLACE_BID          -> handlePlaceBid(msg);
             case REGISTER_AUTO_BID  -> handleRegisterAutoBid(msg);
             case CANCEL_AUTO_BID    -> handleCancelAutoBid(msg);
+            case GET_MY_BIDS        -> handleGetMyBids(msg);
 
             // Item
             case CREATE_ITEM         -> handleCreateItem(msg);
@@ -110,7 +114,7 @@ public class ClientHandler implements Runnable {
     }
 
     // ══════════════════════════════════════════════════════════════
-    //  AUTH 
+    //  AUTH
     // ══════════════════════════════════════════════════════════════
 
     private SocketMessage handleLogin(SocketMessage msg) {
@@ -149,33 +153,38 @@ public class ClientHandler implements Runnable {
      * AuthService sẽ kiểm tra trùng username và tạo đúng loại user.
      */
     private SocketMessage handleRegister(SocketMessage msg) {
-    String userType = msg.getString("userType");
-    String username = msg.getString("username");
-    String password = msg.getString("password");
+        String userType = msg.getString("userType");
+        String username = msg.getString("username");
+        String email = msg.getString("Email");
+        String password = msg.getString("password");
+        String fullName = msg.getString("fullname");
 
-    if (userType == null || userType.isBlank()) {
-        return SocketMessage.error(Action.REGISTER, "Thiếu userType");
+        if (userType == null || userType.isBlank()) {
+            return SocketMessage.error(Action.REGISTER, "Thiếu userType");
+        }
+
+        if (username == null || username.isBlank()
+                || password == null || password.isBlank()) {
+            return SocketMessage.error(Action.REGISTER, "Thiếu username hoặc password");
+        }
+
+        int result;
+
+        if ("SELLER".equalsIgnoreCase(userType)) {
+            result = authService.registerSeller(username,email, password,fullName);
+        } else if ("BIDDER".equalsIgnoreCase(userType)) {
+            result = authService.registerBidder(username,email, password,fullName);
+        } else {
+            return SocketMessage.error(Action.REGISTER, "userType không hợp lệ, chỉ nhận BIDDER hoặc SELLER");
+        }
+
+        return switch (result) {
+            case 0 -> SocketMessage.ok(Action.REGISTER, "Đăng ký thành công");
+            case 1 -> SocketMessage.error(Action.REGISTER, "Username đã tồn tại, vui lòng chọn tên khác");
+            case 3 -> SocketMessage.error(Action.REGISTER, "Email đã tồn tại,vui lòng nhập email khác");
+            default -> SocketMessage.error(Action.REGISTER, "Đăng ký thất bại, lỗi kết nối cơ sở dữ liệu");
+        };
     }
-
-    if (username == null || username.isBlank()
-            || password == null || password.isBlank()) {
-        return SocketMessage.error(Action.REGISTER, "Thiếu username hoặc password");
-    }
-
-    boolean ok;
-
-    if ("SELLER".equalsIgnoreCase(userType)) {
-        ok = authService.registerSeller(username, password);
-    } else if ("BIDDER".equalsIgnoreCase(userType)) {
-        ok = authService.registerBidder(username, password);
-    } else {
-        return SocketMessage.error(Action.REGISTER, "userType không hợp lệ, chỉ nhận BIDDER hoặc SELLER");
-    }
-
-    return ok
-            ? SocketMessage.ok(Action.REGISTER, "Đăng ký thành công")
-            : SocketMessage.error(Action.REGISTER, "Đăng ký thất bại, username đã tồn tại?");
-}
 
     // ══════════════════════════════════════════════════════════════
     //  AUCTION
@@ -271,45 +280,57 @@ public class ClientHandler implements Runnable {
     //  BID
     // ══════════════════════════════════════════════════════════════
 
+    private SocketMessage handleGetMyBids(SocketMessage msg) {
+        if (!isLoggedIn()) return requireLogin(Action.GET_MY_BIDS);
+        String bidderId = currentUser.getId();
+        AuctionDAO auctionDAO = new AuctionDAO();
+        BidDAO bidDAO = new BidDAO();
+        List<Auction> auctions = auctionDAO.getAuctionsByBidder(bidderId);
+        Map<String, Double> myBestBids = bidDAO.getMyBestBids(bidderId);
+        return SocketMessage.ok(Action.GET_MY_BIDS, "OK")
+                .put("auctions", auctions)
+                .put("myBestBids", myBestBids);
+    }
+
     private SocketMessage handlePlaceBid(SocketMessage msg) {
-    if (!isLoggedIn()) return requireLogin(Action.PLACE_BID);
+        if (!isLoggedIn()) return requireLogin(Action.PLACE_BID);
 
-    String auctionId = msg.getString("auctionId");
-    double amount    = msg.getDouble("amount");
+        String auctionId = msg.getString("auctionId");
+        double amount    = msg.getDouble("amount");
 
-    if (auctionId == null || auctionId.isBlank()) {
-        return SocketMessage.error(Action.PLACE_BID, "Thiếu auctionId");
-    }
-
-    if (amount <= 0) {
-        return SocketMessage.error(Action.PLACE_BID, "Số tiền bid phải lớn hơn 0");
-    }
-
-    String bidderId = currentUser.getId();
-    String bidderName = currentUser.getUsername(); 
-
-    try {
-        String bidId = bidService.placeManualBid(auctionId, bidderId, bidderName, amount);
-
-        if (bidId == null) {
-            return SocketMessage.error(Action.PLACE_BID, "Đặt giá thất bại");
+        if (auctionId == null || auctionId.isBlank()) {
+            return SocketMessage.error(Action.PLACE_BID, "Thiếu auctionId");
         }
 
-        Auction updated = auctionService.getAuctionById(auctionId);
+        if (amount <= 0) {
+            return SocketMessage.error(Action.PLACE_BID, "Số tiền bid phải lớn hơn 0");
+        }
 
-        server.broadcastToWatchers(auctionId,
-                SocketMessage.ok(Action.BROADCAST_BID_UPDATE, "Có bid mới!")
-                        .put("auction", updated)
-                        .put("bidderName", bidderName)
-                        .put("amount", amount));
+        String bidderId = currentUser.getId();
+        String bidderName = currentUser.getUsername();
 
-        return SocketMessage.ok(Action.PLACE_BID, "Đặt giá thành công")
-                .put("bidId", bidId);
+        try {
+            String bidId = bidService.placeManualBid(auctionId, bidderId, bidderName, amount);
 
-    } catch (IllegalArgumentException | IllegalStateException e) {
-        return SocketMessage.error(Action.PLACE_BID, e.getMessage());
+            if (bidId == null) {
+                return SocketMessage.error(Action.PLACE_BID, "Đặt giá thất bại");
+            }
+
+            Auction updated = auctionService.getAuctionById(auctionId);
+
+            server.broadcastToWatchers(auctionId,
+                    SocketMessage.ok(Action.BROADCAST_BID_UPDATE, "Có bid mới!")
+                            .put("auction", updated)
+                            .put("bidderName", bidderName)
+                            .put("amount", amount));
+
+            return SocketMessage.ok(Action.PLACE_BID, "Đặt giá thành công")
+                    .put("bidId", bidId);
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return SocketMessage.error(Action.PLACE_BID, e.getMessage());
+        }
     }
-}
 
     private SocketMessage handleRegisterAutoBid(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.REGISTER_AUTO_BID);

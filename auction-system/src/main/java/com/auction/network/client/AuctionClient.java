@@ -86,11 +86,13 @@ public class AuctionClient {
         return send(SocketMessage.request(Action.LOGOUT));
     }
 
-    public SocketMessage register(String userType, String username, String password) {
+    public SocketMessage register(String userType, String username, String email, String password, String fullname) {
         return send(SocketMessage.request(Action.REGISTER)
                 .put("userType", userType)
                 .put("username", username)
-                .put("password", password));
+                .put("Email", email)
+                .put("password", password)
+                .put("fullname", fullname));
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -99,6 +101,10 @@ public class AuctionClient {
 
     public SocketMessage getAllAuctions() {
         return send(SocketMessage.request(Action.GET_ALL_AUCTIONS));
+    }
+
+    public SocketMessage getMyBids() {
+        return send(SocketMessage.request(Action.GET_MY_BIDS));
     }
 
     /**
