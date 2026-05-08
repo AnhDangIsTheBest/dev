@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.auction.network.client.controller.AuctionsController"
+      fx:controller="com.auction.client.controller.AuctionsController"
       spacing="16" style="-fx-background-color: #0a0b0f; -fx-padding: 20;">
 
     <Label text="Dashboard"

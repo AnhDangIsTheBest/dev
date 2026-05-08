@@ -8,6 +8,7 @@ public abstract class Item extends Entity{
     protected double startingPrice;
     protected double currentPrice;
     protected String status;
+    protected byte[] imageData;
 
     public Item(String id,String name, double startingPrice, double currentPrice, String status,String description){
         super(id);
@@ -33,6 +34,8 @@ public abstract class Item extends Entity{
     public double getStartingPrice(){ return startingPrice;}
     public void setStartingPrice(double price){ this.startingPrice = price;}
     public String getStatus(){ return status;}
+    public byte[] getImageData(){ return imageData; }
+    public void setImageData(byte[] imageData){ this.imageData = imageData; }
     public void setStatus(String status){
         this.status = status;
     }
