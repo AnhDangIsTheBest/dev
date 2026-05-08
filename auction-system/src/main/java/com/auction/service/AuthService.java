@@ -20,26 +20,35 @@ public class AuthService {
         User user = userDao.login(username,password);
         return user;
     }
+    private boolean isUsernameExists(String username) {
+        return userDao.existsByUsername(username);
+    }
+    private boolean isEmailExists(String email) {
+        return userDao.existsByEmail(email);
+    }
+    public int registerBidder(String username, String email, String password, String fullName) {
+        try {
+            if (isUsernameExists(username)) return 1;
+            if (isEmailExists(email)) return 3;
 
-    // Kiểm tra xem tên đăng nhập tồn tại chưa
-    private  boolean isUsernameExists(String username){
-        return userDao.getAll().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(username));
+            User newUser = new Bidder(null, username, email, fullName, password, 0.0, 0, 0);
+            return userDao.insert(newUser) ? 0 : 2;
+        } catch (RuntimeException e) {
+            System.err.println("[AuthService] registerBidder lỗi DB: " + e.getMessage());
+            return 2;
+        }
     }
 
-    // Xử lí đăng kí cho Bidder
-    public boolean registerBidder(String username, String password){
-        if (isUsernameExists(username)) return false; // Nếu username tồn tại
-
-        User newUser = new Bidder(null,username,"","",password,0.0,0,0);
-        return userDao.insert(newUser);
-
-    }
-
-    // Xử lí  đăng kí cho người bán (Seller)
-    public boolean registerSeller(String username, String password){
-        if (isUsernameExists(username)) return false;
-
-        User newUser = new Seller(null,username,"",password,"",0,0);
-        return userDao.insert(newUser);
+    // Đăng kí Seller: 0=thành công, 1=username đã tồn tại, 2=lỗi DB
+    public int registerSeller(String username,String email, String password,String fullName) {
+        try {
+            if (isUsernameExists(username)) return 1;
+            if (isEmailExists(email)) return 3;
+            User newUser = new Seller(null, username, email, password, fullName, 0, 0);
+            return userDao.insert(newUser) ? 0 : 2;
+        } catch (RuntimeException e) {
+            System.err.println("[AuthService] registerSeller lỗi DB: " + e.getMessage());
+            return 2;
+        }
     }
 }
