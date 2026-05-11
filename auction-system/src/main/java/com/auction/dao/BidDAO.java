@@ -1,13 +1,13 @@
 package com.auction.dao;
 
 import com.auction.config.DBConnection;
+import com.auction.model.Auction;
 import com.auction.model.BidTransaction;
+import com.auction.network.server.AuctionServer;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class BidDAO {
 
@@ -77,6 +77,25 @@ public class BidDAO {
             System.err.println("[BidDAO] getLeadBid lỗi: " + e.getMessage());
         }
         return null;
+    }
+    public Map<String,Double> getMyBestBids(String bidderId){
+        String sql =  "SELECT auction_id,MAX(amount) AS best_bid FROM bid_transactions WHERE bidder_id = ? ";
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,bidderId);
+            Map<String,Double> bestBids = new HashMap<>();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                bestBids.put(rs.getString("auction_id"),rs.getDouble("amount"));
+            }
+            return bestBids;
+
+        }
+        catch(SQLException e){
+            System.err.println("[BidDAO] getMyBestBids lỗi: " + e.getMessage());
+            return null;
+        }
+
     }
 
     public List<BidTransaction> getBidsByBidder(String bidderId) {

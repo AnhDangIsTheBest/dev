@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.AutoBidController"
+      spacing="16" style="-fx-background-color: #0a0b0f; -fx-padding: 20;">
+
+    <Label text="🤖 Auto-Bid (Đấu giá tự động)"
+           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+
+    <Label text="Auto-Bid tự động đặt giá thay bạn khi có người vượt qua, không vượt quá ngưỡng maxBid đã thiết lập."
+           style="-fx-text-fill: #94a3b8; -fx-font-size: 12;" wrapText="true"/>
+
+    <VBox spacing="12"
+          style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 16;">
+        <Label text="Thiết lập Auto-Bid mới"
+               style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+
+        <Label text="Phiên đấu giá" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <ComboBox fx:id="auctionCombo" maxWidth="Infinity"
+                  style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8;"/>
+
+        <HBox spacing="16">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Giá tối đa (maxBid)" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+                <TextField fx:id="maxBidField" promptText="VD: 30000000"
+                           style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9;"/>
+            </VBox>
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Bước giá (increment)" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+                <TextField fx:id="incrementField" promptText="VD: 500000"
+                           style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9;"/>
+            </VBox>
+        </HBox>
+
+        <Button text="🤖 Kích hoạt Auto-Bid" onAction="#handleSetAutoBid" maxWidth="Infinity"
+                style="-fx-background-color: #8b5cf6; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+        <Label fx:id="resultLabel" text="" style="-fx-font-size: 12;" wrapText="true"/>
+    </VBox>
+
+    <VBox spacing="8"
+          style="-fx-background-color: #12141a; -fx-border-color: rgba(139,92,246,0.3); -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 16;">
+        <Label text="Cách hoạt động"
+               style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #a78bfa;"/>
+        <Label text="1. Người dùng đặt giá tối đa (maxBid) và bước giá (increment)" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <Label text="2. Khi có bid mới từ đối thủ, hệ thống tự động đặt giá = giá hiện tại + increment" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <Label text="3. Nếu giá tự động vượt maxBid, hệ thống dừng lại" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <Label text="4. Ưu tiên theo thời điểm đăng ký (PriorityQueue) khi xung đột" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+    </VBox>
+</VBox>

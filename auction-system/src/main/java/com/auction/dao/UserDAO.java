@@ -20,7 +20,7 @@ public class UserDAO {
         String sql = """
                 INSERT INTO users (
                     id, username, email, password, fullname, role,
-                    admin_level, balance, total_bids, won_auctions,
+                    balance, total_bids, won_auctions,
                     total_items_listed, total_revenue
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
@@ -58,6 +58,35 @@ public class UserDAO {
         }
         return null;
     }
+    public boolean existsByUsername(String userName){
+        String sql = "SELECT username FROM users WHERE username = ?";
+
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,userName);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }
+        catch(SQLException e){
+            System.err.println("[UserDAO] findByUserName lỗi: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean existsByEmail(String email){
+        String sql = "SELECT eamil FROM users WHERE email = ?";
+
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }
+        catch(SQLException e){
+            System.err.println("[UserDAO] findByEmail lỗi: " + e.getMessage());
+        }
+        return false;
+    }
 
     public User findById(String id) {
         String sql = "SELECT * FROM users WHERE id = ?";
@@ -92,7 +121,7 @@ public class UserDAO {
         String sql = """
                 UPDATE users SET
                     username = ?, email = ?, password = ?, fullname = ?, role = ?,
-                    admin_level = ?, balance = ?, total_bids = ?, won_auctions = ?,
+                    balance = ?, total_bids = ?, won_auctions = ?,
                     total_items_listed = ?, total_revenue = ?
                 WHERE id = ?
                 """;
@@ -147,9 +176,8 @@ public class UserDAO {
 
         return switch (role.toUpperCase()) {
             case "ADMIN" -> new Admin(
-                    id, username, email, password, fullname,
-                    rs.getString("admin_level") != null ? rs.getString("admin_level") : "NORMAL"
-            );
+                    id, username, email, password, fullname);
+
             case "BIDDER" -> new Bidder(
                     id, username, email, fullname, password,
                     rs.getDouble("balance"),
@@ -170,46 +198,20 @@ public class UserDAO {
 
     private void fillRoleFields(PreparedStatement ps, User user) throws SQLException {
         if (user instanceof Admin a) {
-            ps.setString(7, a.getAdminLevel());
-            ps.setNull(8, Types.DECIMAL);
-            ps.setInt(9, 0);
-            ps.setInt(10, 0);
-            ps.setInt(11, 0);
-            ps.setDouble(12, 0.0);
-        } else if (user instanceof Bidder b) {
-            ps.setNull(7, Types.VARCHAR);
-            ps.setDouble(8, b.getBalance());
-            ps.setInt(9, b.getTotalBids());
-            ps.setInt(10, b.getWonAuctions());
-            ps.setInt(11, 0);
-            ps.setDouble(12, 0.0);
-        } else if (user instanceof Seller s) {
-            ps.setNull(7, Types.VARCHAR);
-            ps.setNull(8, Types.DECIMAL);
-            ps.setInt(9, 0);
-            ps.setInt(10, 0);
-            ps.setInt(11, s.getTotalItemslisted());
-            ps.setDouble(12, s.getTotalRevenue());
-        }
-    }
-
-    private void fillRoleFieldsForUpdate(PreparedStatement ps, User user) throws SQLException {
-        if (user instanceof Admin a) {
-            ps.setString(6, a.getAdminLevel());
             ps.setNull(7, Types.DECIMAL);
             ps.setInt(8, 0);
             ps.setInt(9, 0);
-            ps.setInt(10, 0);
-            ps.setDouble(11, 0.0);
+            ps.setDouble(10, 0.0);
+            ps.setDouble(11,0);
         } else if (user instanceof Bidder b) {
-            ps.setNull(6, Types.VARCHAR);
+
             ps.setDouble(7, b.getBalance());
             ps.setInt(8, b.getTotalBids());
             ps.setInt(9, b.getWonAuctions());
             ps.setInt(10, 0);
             ps.setDouble(11, 0.0);
         } else if (user instanceof Seller s) {
-            ps.setNull(6, Types.VARCHAR);
+
             ps.setNull(7, Types.DECIMAL);
             ps.setInt(8, 0);
             ps.setInt(9, 0);
@@ -217,4 +219,30 @@ public class UserDAO {
             ps.setDouble(11, s.getTotalRevenue());
         }
     }
+
+    private void fillRoleFieldsForUpdate(PreparedStatement ps, User user) throws SQLException {
+        if (user instanceof Admin a) {
+            ps.setNull(7, Types.DECIMAL);
+            ps.setInt(8, 0);
+            ps.setInt(9, 0);
+            ps.setInt(10, 0);
+            ps.setDouble(11, 0.0);
+        } else if (user instanceof Bidder b) {
+
+            ps.setDouble(7, b.getBalance());
+            ps.setInt(8, b.getTotalBids());
+            ps.setInt(9, b.getWonAuctions());
+            ps.setInt(10, 0);
+            ps.setDouble(11, 0.0);
+        } else if (user instanceof Seller s) {
+
+            ps.setNull(7, Types.DECIMAL);
+            ps.setInt(8, 0);
+            ps.setInt(9, 0);
+            ps.setInt(10, s.getTotalItemslisted());
+            ps.setDouble(11, s.getTotalRevenue());
+        }
+    }
+
+
 }

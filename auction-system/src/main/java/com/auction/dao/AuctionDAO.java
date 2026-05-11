@@ -103,6 +103,20 @@ public class AuctionDAO {
         }
         return null;
     }
+    public List<Auction> getAuctionsByBidder(String bidderId){
+        String sql = "SELECT *  FROM bid_transactions WHERE bidder_id = ?";
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,bidderId);
+            ResultSet rs = ps.executeQuery();
+            return mapResultSet(rs);
+        }
+        catch(SQLException e){
+            System.err.println("[AuctionDAO] getAuctionsByBidder: " + e.getMessage());
+            return null;
+        }
+
+    }
 
     public boolean updatePriceAndEndTime(String auctionId, double newPrice, LocalDateTime newEndTime) {
         String sql = "UPDATE auctions SET current_price = ?, end_time = ? WHERE id = ?";
