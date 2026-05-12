@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "com.auction.Main",
+      "projectName": "online-auction-system"
+    },
+    {
+      "type": "java",
+      "name": "TestUserDAO",
+      "request": "launch",
+      "mainClass": "com.auction.test.TestUserDAO",
+      "projectName": "online-auction-system"
+    },
+    {
+      "type": "java",
+      "name": "TestDB",
+      "request": "launch",
+      "mainClass": "com.auction.test.TestDB",
+      "projectName": "online-auction-system"
+    },
+    {
+      "type": "java",
+      "name": "TestItemDAO",
+      "request": "launch",
+      "mainClass": "com.auction.test.TestItemDAO",
+      "projectName": ""
+    },
+    {
+      "type": "java",
+      "name": "Launch Main",
+      "request": "launch",
+      "mainClass": "com.auction.ui.Main",
+      "vmArgs": "--module-path javafx-sdk-21.0.10/lib --add-modules javafx.controls,javafx.fxml"
+    }
+  ]
+}

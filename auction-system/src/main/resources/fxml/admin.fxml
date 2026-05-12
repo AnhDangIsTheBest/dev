@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.AdminController"
+      spacing="14" style="-fx-background-color: #0a0b0f; -fx-padding: 20;">
+
+    <Label text="⚙️ Quản trị hệ thống"
+           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+
+    <HBox spacing="12">
+        <VBox style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 14;" HBox.hgrow="ALWAYS">
+            <Label text="TỔNG USERS" style="-fx-text-fill: #64748b; -fx-font-size: 10;"/>
+            <Label fx:id="totalUsersLabel" text="..." style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+        </VBox>
+        <VBox style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 14;" HBox.hgrow="ALWAYS">
+            <Label text="TỔNG PHIÊN" style="-fx-text-fill: #64748b; -fx-font-size: 10;"/>
+            <Label fx:id="totalAuctionsLabel" text="..." style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+        </VBox>
+        <VBox style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 14;" HBox.hgrow="ALWAYS">
+            <Label text="TỔNG BID" style="-fx-text-fill: #64748b; -fx-font-size: 10;"/>
+            <Label fx:id="totalBidsLabel" text="..." style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+        </VBox>
+    </HBox>
+
+    <SplitPane dividerPositions="0.45" VBox.vgrow="ALWAYS">
+        <VBox spacing="8">
+            <Label text="Danh sách người dùng"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <TableView fx:id="userTable" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);">
+                <columns>
+                    <TableColumn fx:id="colUserName" text="Họ tên" prefWidth="160"/>
+                    <TableColumn fx:id="colUserRole" text="Vai trò" prefWidth="80"/>
+                    <TableColumn fx:id="colUserEmail" text="Email" prefWidth="180"/>
+                </columns>
+            </TableView>
+        </VBox>
+        <VBox spacing="8">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Quản lý phiên đấu giá"
+                       style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="↻ Làm mới" onAction="#handleRefresh"
+                        style="-fx-background-color: #1a1d26; -fx-text-fill: #94a3b8; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-padding: 5 10; -fx-cursor: hand; -fx-font-size: 11;"/>
+                <Button text="⏹ Dừng phiên" onAction="#handleEndSelectedAuction"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: #fff; -fx-border-radius: 6; -fx-padding: 5 10; -fx-cursor: hand; -fx-font-size: 11;"/>
+            </HBox>
+            <Label fx:id="adminStatusLabel" text="" style="-fx-font-size: 12;"/>
+            <TableView fx:id="adminAucTable" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);">
+                <columns>
+                    <TableColumn fx:id="colAdminAucName" text="Sản phẩm" prefWidth="180"/>
+                    <TableColumn fx:id="colAdminAucStatus" text="Trạng thái" prefWidth="100"/>
+                    <TableColumn fx:id="colAdminAucPrice" text="Giá" prefWidth="110"/>
+                    <TableColumn fx:id="colAdminAucBids" text="Bids" prefWidth="60"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </SplitPane>
+</VBox>

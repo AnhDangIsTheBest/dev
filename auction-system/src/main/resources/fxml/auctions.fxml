@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<SplitPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.auction.client.controller.AuctionsController"
+           dividerPositions="0.45"
+           style="-fx-background-color: #0a0b0f; -fx-padding: 16;">
+
+    <!-- LEFT: Danh sách -->
+    <VBox spacing="10">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Danh sách phiên đấu giá"
+                   style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="↻ Làm mới" onAction="#handleRefresh"
+                    style="-fx-background-color: #1a1d26; -fx-text-fill: #94a3b8; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-padding: 5 12; -fx-cursor: hand;"/>
+        </HBox>
+        <Label fx:id="statusLabel" text="" style="-fx-text-fill: #64748b; -fx-font-size: 11;"/>
+        <TableView fx:id="auctionTable" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);">
+            <columns>
+                <TableColumn fx:id="colName" text="Sản phẩm" prefWidth="200"/>
+                <TableColumn fx:id="colCategory" text="Danh mục" prefWidth="90"/>
+                <TableColumn fx:id="colPrice" text="Giá" prefWidth="120"/>
+                <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="90"/>
+                <TableColumn fx:id="colTimer" text="Còn lại" prefWidth="70"/>
+                <TableColumn fx:id="colLeader" text="Dẫn đầu" prefWidth="130"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- RIGHT: Chi tiết -->
+    <VBox fx:id="detailPanel" spacing="12" style="-fx-padding: 0 0 0 10;" visible="false">
+        <Label text="Chi tiết phiên" style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+        <Label fx:id="detailName" text="" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #f59e0b;" wrapText="true"/>
+
+        <HBox spacing="16">
+            <VBox style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;" HBox.hgrow="ALWAYS">
+                <Label text="GIÁ HIỆN TẠI" style="-fx-text-fill: #64748b; -fx-font-size: 10;"/>
+                <Label fx:id="detailPrice" text="--" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+            </VBox>
+            <VBox style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;" HBox.hgrow="ALWAYS">
+                <Label text="CÒN LẠI" style="-fx-text-fill: #64748b; -fx-font-size: 10;"/>
+                <Label fx:id="detailTimer" text="--" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="10">
+            <Label text="Trạng thái:" style="-fx-text-fill: #64748b; -fx-font-size: 12;"/>
+            <Label fx:id="detailStatus" text="" style="-fx-text-fill: #10b981; -fx-font-size: 12; -fx-font-weight: bold;"/>
+            <Label text="  Người dẫn:" style="-fx-text-fill: #64748b; -fx-font-size: 12;"/>
+            <Label fx:id="detailLeader" text="" style="-fx-text-fill: #e2e8f0; -fx-font-size: 12;"/>
+        </HBox>
+        <Label fx:id="detailDesc" text="" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;" wrapText="true"/>
+        <Label fx:id="detailAntiSnipe" text="" style="-fx-text-fill: #a78bfa; -fx-font-size: 11;"/>
+
+        <Separator style="-fx-background-color: rgba(255,255,255,0.08);"/>
+
+        <!-- Đặt giá -->
+        <VBox spacing="6" style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;">
+            <Label text="Đặt giá" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <HBox spacing="8">
+                <TextField fx:id="bidAmountField" promptText="Nhập số tiền (VD: 25000000)"
+                           HBox.hgrow="ALWAYS"
+                           style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8;"/>
+                <Button fx:id="placeBidButton" text="Đặt giá" onAction="#handlePlaceBid"
+                        style="-fx-background-color: #f59e0b; -fx-text-fill: #000; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;"/>
+            </HBox>
+            <Label fx:id="bidResultLabel" text="" style="-fx-font-size: 12;" wrapText="true"/>
+        </VBox>
+
+        <!-- Biểu đồ giá -->
+        <Label text="Biểu đồ giá" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+        <LineChart fx:id="priceChart" prefHeight="140" legendVisible="false"
+                   style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8;">
+            <xAxis><NumberAxis fx:id="xAxis" label="Lượt bid"/></xAxis>
+            <yAxis><NumberAxis fx:id="yAxis" label="Giá (đ)"/></yAxis>
+        </LineChart>
+
+        <!-- Lịch sử -->
+        <Label text="Lịch sử đặt giá" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+        <ListView fx:id="bidHistoryList" prefHeight="150"
+                  style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-font-size: 12; -fx-text-fill: #94a3b8;"/>
+    </VBox>
+</SplitPane>
