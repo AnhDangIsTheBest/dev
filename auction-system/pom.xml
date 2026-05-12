@@ -36,6 +36,15 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+<<<<<<< HEAD
+=======
+    <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <!-- Nên kiểm tra phiên bản mới nhất trên Maven Central -->
+        <version>5.1.0</version>
+    </dependency>
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
 </dependencies>
 
     <build>

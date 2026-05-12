@@ -43,6 +43,7 @@ public class UserDAO {
         }
     }
 
+<<<<<<< HEAD
     public boolean existsByUsername(String username) {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -58,6 +59,8 @@ public class UserDAO {
         return false;
     }
 
+=======
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
     public User login(String username, String password) {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
 
@@ -73,6 +76,7 @@ public class UserDAO {
         }
         return null;
     }
+<<<<<<< HEAD
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -89,6 +93,38 @@ public class UserDAO {
         }
         return false;
     }
+=======
+    public boolean existsByUsername(String userName){
+        String sql = "SELECT username FROM users WHERE username = ?";
+
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,userName);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }
+        catch(SQLException e){
+            System.err.println("[UserDAO] findByUserName lỗi: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean existsByEmail(String email){
+        String sql = "SELECT eamil FROM users WHERE email = ?";
+
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1,email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }
+        catch(SQLException e){
+            System.err.println("[UserDAO] findByEmail lỗi: " + e.getMessage());
+        }
+        return false;
+    }
+
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
     public User findById(String id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
@@ -122,7 +158,11 @@ public class UserDAO {
         String sql = """
                 UPDATE users SET
                     username = ?, email = ?, password = ?, fullname = ?, role = ?,
+<<<<<<< HEAD
                     admin_level = ?, balance = ?, total_bids = ?, won_auctions = ?,
+=======
+                    balance = ?, total_bids = ?, won_auctions = ?,
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
                     total_items_listed = ?, total_revenue = ?
                 WHERE id = ?
                 """;
@@ -177,8 +217,13 @@ public class UserDAO {
 
         return switch (role.toUpperCase()) {
             case "ADMIN" -> new Admin(
+<<<<<<< HEAD
                     id, username, email, password, fullname
             );
+=======
+                    id, username, email, password, fullname);
+
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
             case "BIDDER" -> new Bidder(
                     id, username, email, fullname, password,
                     rs.getDouble("balance"),
@@ -199,6 +244,7 @@ public class UserDAO {
 
     private void fillRoleFields(PreparedStatement ps, User user) throws SQLException {
         if (user instanceof Admin a) {
+<<<<<<< HEAD
             ps.setNull(8, Types.DECIMAL);
             ps.setInt(9, 0);
             ps.setInt(10, 0);
@@ -218,6 +264,27 @@ public class UserDAO {
             ps.setInt(10, 0);
             ps.setInt(11, s.getTotalItemslisted());
             ps.setDouble(12, s.getTotalRevenue());
+=======
+            ps.setNull(7, Types.DECIMAL);
+            ps.setInt(8, 0);
+            ps.setInt(9, 0);
+            ps.setDouble(10, 0.0);
+            ps.setDouble(11,0);
+        } else if (user instanceof Bidder b) {
+
+            ps.setDouble(7, b.getBalance());
+            ps.setInt(8, b.getTotalBids());
+            ps.setInt(9, b.getWonAuctions());
+            ps.setInt(10, 0);
+            ps.setDouble(11, 0.0);
+        } else if (user instanceof Seller s) {
+
+            ps.setNull(7, Types.DECIMAL);
+            ps.setInt(8, 0);
+            ps.setInt(9, 0);
+            ps.setInt(10, s.getTotalItemslisted());
+            ps.setDouble(11, s.getTotalRevenue());
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
         }
     }
 
@@ -229,14 +296,22 @@ public class UserDAO {
             ps.setInt(10, 0);
             ps.setDouble(11, 0.0);
         } else if (user instanceof Bidder b) {
+<<<<<<< HEAD
             ps.setNull(6, Types.VARCHAR);
+=======
+
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
             ps.setDouble(7, b.getBalance());
             ps.setInt(8, b.getTotalBids());
             ps.setInt(9, b.getWonAuctions());
             ps.setInt(10, 0);
             ps.setDouble(11, 0.0);
         } else if (user instanceof Seller s) {
+<<<<<<< HEAD
             ps.setNull(6, Types.VARCHAR);
+=======
+
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
             ps.setNull(7, Types.DECIMAL);
             ps.setInt(8, 0);
             ps.setInt(9, 0);
@@ -244,4 +319,10 @@ public class UserDAO {
             ps.setDouble(11, s.getTotalRevenue());
         }
     }
+<<<<<<< HEAD
 }
+=======
+
+
+}
+>>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
