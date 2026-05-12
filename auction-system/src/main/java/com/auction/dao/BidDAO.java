@@ -1,7 +1,7 @@
 package com.auction.dao;
 
 import com.auction.config.DBConnection;
-<<<<<<< HEAD
+
 import com.auction.model.BidTransaction;
 
 import java.sql.*;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-=======
+
 import com.auction.model.Auction;
 import com.auction.model.BidTransaction;
 import com.auction.network.server.AuctionServer;
@@ -17,7 +17,6 @@ import com.auction.network.server.AuctionServer;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
->>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
 
 public class BidDAO {
 
@@ -88,8 +87,7 @@ public class BidDAO {
         }
         return null;
     }
-<<<<<<< HEAD
-=======
+
     public Map<String,Double> getMyBestBids(String bidderId){
         String sql =  "SELECT auction_id,MAX(amount) AS best_bid FROM bid_transactions WHERE bidder_id = ? ";
         try(Connection conn = DBConnection.getConnection();
@@ -109,7 +107,6 @@ public class BidDAO {
         }
 
     }
->>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
 
     public List<BidTransaction> getBidsByBidder(String bidderId) {
         String sql = """

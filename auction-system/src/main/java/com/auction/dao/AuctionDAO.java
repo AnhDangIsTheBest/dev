@@ -103,8 +103,6 @@ public class AuctionDAO {
         }
         return null;
     }
-<<<<<<< HEAD
-=======
     public List<Auction> getAuctionsByBidder(String bidderId){
         String sql = "SELECT *  FROM bid_transactions WHERE bidder_id = ?";
         try(Connection conn = DBConnection.getConnection();
@@ -119,7 +117,6 @@ public class AuctionDAO {
         }
 
     }
->>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
 
     public boolean updatePriceAndEndTime(String auctionId, double newPrice, LocalDateTime newEndTime) {
         String sql = "UPDATE auctions SET current_price = ?, end_time = ? WHERE id = ?";

@@ -8,10 +8,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     fullname VARCHAR(100) NOT NULL,
     role ENUM('ADMIN','BIDDER','SELLER') NOT NULL,
-<<<<<<< HEAD
     admin_level VARCHAR(50) DEFAULT NULL,
-=======
->>>>>>> d4d8fa6e3f9387bed9410ec5300bd9f71c4a33d3
     balance DECIMAL(15,2) DEFAULT NULL,
     total_bids INT DEFAULT 0,
     won_auctions INT DEFAULT 0,
