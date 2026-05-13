@@ -89,6 +89,26 @@ public class AuctionDAO {
         }
     }
 
+    public List<Auction> getAuctionsByBidder(String bidderId) {
+        String sql = """
+                SELECT DISTINCT a.*
+                FROM auctions a
+                INNER JOIN bid_transactions b ON b.auction_id = a.id
+                WHERE b.bidder_id = ?
+                ORDER BY a.created_at DESC, a.id DESC
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, bidderId);
+            return mapResultSet(ps.executeQuery());
+        } catch (SQLException e) {
+            System.err.println("[AuctionDAO] getAuctionsByBidder lá»—i: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
     public Auction getAuctionByItemId(String itemId) {
         String sql = "SELECT * FROM auctions WHERE item_id = ? ORDER BY created_at DESC, id DESC LIMIT 1";
 

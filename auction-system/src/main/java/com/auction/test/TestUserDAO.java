@@ -49,8 +49,7 @@ public class TestUserDAO {
                 adminUsername,
                 adminUsername + "@test.com",
                 "123456",
-                "Dang Admin",
-                "SUPER"
+                "Dang Admin"
         );
 
         System.out.println("\n--- 1. INSERT ---");

@@ -6,7 +6,9 @@ import com.auction.model.BidTransaction;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class BidDAO {
@@ -139,6 +141,31 @@ public class BidDAO {
             System.err.println("[BidDAO] deleteBidsByAuction lỗi: " + e.getMessage());
             return false;
         }
+    }
+
+    public Map<String, Double> getMyBestBids(String bidderId) {
+        String sql = """
+                SELECT auction_id, MAX(amount) AS max_amount
+                FROM bid_transactions
+                WHERE bidder_id = ?
+                GROUP BY auction_id
+                """;
+
+        Map<String, Double> bestBids = new HashMap<>();
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, bidderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                bestBids.put(rs.getString("auction_id"), rs.getDouble("max_amount"));
+            }
+        } catch (SQLException e) {
+            System.err.println("[BidDAO] getMyBestBids lá»—i: " + e.getMessage());
+        }
+
+        return bestBids;
     }
 
     private List<BidTransaction> mapResultSet(ResultSet rs) throws SQLException {
