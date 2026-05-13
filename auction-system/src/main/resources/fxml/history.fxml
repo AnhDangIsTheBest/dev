@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.HistoryController"
+      spacing="14" style="-fx-background-color: #0a0b0f; -fx-padding: 20;">
+
+    <Label text="📈 Lịch sử &amp; Biểu đồ giá"
+           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+    <Label fx:id="statsLabel" text="" style="-fx-text-fill: #64748b; -fx-font-size: 12;"/>
+
+    <SplitPane dividerPositions="0.45" VBox.vgrow="ALWAYS">
+        <!-- LEFT: Lịch sử tất cả bids -->
+        <VBox spacing="8">
+            <Label text="Lịch sử đặt giá toàn hệ thống"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <ListView fx:id="allBidsList" VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-font-size: 12; -fx-text-fill: #94a3b8;">
+                <placeholder><Label text="Chưa có hoạt động" style="-fx-text-fill: #64748b;"/></placeholder>
+            </ListView>
+        </VBox>
+
+        <!-- RIGHT: Biểu đồ giá realtime -->
+        <VBox spacing="10">
+            <Label text="Bid History Visualization"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Chọn phiên:" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+                <ComboBox fx:id="auctionFilter" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                          style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6;"/>
+            </HBox>
+            <LineChart fx:id="priceLineChart" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8;">
+                <xAxis><CategoryAxis label="Thời gian"/></xAxis>
+                <yAxis><NumberAxis label="Giá (đ)"/></yAxis>
+            </LineChart>
+            <Label text="💡 Biểu đồ tự cập nhật khi có bid mới (realtime)"
+                   style="-fx-text-fill: #64748b; -fx-font-size: 11;"/>
+        </VBox>
+    </SplitPane>
+</VBox>

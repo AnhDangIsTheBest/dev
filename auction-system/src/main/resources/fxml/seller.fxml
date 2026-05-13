@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.SellerController"
+      spacing="14" style="-fx-background-color: #0a0b0f; -fx-padding: 20;">
+
+    <Label text="📦 Quản lý sản phẩm"
+           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+    <Label fx:id="sellerResultLabel" text="" style="-fx-font-size: 12;" wrapText="true"/>
+
+    <SplitPane dividerPositions="0.5" VBox.vgrow="ALWAYS">
+        <!-- LEFT: Thêm sản phẩm + danh sách -->
+        <VBox spacing="10">
+            <Label text="Thêm sản phẩm mới"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <VBox spacing="8"
+                  style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;">
+                <HBox spacing="10">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Loại sản phẩm" style="-fx-text-fill: #94a3b8; -fx-font-size: 11;"/>
+                        <ComboBox fx:id="itemTypeCombo" maxWidth="Infinity"
+                                  style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Tình trạng" style="-fx-text-fill: #94a3b8; -fx-font-size: 11;"/>
+                        <ComboBox fx:id="itemCondCombo" maxWidth="Infinity"
+                                  style="-fx-background-color: #1a1d26; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                    </VBox>
+                </HBox>
+                <Label text="Tên sản phẩm" style="-fx-text-fill: #94a3b8; -fx-font-size: 11;"/>
+                <TextField fx:id="itemNameField" promptText="VD: iPhone 16 Pro"
+                           style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8;"/>
+                <Label text="Mô tả" style="-fx-text-fill: #94a3b8; -fx-font-size: 11;"/>
+                <TextField fx:id="itemDescField" promptText="Mô tả chi tiết sản phẩm"
+                           style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8;"/>
+                <Label text="Giá khởi điểm (đ)" style="-fx-text-fill: #94a3b8; -fx-font-size: 11;"/>
+                <TextField fx:id="itemPriceField" promptText="VD: 5000000"
+                           style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8;"/>
+                <Button text="+ Thêm sản phẩm" onAction="#handleAddItem" maxWidth="Infinity"
+                        style="-fx-background-color: #3b82f6; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-padding: 9; -fx-background-radius: 6; -fx-cursor: hand;"/>
+            </VBox>
+
+            <Label text="Sản phẩm của tôi"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <TableView fx:id="itemTable" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);">
+                <columns>
+                    <TableColumn fx:id="colItemName" text="Tên" prefWidth="160"/>
+                    <TableColumn fx:id="colItemCat" text="Loại" prefWidth="90"/>
+                    <TableColumn fx:id="colItemPrice" text="Giá KĐ" prefWidth="110"/>
+                    <TableColumn fx:id="colItemCond" text="Tình trạng" prefWidth="90"/>
+                </columns>
+                <placeholder><Label text="Chưa có sản phẩm" style="-fx-text-fill: #64748b;"/></placeholder>
+            </TableView>
+        </VBox>
+
+        <!-- RIGHT: Tạo phiên + danh sách phiên -->
+        <VBox spacing="10">
+            <Label text="Tạo phiên đấu giá"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <Label text="(Chọn sản phẩm bên trái, rồi nhấn Tạo phiên)"
+                   style="-fx-text-fill: #64748b; -fx-font-size: 11;"/>
+            <VBox spacing="8"
+                  style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Thời gian (phút):" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+                    <TextField fx:id="durationField" promptText="30" prefWidth="80"
+                               style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 7;"/>
+                    <CheckBox fx:id="antiSnipeCheck" text="Anti-Snipe" selected="true"
+                              style="-fx-text-fill: #a78bfa;"/>
+                </HBox>
+                <Button text="🚀 Tạo phiên đấu giá" onAction="#handleCreateAuction" maxWidth="Infinity"
+                        style="-fx-background-color: #f59e0b; -fx-text-fill: #000; -fx-font-weight: bold; -fx-padding: 9; -fx-background-radius: 6; -fx-cursor: hand;"/>
+                <Button text="⏹ Kết thúc phiên đang chọn" onAction="#handleEndAuction" maxWidth="Infinity"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-padding: 9; -fx-background-radius: 6; -fx-cursor: hand;"/>
+            </VBox>
+
+            <Label text="Phiên đấu giá của tôi"
+                   style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+            <TableView fx:id="auctionTable" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);">
+                <columns>
+                    <TableColumn fx:id="colAucName" text="Sản phẩm" prefWidth="180"/>
+                    <TableColumn fx:id="colAucStatus" text="Trạng thái" prefWidth="100"/>
+                    <TableColumn fx:id="colAucPrice" text="Giá hiện tại" prefWidth="120"/>
+                </columns>
+                <placeholder><Label text="Chưa có phiên nào" style="-fx-text-fill: #64748b;"/></placeholder>
+            </TableView>
+        </VBox>
+    </SplitPane>
+</VBox>
