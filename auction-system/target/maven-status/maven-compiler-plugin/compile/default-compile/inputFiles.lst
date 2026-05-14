@@ -1,49 +1,57 @@
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Entity.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\User\User.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\dao\ItemDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Item\Vehicle.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\service\UserService.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\service\AuctionService.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\service\BidService.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\controller\AutoBidController.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\dao\UserDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Item\Art.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\User\Bidder.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\exception\AuctionClosedException.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\BidTransaction.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\AutoBidConfig.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\network\server\ClientHandler.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\test\TestAutoBidDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\controller\AdminController.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\dao\BidDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Item\OtherItem.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\test\TestBidService.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\service\ItemService.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\ui\AfterLogin.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\dao\AuctionDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\network\server\AuctionServer.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\client\ClientContext.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\ui\Login.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\ui\Main.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\service\AuctionManager.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\test\TestAuctionDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\exception\AuctionNotFoundException.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\MainApplication.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\network\protocol\SocketMessage.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\network\client\AuctionClient.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\User\Seller.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\test\TestItemDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\service\AuthService.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Item\Electronics.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\exception\AuthenticationException.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\exception\InvalidBidException.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Auction.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\test\TestUserDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\test\TestDB.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\controller\UserController.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\config\DBConnection.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\controller\SellerController.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Item\Item.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\Item\ItemFactory.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\dao\AutoBidDAO.java
-C:\Users\HANH\Desktop\baitaplon\mytesting\auction-system\src\main\java\com\auction\model\User\Admin.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\User\Seller.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\AdminController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\AutoBidController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\dao\AuctionDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\SellerController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\service\ItemService.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\test\TestItemDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\test\TestAuctionDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\exception\AuthenticationException.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\User\Admin.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\service\AuctionManager.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\HistoryController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\RegisterController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\ui\Login.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\exception\InvalidBidException.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Item\ItemFactory.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\dao\AutoBidDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\test\TestAutoBidDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\service\AuthService.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Item\OtherItem.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\User\Bidder.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\dao\ItemDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\UserController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Auction.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\MySellController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Item\Item.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\service\UserService.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\LoginController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\network\client\AuctionClient.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\config\DBConnection.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\SceneManager.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\dao\UserDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\MyBidsController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\BidTransaction.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\service\AuctionService.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\AutoBidConfig.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\network\protocol\SocketMessage.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\network\server\ClientHandler.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\test\TestBidService.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\dao\BidDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\User\User.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\exception\AuctionClosedException.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Item\Vehicle.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\ui\Main.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\MainController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\MainApplication.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\network\server\AuctionServer.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\ClientContext.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Item\Electronics.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Item\Art.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\exception\AuctionNotFoundException.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\ui\AfterLogin.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\test\TestUserDAO.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\client\controller\AuctionsController.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\model\Entity.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\service\BidService.java
+C:\Users\D A N G\Desktop\Project\auction-system\src\main\java\com\auction\test\TestDB.java

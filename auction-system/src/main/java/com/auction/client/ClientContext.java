@@ -1,27 +1,64 @@
 package com.auction.client;
 
+import com.auction.model.User.User;
 import com.auction.network.client.AuctionClient;
 
-public final class ClientContext {
-    private static final ClientContext INSTANCE = new ClientContext();
+/**
+ * Singleton giữ trạng thái client: kết nối socket + user đang đăng nhập.
+ * Tất cả controller dùng ClientContext.getInstance() để lấy client/user.
+ */
+public class ClientContext {
 
-    private AuctionClient client = new AuctionClient("localhost", 9090);
+    private static volatile ClientContext instance;
 
-    private ClientContext() {
-    }
+    private AuctionClient client;
+    private User currentUser;
+
+    private ClientContext() {}
 
     public static ClientContext getInstance() {
-        return INSTANCE;
+        if (instance == null) {
+            synchronized (ClientContext.class) {
+                if (instance == null) instance = new ClientContext();
+            }
+        }
+        return instance;
     }
+
+    // ── AuctionClient ────────────────────────────────────────────
 
     public AuctionClient getClient() {
         return client;
     }
 
-    public void setClient(AuctionClient client) {
-        if (client == null) {
-            throw new IllegalArgumentException("client must not be null");
-        }
-        this.client = client;
+    /**
+     * Khởi tạo và kết nối client. Gọi 1 lần khi app start.
+     */
+    public boolean connect(String host, int port) {
+        client = new AuctionClient(host, port);
+        return client.connect();
+    }
+
+    public void disconnect() {
+        if (client != null) client.disconnect();
+    }
+
+    // ── User hiện tại ─────────────────────────────────────────────
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    public boolean isLoggedIn() {
+        return currentUser != null;
+    }
+
+    public void logout() {
+        if (client != null) client.logout();
+        currentUser = null;
     }
 }

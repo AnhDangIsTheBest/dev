@@ -1,45 +1,42 @@
 package com.auction;
 
+import com.auction.client.SceneManager;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.IOException;
-
-//@SpringBootApplication
-//public class MainApplication {
-//    public static void main(String[] args) {
-//        SpringApplication.run(MainApplication.class, args);
-//    }
-//}
-
-import javafx.application.Application;
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-
+/**
+ * Entry point JavaFX.
+ * Khởi động ứng dụng, show màn hình Login (login2.fxml).
+ * AuctionServer phải được chạy riêng trước.
+ */
 public class MainApplication extends Application {
-    private static Stage stg;
+
     @Override
-    public void start(Stage primaryStage) throws Exception{
-        stg = primaryStage;
-        primaryStage.setResizable(false);
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
-        primaryStage.setTitle("76 auction");
-        primaryStage.setScene(new Scene(root, 600, 400));
+    public void start(Stage primaryStage) throws Exception {
+        // Đăng ký stage với SceneManager để dùng ở khắp nơi
+        SceneManager.getInstance().setPrimaryStage(primaryStage);
+
+        Parent root = FXMLLoader.load(
+                getClass().getResource("/fxml/login2.fxml"));
+
+        primaryStage.setTitle("⚡ AuctionX – Hệ thống đấu giá trực tuyến");
+        primaryStage.setScene(new Scene(root, 600, 520));
+        primaryStage.setResizable(true);
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
         primaryStage.show();
+
+        // Đóng ứng dụng → ngắt kết nối socket
+        primaryStage.setOnCloseRequest(e -> {
+            com.auction.client.ClientContext.getInstance().disconnect();
+        });
     }
-    public void changeScene(String fxml) throws IOException {
-        Parent pane = FXMLLoader.load(getClass().getResource("/fxml/"+fxml));
-        stg.getScene().setRoot(pane);
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
