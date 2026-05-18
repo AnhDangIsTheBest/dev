@@ -1,6 +1,10 @@
+# IntelliJ
 .idea/
 *.iml
-*.log
 
-auction-system/target/
-auction-system/.idea/
+# Maven
+target/
+
+# OS
+.DS_Store
+Thumbs.db

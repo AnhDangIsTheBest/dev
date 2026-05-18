@@ -1,9 +1,9 @@
 package com.auction.client.controller;
 
 import com.auction.client.ClientContext;
-import com.auction.model.Auction;
-import com.auction.model.Item.Item;
-import com.auction.network.protocol.SocketMessage;
+import com.auction.shared.model.Auction;
+import com.auction.shared.model.Item.Item;
+import com.auction.shared.network.protocol.SocketMessage;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

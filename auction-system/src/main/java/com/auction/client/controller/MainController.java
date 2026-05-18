@@ -2,8 +2,8 @@ package com.auction.client.controller;
 
 import com.auction.client.ClientContext;
 import com.auction.client.SceneManager;
-import com.auction.model.User.Admin;
-import com.auction.model.User.User;
+import com.auction.shared.model.User.Admin;
+import com.auction.shared.model.User.User;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

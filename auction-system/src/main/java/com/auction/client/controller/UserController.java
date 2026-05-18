@@ -1,4 +1,4 @@
-package com.auction.controller;
+package com.auction.client.controller;
 
 public class UserController {
 }

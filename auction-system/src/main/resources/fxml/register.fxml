@@ -16,15 +16,34 @@
             <Label text="Họ và tên" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
             <TextField fx:id="fullNameField" promptText="Nguyễn Văn A"
                        style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
             <Label text="Tên đăng nhập" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
             <TextField fx:id="usernameField" promptText="username"
                        style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
             <Label text="Email" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
             <TextField fx:id="emailField" promptText="email@gmail.com"
                        style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
             <Label text="Mật khẩu" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
             <PasswordField fx:id="passwordField" promptText="Tối thiểu 6 ký tự"
                            style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
+            <!-- Chọn vai trò -->
+            <Label text="Vai trò" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <HBox spacing="10">
+                <ToggleButton fx:id="btnBidder" text="🙋 Bidder" maxWidth="Infinity"
+                              HBox.hgrow="ALWAYS"
+                              style="-fx-background-color: #f59e0b; -fx-text-fill: #000; -fx-font-weight: bold;
+                                     -fx-background-radius: 8; -fx-padding: 8; -fx-cursor: hand;"/>
+                <ToggleButton fx:id="btnSeller" text="🏷️ Seller" maxWidth="Infinity"
+                              HBox.hgrow="ALWAYS"
+                              style="-fx-background-color: #1a1d26; -fx-text-fill: #94a3b8;
+                                     -fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 8;
+                                     -fx-padding: 8; -fx-cursor: hand;"/>
+            </HBox>
+            <Label text="Bidder: đặt giá phiên đấu giá  •  Seller: đăng sản phẩm đấu giá"
+                   style="-fx-text-fill: #475569; -fx-font-size: 10;" wrapText="true"/>
         </VBox>
 
         <Label fx:id="messageLabel" text="" wrapText="true" style="-fx-font-size: 12;"/>

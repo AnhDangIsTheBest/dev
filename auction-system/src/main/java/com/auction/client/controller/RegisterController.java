@@ -2,7 +2,7 @@ package com.auction.client.controller;
 
 import com.auction.client.ClientContext;
 import com.auction.client.SceneManager;
-import com.auction.network.protocol.SocketMessage;
+import com.auction.shared.network.protocol.SocketMessage;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

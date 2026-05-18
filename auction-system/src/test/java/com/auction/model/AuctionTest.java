@@ -1,6 +1,6 @@
-package com.auction.model;
+package com.auction.shared.model;
 
-import com.auction.model.Item.OtherItem;
+import com.auction.shared.model.Item.OtherItem;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

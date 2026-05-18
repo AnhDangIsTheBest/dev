@@ -1,10 +1,10 @@
 package com.auction.client.controller;
 
 import com.auction.client.ClientContext;
-import com.auction.model.Auction;
-import com.auction.model.BidTransaction;
-import com.auction.network.protocol.SocketMessage;
-import com.auction.network.protocol.SocketMessage.Action;
+import com.auction.shared.model.Auction;
+import com.auction.shared.model.BidTransaction;
+import com.auction.shared.network.protocol.SocketMessage;
+import com.auction.shared.network.protocol.SocketMessage.Action;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -310,7 +310,7 @@ public class AuctionsController {
         return label;
     }
 
-    private Image loadItemImage(com.auction.model.Item.Item item) {
+    private Image loadItemImage(com.auction.shared.model.Item.Item item) {
         if (item != null && item.getImageData() != null && item.getImageData().length > 0) {
             return new Image(new ByteArrayInputStream(item.getImageData()));
         }

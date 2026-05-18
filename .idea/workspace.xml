@@ -5,23 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a2091a65-91d5-42c0-a016-b8c18f0b82b8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/MainApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/ClientContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/ClientContext.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/AdminController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/AuctionsController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/AutoBidController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/HistoryController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/LoginController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/MainController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/MyBidsController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/MySellController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/RegisterController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/SellerController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/src/main/java/com/auction/client/controller/controller/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auction-system/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/admin.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/admin.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/afterLogin.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/afterLogin.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/auctions.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/auctions.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/auto-bid.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/auto-bid.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/dashboard.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/history.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/history.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/main.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/my-bids.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/my-bids.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/my-sell.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/my-sell.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/register.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/register.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/seller.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/src/main/resources/fxml/seller.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/admin.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/admin.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/afterLogin.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/afterLogin.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/auctions.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/auctions.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/auto-bid.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/auto-bid.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/dashboard.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/dashboard.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/history.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/history.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/main.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/my-bids.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/my-bids.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/my-sell.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/my-sell.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/register.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/register.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auction-system/target/classes/fxml/seller.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/auction-system/target/classes/fxml/seller.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +35,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="183" />
+    <option name="cachedIndexableFilesCount" value="188" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -105,6 +111,10 @@
       <workItem from="1778688991010" duration="56000" />
       <workItem from="1778689074764" duration="35000" />
       <workItem from="1778689301125" duration="9000" />
+      <workItem from="1778729168140" duration="8000" />
+      <workItem from="1779067752956" duration="419000" />
+      <workItem from="1779068721210" duration="14000" />
+      <workItem from="1779086842979" duration="321000" />
     </task>
     <servers />
   </component>

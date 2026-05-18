@@ -1,11 +1,11 @@
 package com.auction.client.controller;
 
 import com.auction.client.ClientContext;
-import com.auction.model.Auction;
-import com.auction.model.Item.Item;
-import com.auction.model.Item.ItemFactory;
-import com.auction.model.Item.ItemFactory.ItemType;
-import com.auction.network.protocol.SocketMessage;
+import com.auction.shared.model.Auction;
+import com.auction.shared.model.Item.Item;
+import com.auction.shared.model.Item.ItemFactory;
+import com.auction.shared.model.Item.ItemFactory.ItemType;
+import com.auction.shared.network.protocol.SocketMessage;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
