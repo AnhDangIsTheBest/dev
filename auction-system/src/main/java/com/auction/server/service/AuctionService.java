@@ -65,6 +65,13 @@ public class AuctionService {
         return auctionDAO.getAllAuctions();
     }
 
+    public List<Auction> getAuctionsBySeller(String sellerId) {
+        if (sellerId == null || sellerId.isBlank()) {
+            throw new IllegalArgumentException("sellerId khong duoc trong");
+        }
+        return auctionDAO.getAuctionsBySeller(sellerId);
+    }
+
     public List<Auction> getAuctionsByStatus(AuctionStatus status) {
         return auctionDAO.getAuctionsByStatus(status);
     }

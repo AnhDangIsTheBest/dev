@@ -8,6 +8,7 @@ import com.auction.shared.model.Auction.AuctionStatus;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -110,6 +111,21 @@ public class AuctionServer {
     /**
      * Gửi message đến TẤT CẢ client đang kết nối.
      */
+    public void broadcastToWatchersExcept(String auctionId, SocketMessage msg, ClientHandler excludedClient) {
+        int count = 0;
+        for (ClientHandler client : connectedClients) {
+            if (client == excludedClient) {
+                continue;
+            }
+            if (auctionId.equals(client.getAuctionIdWatching())) {
+                client.sendResponse(msg);
+                count++;
+            }
+        }
+        System.out.printf("[Server] Broadcast '%s' -> %d client dang xem phien %s%n",
+                msg.getAction(), count, auctionId);
+    }
+
     public void broadcastToAll(SocketMessage msg) {
         for (ClientHandler client : connectedClients) {
             client.sendResponse(msg);
@@ -152,10 +168,12 @@ public class AuctionServer {
 
     private void checkAndFinishExpiredAuctions() {
         try {
-            List<Auction> running = auctionService.getAuctionsByStatus(AuctionStatus.RUNNING);
+            List<Auction> active = new ArrayList<>();
+            active.addAll( auctionService.getAuctionsByStatus(AuctionStatus.OPEN));
+            active.addAll( auctionService.getAuctionsByStatus(AuctionStatus.RUNNING));
             java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
-            for (Auction auction : running) {
+            for (Auction auction : active) {
                 if (now.isAfter(auction.getEndTime())) {
                     boolean finished = auctionService.finishAuction(auction.getAuctionId());
                     if (finished) {
@@ -165,7 +183,7 @@ public class AuctionServer {
                         Auction updated = auctionService.getAuctionById(auction.getAuctionId());
                         broadcastToWatchers(auction.getAuctionId(),
                                 SocketMessage.ok(SocketMessage.Action.BROADCAST_AUCTION_END,
-                                        "Phiên đấu giá đã kết thúc!")
+                                                "Phiên đấu giá đã kết thúc!")
                                         .put("auction", updated));
                     }
                 }

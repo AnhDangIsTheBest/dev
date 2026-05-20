@@ -85,6 +85,7 @@ public class ClientHandler implements Runnable {
 
             // Auction
             case GET_ALL_AUCTIONS -> handleGetAllAuctions();
+            case GET_MY_SELLER_AUCTIONS -> handleGetMySellerAuctions();
             case GET_AUCTION      -> handleGetAuction(msg);
             case CREATE_AUCTION   -> handleCreateAuction(msg);
             case START_AUCTION    -> handleStartAuction(msg);
@@ -196,6 +197,14 @@ public class ClientHandler implements Runnable {
                 .put("auctions", list);
     }
 
+    private SocketMessage handleGetMySellerAuctions() {
+        if (!isLoggedIn()) return requireLogin(Action.GET_MY_SELLER_AUCTIONS);
+
+        List<Auction> list = auctionService.getAuctionsBySeller(currentUser.getId());
+        return SocketMessage.ok(Action.GET_MY_SELLER_AUCTIONS, "OK")
+                .put("auctions", list);
+    }
+
     private SocketMessage handleGetAuction(SocketMessage msg) {
         String auctionId = msg.getString("auctionId");
         if (auctionId == null)
@@ -249,9 +258,10 @@ public class ClientHandler implements Runnable {
         if (ok) {
             // Broadcast cho tất cả client đang xem phiên này
             Auction finished = auctionService.getAuctionById(id);
-            server.broadcastToWatchers(id,
+            server.broadcastToWatchersExcept(id,
                     SocketMessage.ok(Action.BROADCAST_AUCTION_END, "Phiên đấu giá đã kết thúc")
-                            .put("auction", finished));
+                            .put("auction", finished),
+                    this);
         }
         return ok
                 ? SocketMessage.ok(Action.FINISH_AUCTION, "Phiên đã kết thúc")
@@ -318,14 +328,17 @@ public class ClientHandler implements Runnable {
 
             Auction updated = auctionService.getAuctionById(auctionId);
 
-            server.broadcastToWatchers(auctionId,
+            server.broadcastToWatchersExcept(auctionId,
                     SocketMessage.ok(Action.BROADCAST_BID_UPDATE, "Có bid mới!")
                             .put("auction", updated)
                             .put("bidderName", bidderName)
-                            .put("amount", amount));
+                            .put("amount", amount),
+                    this);
 
             return SocketMessage.ok(Action.PLACE_BID, "Đặt giá thành công")
-                    .put("bidId", bidId);
+                    .put("bidId", bidId)
+                    .put("auction", updated)
+                    .put("user", userService.getUserById(bidderId));
 
         } catch (IllegalArgumentException | IllegalStateException e) {
             return SocketMessage.error(Action.PLACE_BID, e.getMessage());
@@ -350,7 +363,7 @@ public class ClientHandler implements Runnable {
             boolean ok = bidService.registerAutoBid(auctionId, bidderId, bidderName, maxBid, increment);
 
             return ok
-                    ? SocketMessage.ok(Action.REGISTER_AUTO_BID, "Đăng ký auto bid thành công")
+                    ? SocketMessage.ok(Action.REGISTER_AUTO_BID, "Đăng ký auto bid thành công").put("user", userService.getUserById(bidderId))
                     : SocketMessage.error(Action.REGISTER_AUTO_BID, "Đăng ký thất bại");
 
         } catch (IllegalArgumentException e) {

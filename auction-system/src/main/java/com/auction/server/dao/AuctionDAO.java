@@ -20,6 +20,36 @@ import com.auction.shared.model.Item.Item;
 public class AuctionDAO {
     private final ItemDAO itemDAO = new ItemDAO();
 
+    private static final String SELECT_WITH_ITEM = """
+            SELECT a.*,
+                   i.name          AS item_name,
+                   i.description   AS item_description,
+                   i.type          AS item_type,
+                   i.starting_price,
+                   i.current_price AS item_current_price,
+                   i.status        AS item_status,
+                   i.image_data    AS item_image_data,
+                   i.seller_id     AS item_seller_id,
+                   e.brand         AS electronics_brand,
+                   e.model         AS electronics_model,
+                   e.warranty,
+                   v.brand         AS vehicle_brand,
+                   v.vehicle_model,
+                   v.year,
+                   v.mileage,
+                   v.vehicle_type,
+                   ar.artist,
+                   ar.year_created,
+                   ar.material,
+                   o.category
+            FROM auctions a
+            JOIN items i ON i.id = a.item_id
+            LEFT JOIN item_electronics e  ON e.item_id  = i.id
+            LEFT JOIN item_vehicles    v  ON v.item_id  = i.id
+            LEFT JOIN item_arts        ar ON ar.item_id = i.id
+            LEFT JOIN item_others      o  ON o.item_id  = i.id
+            """;
+
     public String createAuction(Auction auction) {
         String sql = """
                 INSERT INTO auctions (
@@ -71,10 +101,6 @@ public class AuctionDAO {
         return null;
     }
 
-    public List<Auction> getAllAuctions() {
-        return queryList("SELECT * FROM auctions ORDER BY created_at DESC, id DESC");
-    }
-
     public List<Auction> getAuctionsByStatus(AuctionStatus status) {
         String sql = "SELECT * FROM auctions WHERE status = ? ORDER BY created_at DESC, id DESC";
 
@@ -87,6 +113,11 @@ public class AuctionDAO {
             System.err.println("[AuctionDAO] getAuctionsByStatus lỗi: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    public List<Auction> getAllAuctions() {
+        String sql = SELECT_WITH_ITEM + "ORDER BY a.created_at DESC, a.id DESC";
+        return queryList(sql);
     }
 
     public List<Auction> getAuctionsByBidder(String bidderId) {
@@ -105,6 +136,20 @@ public class AuctionDAO {
             return mapResultSet(ps.executeQuery());
         } catch (SQLException e) {
             System.err.println("[AuctionDAO] getAuctionsByBidder lá»—i: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Auction> getAuctionsBySeller(String sellerId) {
+        String sql = SELECT_WITH_ITEM + "WHERE i.seller_id = ? ORDER BY a.created_at DESC, a.id DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, sellerId);
+            return mapResultSet(ps.executeQuery());
+        } catch (SQLException e) {
+            System.err.println("[AuctionDAO] getAuctionsBySeller loi: " + e.getMessage());
             return new ArrayList<>();
         }
     }

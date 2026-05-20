@@ -17,7 +17,7 @@ public class SocketMessage implements Serializable {
         LOGIN, LOGOUT, REGISTER,
 
         // Auction
-        GET_ALL_AUCTIONS, GET_AUCTION, CREATE_AUCTION,
+        GET_ALL_AUCTIONS, GET_AUCTION, GET_MY_SELLER_AUCTIONS, CREATE_AUCTION,
         START_AUCTION, FINISH_AUCTION, CANCEL_AUCTION, DELETE_AUCTION,
 
         // Bid

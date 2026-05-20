@@ -1,114 +1,115 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
 
-<ScrollPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.auction.client.controller.SellerController"
-            fitToWidth="true"
-            style="-fx-background: #0a0b0f; -fx-background-color: #0a0b0f;">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" style="-fx-background: #0a0b0f; -fx-background-color: #0a0b0f;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.auction.client.controller.SellerController">
     <VBox spacing="18" style="-fx-background-color: #0a0b0f; -fx-padding: 24 44 36 44;">
-        <Label text="ĐĂNG TÀI SẢN MỚI &amp; TẠO CUỘC ĐẤU GIÁ"
-               style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #f8fafc;"/>
-        <Label fx:id="sellerResultLabel" text="" style="-fx-font-size: 12;" wrapText="true"/>
+        <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #f8fafc;" text="ĐĂNG TÀI SẢN MỚI &amp; TẠO CUỘC ĐẤU GIÁ" />
+        <Label fx:id="sellerResultLabel" style="-fx-font-size: 12;" text="" wrapText="true" />
 
-        <HBox spacing="18" alignment="TOP_LEFT">
-            <VBox spacing="12" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color: #121416; -fx-border-color: #323941; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;">
-                <Label text="Chi tiết sản phẩm"
-                       style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #f8fafc;"/>
+        <HBox alignment="TOP_LEFT" spacing="18">
+            <VBox spacing="12" style="-fx-background-color: #121416; -fx-border-color: #323941; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;" HBox.hgrow="ALWAYS">
+                <Label style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #f8fafc;" text="Chi tiết sản phẩm" />
 
-                <Label text="Tên sản phẩm" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                <TextField fx:id="itemNameField" promptText="Ví dụ: Xe ô tô Hyundai Grand i10"
-                           style="-fx-background-color: #17191d; -fx-text-fill: #e5e7eb; -fx-prompt-text-fill: #6b7280; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 9;"/>
+                <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Tên sản phẩm" />
+                <TextField fx:id="itemNameField" promptText="Ví dụ: Firgue Hatsune Miku" style="-fx-background-color: #17191d; -fx-text-fill: #e5e7eb; -fx-prompt-text-fill: #6b7280; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 9;" />
 
-                <Label text="Loại sản phẩm" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                <ComboBox fx:id="itemTypeCombo" maxWidth="Infinity"
-                          promptText="Chọn danh mục"
-                          style="-fx-background-color: #17191d; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Loại sản phẩm" />
+                <ComboBox fx:id="itemTypeCombo" maxWidth="Infinity" promptText="Chọn danh mục" style="-fx-background-color: #17191d; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6;" />
 
-                <Label text="Mô tả sản phẩm" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                <TextArea fx:id="itemDescField" promptText="Mô tả cụ thể về tài sản, thông số kỹ thuật, lịch sử, v.v."
-                          prefRowCount="5" wrapText="true"
-                          style="-fx-control-inner-background: #17191d; -fx-background-color: #17191d; -fx-text-fill: #e5e7eb; -fx-prompt-text-fill: #6b7280; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Mô tả sản phẩm" />
+                <TextArea fx:id="itemDescField" prefRowCount="5" promptText="Mô tả cụ thể về tài sản, thông số kỹ thuật, lịch sử, v.v." style="-fx-control-inner-background: #17191d; -fx-background-color: #17191d; -fx-text-fill: #e5e7eb; -fx-prompt-text-fill: #6b7280; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6;" wrapText="true" />
 
                 <VBox spacing="8" style="-fx-border-color: #6b7280; -fx-border-style: dashed; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 18;">
-                    <ImageView fx:id="selectedImagePreview" fitWidth="180" fitHeight="105" preserveRatio="true" smooth="true"/>
-                    <Button text="+ Chọn ảnh sản phẩm" onAction="#handleChooseImage"
-                            style="-fx-background-color: #991b1b; -fx-text-fill: white; -fx-font-size: 18; -fx-background-radius: 8; -fx-cursor: hand;"/>
-                    <Label fx:id="selectedImageLabel" text="Chưa chọn ảnh" wrapText="true"
-                           style="-fx-text-fill: #cbd5e1; -fx-font-size: 12;"/>
+                    <ImageView fx:id="selectedImagePreview" fitHeight="105" fitWidth="180" preserveRatio="true" smooth="true" />
+                    <Button onAction="#handleChooseImage" style="-fx-background-color: #991b1b; -fx-text-fill: white; -fx-font-size: 18; -fx-background-radius: 8; -fx-cursor: hand;" text="+ Chọn ảnh sản phẩm" />
+                    <Label fx:id="selectedImageLabel" style="-fx-text-fill: #cbd5e1; -fx-font-size: 12;" text="Chưa chọn ảnh" wrapText="true" />
                 </VBox>
             </VBox>
 
-            <VBox spacing="12" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color: #121416; -fx-border-color: #323941; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;">
-                <Label text="Cài đặt cuộc đấu giá"
-                       style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #f8fafc;"/>
+            <VBox spacing="12" style="-fx-background-color: #121416; -fx-border-color: #323941; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;" HBox.hgrow="ALWAYS">
+                <Label style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #f8fafc;" text="Cài đặt cuộc đấu giá" />
 
-                <Label text="Giá khởi điểm" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                <TextField fx:id="itemPriceField" promptText="Ví dụ: 100000000"
-                           style="-fx-background-color: #17191d; -fx-text-fill: #e5e7eb; -fx-prompt-text-fill: #6b7280; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 9;"/>
+                <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Giá khởi điểm" />
+                <TextField fx:id="itemPriceField" promptText="Ví dụ: 100000000" style="-fx-background-color: #17191d; -fx-text-fill: #e5e7eb; -fx-prompt-text-fill: #6b7280; -fx-border-color: #343a40; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 9;" />
 
                 <GridPane hgap="12" vgap="8">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
-                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
                     </columnConstraints>
 
-                    <Label text="Ngày bắt đầu" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                    <Label text="Giờ bắt đầu" GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                    <DatePicker fx:id="startDatePicker" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <HBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="1">
-                        <Spinner fx:id="startHourSpinner" prefWidth="70" editable="true"/>
-                        <Label text=":" style="-fx-text-fill: #cbd5e1; -fx-font-size: 16;"/>
-                        <Spinner fx:id="startMinSpinner" prefWidth="70" editable="true"/>
-                        <Button text="Ngay" onAction="#handleSetStartNow" style="-fx-background-color: #1f2937; -fx-text-fill: #cbd5e1; -fx-background-radius: 6;"/>
+                    <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Ngày bắt đầu" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Giờ bắt đầu" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <DatePicker fx:id="startDatePicker" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <HBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Spinner fx:id="startHourSpinner" editable="true" prefWidth="70" />
+                        <Label style="-fx-text-fill: #cbd5e1; -fx-font-size: 16;" text=":" />
+                        <Spinner fx:id="startMinSpinner" editable="true" prefWidth="70" />
+                        <Button onAction="#handleSetStartNow" style="-fx-background-color: #1f2937; -fx-text-fill: #cbd5e1; -fx-background-radius: 6;" text="Ngay" />
                     </HBox>
 
-                    <Label text="Ngày kết thúc" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                    <Label text="Giờ kết thúc" GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-text-fill: #d1d5db; -fx-font-size: 12;"/>
-                    <DatePicker fx:id="endDatePicker" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                    <HBox spacing="6" GridPane.rowIndex="3" GridPane.columnIndex="1">
-                        <Spinner fx:id="endHourSpinner" prefWidth="70" editable="true"/>
-                        <Label text=":" style="-fx-text-fill: #cbd5e1; -fx-font-size: 16;"/>
-                        <Spinner fx:id="endMinSpinner" prefWidth="70" editable="true"/>
-                        <Button text="+1h" onAction="#handleAddOneHour" style="-fx-background-color: #1f2937; -fx-text-fill: #cbd5e1; -fx-background-radius: 6;"/>
+                    <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Ngày kết thúc" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <Label style="-fx-text-fill: #d1d5db; -fx-font-size: 12;" text="Giờ kết thúc" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    <DatePicker fx:id="endDatePicker" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <HBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <Spinner fx:id="endHourSpinner" editable="true" prefWidth="70" />
+                        <Label style="-fx-text-fill: #cbd5e1; -fx-font-size: 16;" text=":" />
+                        <Spinner fx:id="endMinSpinner" editable="true" prefWidth="70" />
+                        <Button onAction="#handleAddOneHour" style="-fx-background-color: #1f2937; -fx-text-fill: #cbd5e1; -fx-background-radius: 6;" text="+1h" />
                     </HBox>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
                 </GridPane>
 
-                <CheckBox fx:id="antiSnipeCheck" text="Gia hạn thời gian (Anti-Snipe)" selected="true"
-                          style="-fx-text-fill: #e5e7eb;"/>
-                <Label text="Kích hoạt Anti-Snipe: tự động gia hạn nếu có đấu giá cuối"
-                       style="-fx-text-fill: #9ca3af; -fx-font-size: 11;"/>
+                <CheckBox fx:id="antiSnipeCheck" selected="true" style="-fx-text-fill: #e5e7eb;" text="Gia hạn thời gian (Anti-Snipe)" />
+                <Label style="-fx-text-fill: #9ca3af; -fx-font-size: 11;" text="Kích hoạt Anti-Snipe: tự động gia hạn nếu có đấu giá cuối" />
 
-                <Button text="ĐĂNG SẢN PHẨM &amp; TẠO CUỘC ĐẤU GIÁ" onAction="#handleAddItemAndCreateAuction" maxWidth="Infinity"
-                        style="-fx-background-color: #991b1b; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-padding: 13; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button maxWidth="Infinity" onAction="#handleAddItemAndCreateAuction" style="-fx-background-color: #991b1b; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-padding: 13; -fx-background-radius: 8; -fx-cursor: hand;" text="ĐĂNG SẢN PHẨM &amp; TẠO CUỘC ĐẤU GIÁ" />
             </VBox>
         </HBox>
 
         <HBox spacing="18" VBox.vgrow="ALWAYS">
             <VBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="Sản phẩm của tôi" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+                <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;" text="Sản phẩm của tôi" />
                 <TableView fx:id="itemTable" prefHeight="230" style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);">
                     <columns>
-                        <TableColumn fx:id="colItemName" text="Tên" prefWidth="190"/>
-                        <TableColumn fx:id="colItemCat" text="Loại" prefWidth="100"/>
-                        <TableColumn fx:id="colItemPrice" text="Giá KĐ" prefWidth="130"/>
+                        <TableColumn fx:id="colItemName" prefWidth="190" text="Tên" />
+                        <TableColumn fx:id="colItemCat" prefWidth="100" text="Loại" />
+                        <TableColumn fx:id="colItemPrice" prefWidth="130" text="Giá KĐ" />
                     </columns>
-                    <placeholder><Label text="Chưa có sản phẩm" style="-fx-text-fill: #64748b;"/></placeholder>
+                    <placeholder><Label style="-fx-text-fill: #64748b;" text="Chưa có sản phẩm" /></placeholder>
                 </TableView>
             </VBox>
             <VBox spacing="10" HBox.hgrow="ALWAYS">
-                <Label text="Phiên đấu giá của tôi" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;"/>
+                <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;" text="Phiên đấu giá của tôi" />
                 <TableView fx:id="auctionTable" prefHeight="230" style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);">
                     <columns>
-                        <TableColumn fx:id="colAucName" text="Sản phẩm" prefWidth="220"/>
-                        <TableColumn fx:id="colAucStatus" text="Trạng thái" prefWidth="110"/>
-                        <TableColumn fx:id="colAucPrice" text="Giá hiện tại" prefWidth="130"/>
+                        <TableColumn fx:id="colAucName" prefWidth="220" text="Sản phẩm" />
+                        <TableColumn fx:id="colAucStatus" prefWidth="110" text="Trạng thái" />
+                        <TableColumn fx:id="colAucPrice" prefWidth="130" text="Giá hiện tại" />
                     </columns>
-                    <placeholder><Label text="Chưa có phiên nào" style="-fx-text-fill: #64748b;"/></placeholder>
+                    <placeholder><Label style="-fx-text-fill: #64748b;" text="Chưa có phiên nào" /></placeholder>
                 </TableView>
             </VBox>
         </HBox>

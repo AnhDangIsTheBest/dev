@@ -103,6 +103,10 @@ public class AuctionClient {
         return send(SocketMessage.request(Action.GET_ALL_AUCTIONS));
     }
 
+    public SocketMessage getMySellerAuctions() {
+        return send(SocketMessage.request(Action.GET_MY_SELLER_AUCTIONS));
+    }
+
     public SocketMessage getMyBids() {
         return send(SocketMessage.request(Action.GET_MY_BIDS));
     }
