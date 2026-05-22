@@ -3,10 +3,14 @@ package com.auction.client.controller;
 import com.auction.client.ClientContext;
 import com.auction.shared.model.Auction;
 import com.auction.shared.model.BidTransaction;
-import com.auction.shared.network.protocol.SocketMessage;
+import com.auction.shared.network.protocol.SocketMessage ;
 import com.auction.shared.network.protocol.SocketMessage.Action;
 
-import javafx.animation.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -163,6 +167,7 @@ public class HistoryController {
             animateChart(series);
         });
     }
+
     private void animateChart(XYChart.Series<Number, Number> series) {
         priceLineChart.setCache(true);
         priceLineChart.setCacheHint(CacheHint.SPEED);

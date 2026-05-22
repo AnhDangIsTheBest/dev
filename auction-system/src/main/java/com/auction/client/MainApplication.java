@@ -23,7 +23,7 @@ public class MainApplication extends Application {
         Parent root = FXMLLoader.load(
                 getClass().getResource("/fxml/login2.fxml"));
 
-        primaryStage.setTitle("⚡ AuctionX – Hệ thống đấu giá trực tuyến");
+        primaryStage.setTitle("⚡ Auction76 – Đấu giá bằng cả tính mạng");
         primaryStage.setScene(new Scene(root, 600, 520));
         primaryStage.setResizable(true);
         primaryStage.setMinWidth(600);

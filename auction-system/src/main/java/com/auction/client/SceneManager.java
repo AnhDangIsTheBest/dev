@@ -42,7 +42,9 @@ public class SceneManager {
         try {
             Parent root = FXMLLoader.load(
                     getClass().getResource("/fxml/" + fxmlFile));
-            primaryStage.setScene(new Scene(root, width, height));
+            Scene scene = new Scene(root, width, height);
+            installStylesheet(scene);
+            primaryStage.setScene(scene);
             primaryStage.centerOnScreen();
         } catch (IOException e) {
             System.err.println("[SceneManager] Không load được " + fxmlFile + ": " + e.getMessage());
@@ -54,6 +56,7 @@ public class SceneManager {
             Parent root = FXMLLoader.load(
                     getClass().getResource("/fxml/" + fxmlFile));
             primaryStage.getScene().setRoot(root);
+            installStylesheet(primaryStage.getScene());
         } catch (IOException e) {
             System.err.println("[SceneManager] Không load được " + fxmlFile + ": " + e.getMessage());
         }
@@ -67,6 +70,14 @@ public class SceneManager {
                 getClass().getResource("/fxml/" + fxmlFile));
         Parent root = loader.load();
         primaryStage.getScene().setRoot(root);
+        installStylesheet(primaryStage.getScene());
         return loader.getController();
+    }
+
+    private void installStylesheet(Scene scene) {
+        String css = getClass().getResource("/css/style.css").toExternalForm();
+        if (!scene.getStylesheets().contains(css)) {
+            scene.getStylesheets().add(css);
+        }
     }
 }
