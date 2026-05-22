@@ -423,6 +423,35 @@ public class AuctionsController {
         }).start();
     }
 
+    public void openAuctionById(String auctionId) {
+        if (auctionId == null || auctionId.isBlank()) return;
+
+        setStatus("Đang mở phiên đấu giá...");
+        Auction existing = auctions.stream()
+                .filter(a -> auctionId.equals(a.getAuctionId()))
+                .findFirst()
+                .orElse(null);
+        if (existing != null) {
+            onSelectAuction(existing);
+            return;
+        }
+
+        new Thread(() -> {
+            SocketMessage res = ClientContext.getInstance().getClient().getAuction(auctionId);
+            Platform.runLater(() -> {
+                if (res.isOk() && res.get("auction") instanceof Auction auction) {
+                    onSelectAuction(auction);
+                } else {
+                    setStatus("Không tìm thấy phiên đấu giá: " + auctionId);
+                }
+            });
+        }, "open-auction-detail").start();
+    }
+
+    public void openAuction(Auction auction) {
+        onSelectAuction(auction);
+    }
+
     private void renderDetail(Auction a) {
         String itemName = a.getItem().getName();
         if (detailName != null) detailName.setText(itemName);

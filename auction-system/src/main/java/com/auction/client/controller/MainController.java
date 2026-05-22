@@ -2,18 +2,25 @@ package com.auction.client.controller;
 
 import com.auction.client.ClientContext;
 import com.auction.client.SceneManager;
+import com.auction.shared.model.Auction;
 import com.auction.shared.model.User.Admin;
 import com.auction.shared.model.User.User;
 
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -23,6 +30,7 @@ import java.io.IOException;
  */
 public class MainController {
 
+    private static MainController activeInstance;
     @FXML private Label       userNameLabel;
     @FXML private Label       userRoleLabel;
     @FXML private Label       statusLabel;
@@ -49,6 +57,10 @@ public class MainController {
             "-fx-background-color: transparent; -fx-text-fill: #94a3b8;" +
                     "-fx-padding: 10 16; -fx-cursor: hand; " +
                     "-fx-alignment: CENTER_LEFT; -fx-font-size: 13;";
+    private static final String BUTTON_ANIMATION_KEY = "auction.buttonAnimationInstalled";
+    private static final String BUTTON_SCALE_TRANSITION_KEY = "auction.buttonScaleTransition";
+    private static final Duration CONTENT_ANIMATION_DURATION = Duration.millis(150);
+    private static final Duration BUTTON_ANIMATION_DURATION = Duration.millis(90);
 
     @FXML
     public void initialize() {
@@ -91,6 +103,44 @@ public class MainController {
     @FXML public void showAdmin(ActionEvent e)     { loadContent("admin.fxml",     btnAdmin); }
     @FXML public void showHistory(ActionEvent e)   { loadContent("history.fxml",   btnHistory); }
 
+    public static MainController getActiveInstance() {
+        return activeInstance;
+    }
+
+    public void openAuctionDetail(String auctionId) {
+        openAuctionDetail(auctionId, null);
+    }
+
+    public void openAuctionDetail(Auction auction) {
+        openAuctionDetail(auction != null ? auction.getAuctionId() : null, auction);
+    }
+
+    private void openAuctionDetail(String auctionId, Auction auction) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/fxml/dashboard.fxml"));
+            Node content = loader.load();
+            content.setOpacity(0);
+            content.setTranslateY(10);
+            mainPane.setCenter(content);
+            setActiveButton(btnDashboard);
+            installButtonFeedback(content);
+            animateContentIn(content);
+
+            Object controller = loader.getController();
+            if (controller instanceof AuctionsController auctionsController) {
+                if (auction != null) {
+                    auctionsController.openAuction(auction);
+                } else {
+                    auctionsController.openAuctionById(auctionId);
+                }
+            }
+        } catch (IOException e) {
+            setStatus("\u274c L\u1ed7i t\u1ea3i phi\u00ean \u0111\u1ea5u gi\u00e1.");
+            System.err.println("[MainController] openAuctionDetail lỗi: " + e.getMessage());
+        }
+    }
+
     @FXML
     private void handleLogout(ActionEvent event) {
         new Thread(() -> {
@@ -107,11 +157,15 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/fxml/" + fxmlFile));
             Node content = loader.load();
+            content.setOpacity(0);
+            content.setTranslateY(10);
             mainPane.setCenter(content);
             setActiveButton(activeButton);
+            installButtonFeedback(content);
+            animateContentIn(content);
         } catch (IOException e) {
-            setStatus("❌ Lỗi tải màn hình: " + fxmlFile);
-            System.err.println("[MainController] loadContent lỗi: " + e.getMessage());
+            setStatus("\u274c L\u1ed7i t\u1ea3i m\u00e0n h\u00ecnh: " + fxmlFile);
+            System.err.println("[MainController] loadContent l\u1ed7i: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -120,6 +174,74 @@ public class MainController {
         if (activeBtn != null) activeBtn.setStyle(INACTIVE_STYLE);
         activeBtn = btn;
         if (btn != null) btn.setStyle(ACTIVE_STYLE);
+    }
+
+    private void animateContentIn(Node content) {
+        content.setCache(true);
+        content.setCacheHint(CacheHint.SPEED);
+
+        FadeTransition fade = new FadeTransition(CONTENT_ANIMATION_DURATION, content);
+        fade.setToValue(1);
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition translate = new TranslateTransition(CONTENT_ANIMATION_DURATION, content);
+        translate.setToY(0);
+        translate.setInterpolator(Interpolator.EASE_OUT);
+
+        ParallelTransition transition = new ParallelTransition(fade, translate);
+        transition.setOnFinished(event -> content.setCache(false));
+        transition.play();
+    }
+
+    private void installButtonFeedback(Node node) {
+        if (node == null) {
+            return;
+        }
+
+        if (node instanceof ButtonBase button
+                && !Boolean.TRUE.equals(button.getProperties().get(BUTTON_ANIMATION_KEY))) {
+            button.getProperties().put(BUTTON_ANIMATION_KEY, true);
+            button.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
+                if (!button.isDisabled()) animateButtonScale(button, 1.015);
+            });
+            button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                if (!button.isDisabled()) animateButtonScale(button, 0.965);
+            });
+            button.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+                if (!button.isDisabled()) animateButtonScale(button, button.isHover() ? 1.015 : 1.0);
+            });
+            button.addEventFilter(MouseEvent.MOUSE_EXITED, event -> animateButtonScale(button, 1.0));
+            button.disabledProperty().addListener((obs, wasDisabled, isDisabled) -> {
+                if (isDisabled) {
+                    Object existing = button.getProperties().get(BUTTON_SCALE_TRANSITION_KEY);
+                    if (existing instanceof ScaleTransition transition) {
+                        transition.stop();
+                    }
+                    button.setScaleX(1.0);
+                    button.setScaleY(1.0);
+                }
+            });
+        }
+
+        if (node instanceof Parent parent) {
+            for (Node child : parent.getChildrenUnmodifiable()) {
+                installButtonFeedback(child);
+            }
+        }
+    }
+
+    private void animateButtonScale(ButtonBase button, double scale) {
+        Object existing = button.getProperties().get(BUTTON_SCALE_TRANSITION_KEY);
+        if (existing instanceof ScaleTransition transition) {
+            transition.stop();
+        }
+
+        ScaleTransition transition = new ScaleTransition(BUTTON_ANIMATION_DURATION, button);
+        transition.setToX(scale);
+        transition.setToY(scale);
+        transition.setInterpolator(Interpolator.EASE_BOTH);
+        button.getProperties().put(BUTTON_SCALE_TRANSITION_KEY, transition);
+        transition.play();
     }
 
     public void setStatus(String msg) {
