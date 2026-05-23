@@ -9,6 +9,7 @@ public abstract class Item extends Entity{
     protected double currentPrice;
     protected String status;
     protected byte[] imageData;
+    protected String sellerId;
 
     public Item(String id,String name, double startingPrice, double currentPrice, String status,String description){
         super(id);
@@ -35,6 +36,8 @@ public abstract class Item extends Entity{
     public void setStartingPrice(double price){ this.startingPrice = price;}
     public String getStatus(){ return status;}
     public byte[] getImageData(){ return imageData; }
+    public String getSellerId(){ return sellerId; }
+    public void setSellerId(String sellerId){ this.sellerId = sellerId; }
     public void setImageData(byte[] imageData){ this.imageData = imageData; }
     public void setStatus(String status){
         this.status = status;

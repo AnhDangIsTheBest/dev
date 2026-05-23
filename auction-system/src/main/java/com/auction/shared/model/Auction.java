@@ -39,8 +39,10 @@ public class Auction implements Serializable{
         this.auctionId = auctionId;
         this.currentPrice = item.getStartingPrice();
         this.item = item;
-        this.leadBidderId = null;
-        this.leadBidderName = "Hiện Trống ❌";
+        this.leadBidderId = leadBidderId;
+        this.leadBidderName = leadBidderName == null || leadBidderName.isBlank()
+                ? "Hiện Trống ❌"
+                : leadBidderName;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = AuctionStatus.OPEN;
@@ -67,6 +69,19 @@ public class Auction implements Serializable{
     public synchronized void setStatus(AuctionStatus status){ this.status = status;}
     public synchronized void setEndTime(LocalDateTime endTime){ this.endTime =  endTime;}
     public synchronized void setCurrentPrice(double price){ this.currentPrice = price;}
+
+    public synchronized void setLeadBidder(String leadBidderId, String leadBidderName) {
+        this.leadBidderId = leadBidderId;
+        this.leadBidderName = leadBidderName == null || leadBidderName.isBlank()
+                ? "Hiện Trống ❌"
+                : leadBidderName;
+    }
+    public synchronized void setBidHistory(List<BidTransaction> bidHistory) {
+        this.bidHistory.clear();
+        if (bidHistory != null) {
+            this.bidHistory.addAll(bidHistory);
+        }
+    }
 
     public long getSecondRemaining(){ // thời gian còn lại trước khi phiên đấu giá kết thúc
         if (status != AuctionStatus.RUNNING){ return 0;}

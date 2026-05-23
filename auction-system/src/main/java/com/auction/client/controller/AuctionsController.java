@@ -5,6 +5,14 @@ import com.auction.shared.model.Auction;
 import com.auction.shared.model.BidTransaction;
 import com.auction.shared.network.protocol.SocketMessage;
 import com.auction.shared.network.protocol.SocketMessage.Action;
+import com.auction.shared.model.User.User;
+
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,6 +20,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+
+import javafx.geometry.Bounds;
+import javafx.scene.CacheHint;
+import javafx.scene.Node;
+
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -57,6 +70,9 @@ public class AuctionsController {
     @FXML private TilePane                    upcomingCards;
     @FXML private TilePane                    runningCards;
     @FXML private TilePane                    pastCards;
+    @FXML private Button                      upcomingAllButton;
+    @FXML private Button                      runningAllButton;
+    @FXML private Button                      pastAllButton;
     @FXML private TableColumn<Auction,String> colName;
     @FXML private TableColumn<Auction,String> colCategory;
     @FXML private TableColumn<Auction,String> colPrice;
@@ -100,6 +116,12 @@ public class AuctionsController {
     // ── FXML: Đặt giá ────────────────────────────────────────────
     @FXML private TextField bidAmountField;
     @FXML private Button    placeBidButton;
+    @FXML private TextField autoMaxBidField;
+    @FXML private TextField autoIncrementField;
+    @FXML private Button    autoBidButton;
+    @FXML private Button    cancelAutoBidButton;
+    @FXML private Label     autoBidResultLabel;
+
 
     // ── FXML: Chart ──────────────────────────────────────────────
     @FXML private LineChart<Number,Number> priceChart;
@@ -113,6 +135,7 @@ public class AuctionsController {
     // ── State ─────────────────────────────────────────────────────
     private final ObservableList<Auction> auctions = FXCollections.observableArrayList();
     private Auction selectedAuction;
+    private String renderedChartKey;
 
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
@@ -124,12 +147,30 @@ public class AuctionsController {
 
     private static final NumberFormat VND =
             NumberFormat.getInstance(new Locale("vi", "VN"));
+    private static final javafx.util.Duration VIEW_ANIMATION_DURATION = javafx.util.Duration.millis(260);
+    private static final javafx.util.Duration VIEW_OUT_DURATION = javafx.util.Duration.millis(120);
+    private static final javafx.util.Duration CARD_ANIMATION_DURATION = javafx.util.Duration.millis(120);
+    private static final javafx.util.Duration FIELD_FEEDBACK_DURATION = javafx.util.Duration.millis(95);
+    private static final javafx.util.Duration PANEL_STAGGER_DURATION = javafx.util.Duration.millis(70);
+    private static final javafx.util.Duration RESULT_ANIMATION_DURATION = javafx.util.Duration.millis(180);
+    private static final String CARD_BASE_STYLE = "-fx-background-color: #15191d; -fx-border-color: #31363c;"
+            + "-fx-border-radius: 14; -fx-background-radius: 14; -fx-padding: 14; -fx-cursor: hand;";
+    private static final String CARD_HOVER_STYLE = "-fx-background-color: #1b2026; -fx-border-color: rgba(245,158,11,0.55);"
+            + "-fx-border-radius: 14; -fx-background-radius: 14; -fx-padding: 14; -fx-cursor: hand;"
+            + "-fx-effect: dropshadow(gaussian, rgba(245,158,11,0.18), 18, 0.18, 0, 7);";
+    private static final String MOTION_INSTALLED_KEY = "auction.motionInstalled";
+
+    private ParallelTransition viewTransition;
+    private boolean detailVisible;
 
     // ── Init ─────────────────────────────────────────────────────
 
     @FXML
     public void initialize() {
         setupTable();
+        setupInitialViews();
+        installBidFormMotion();
+        installSeeAllButtonMotion();
         loadAuctions();
 
         // Lắng nghe broadcast từ server
@@ -141,7 +182,7 @@ public class AuctionsController {
         });
 
         // Bắt đầu ở màn hình danh sách
-        showList();
+        detailVisible = false;
     }
 
     // ── Navigation ────────────────────────────────────────s───────
@@ -149,28 +190,363 @@ public class AuctionsController {
     /** Hiện danh sách, ẩn chi tiết */
     private void showList() {
         // listView/detailPanel chỉ có trong auctions.fxml, không có trong dashboard.fxml
-        if (listView != null) {
-            listView.setVisible(true);
-            listView.setManaged(true);
-        }
-        if (detailPanel != null) {
-            detailPanel.setVisible(false);
-            detailPanel.setManaged(false);
-        }
+        switchAuctionView(false);
         if (timerTask != null) timerTask.cancel(false);
         selectedAuction = null;
     }
 
     /** Hiện chi tiết, ẩn danh sách */
     private void showDetail() {
+        switchAuctionView(true);
+    }
+
+    private void setupInitialViews() {
+        detailVisible = false;
         if (listView != null) {
-            listView.setVisible(false);
-            listView.setManaged(false);
+            setViewState(listView, true, 1.0, 0, 1.0);
+            listView.setMouseTransparent(false);
         }
         if (detailPanel != null) {
-            detailPanel.setVisible(true);
-            detailPanel.setManaged(true);
+            setViewState(detailPanel, false, 0, 18, 0.985);
+            detailPanel.setMouseTransparent(true);
         }
+    }
+
+    private void switchAuctionView(boolean showDetailView) {
+        if (listView == null || detailPanel == null) {
+            if (listView != null) {
+                listView.setVisible(!showDetailView);
+                listView.setManaged(!showDetailView);
+            }
+            if (detailPanel != null) {
+                detailPanel.setVisible(showDetailView);
+                detailPanel.setManaged(showDetailView);
+            }
+            detailVisible = showDetailView;
+            return;
+        }
+
+        if (detailVisible == showDetailView
+                && ((showDetailView && detailPanel.isVisible())
+                || (!showDetailView && listView.isVisible()))) {
+            return;
+        }
+
+        if (viewTransition != null) {
+            viewTransition.stop();
+        }
+
+        Node incoming = showDetailView ? detailPanel : listView;
+        Node outgoing = showDetailView ? listView : detailPanel;
+        detailVisible = showDetailView;
+
+        incoming.setManaged(true);
+        incoming.setVisible(true);
+        incoming.setMouseTransparent(false);
+        incoming.toFront();
+        outgoing.setMouseTransparent(true);
+
+        if (incoming instanceof ScrollPane scrollPane) {
+            scrollPane.setVvalue(0);
+        }
+
+        double incomingOffset = showDetailView ? 24 : -18;
+        double outgoingOffset = showDetailView ? -14 : 18;
+        setAnimatedCache(incoming, true);
+        setAnimatedCache(outgoing, true);
+        incoming.setOpacity(0);
+        incoming.setTranslateY(incomingOffset);
+        incoming.setScaleX(0.985);
+        incoming.setScaleY(0.985);
+
+        FadeTransition fadeOut = new FadeTransition(VIEW_OUT_DURATION, outgoing);
+        fadeOut.setToValue(0);
+        fadeOut.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition moveOut = new TranslateTransition(VIEW_OUT_DURATION, outgoing);
+        moveOut.setToY(outgoingOffset);
+        moveOut.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition shrinkOut = new ScaleTransition(VIEW_OUT_DURATION, outgoing);
+        shrinkOut.setToX(0.99);
+        shrinkOut.setToY(0.99);
+        shrinkOut.setInterpolator(Interpolator.EASE_OUT);
+
+        FadeTransition fadeIn = new FadeTransition(VIEW_ANIMATION_DURATION, incoming);
+        fadeIn.setToValue(1);
+        fadeIn.setInterpolator(Interpolator.EASE_BOTH);
+
+        TranslateTransition moveIn = new TranslateTransition(VIEW_ANIMATION_DURATION, incoming);
+        moveIn.setToY(0);
+        moveIn.setInterpolator(Interpolator.EASE_BOTH);
+
+        ScaleTransition scaleIn = new ScaleTransition(VIEW_ANIMATION_DURATION, incoming);
+        scaleIn.setToX(1);
+        scaleIn.setToY(1);
+        scaleIn.setInterpolator(Interpolator.EASE_BOTH);
+
+        viewTransition = new ParallelTransition(fadeOut, moveOut, shrinkOut, fadeIn, moveIn, scaleIn);
+        viewTransition.setOnFinished(event -> {
+            outgoing.setVisible(false);
+            outgoing.setManaged(false);
+            outgoing.setOpacity(0);
+            outgoing.setTranslateY(outgoingOffset);
+            outgoing.setScaleX(0.99);
+            outgoing.setScaleY(0.99);
+            incoming.setOpacity(1);
+            incoming.setTranslateY(0);
+            incoming.setScaleX(1);
+            incoming.setScaleY(1);
+            setAnimatedCache(incoming, false);
+            setAnimatedCache(outgoing, false);
+            viewTransition = null;
+        });
+        viewTransition.play();
+
+        if (showDetailView) {
+            animateDetailSections();
+        }
+    }
+
+    private void setViewState(Node node, boolean visible, double opacity, double translateY, double scale) {
+        node.setVisible(visible);
+        node.setManaged(visible);
+        node.setOpacity(opacity);
+        node.setTranslateY(translateY);
+        node.setScaleX(scale);
+        node.setScaleY(scale);
+    }
+
+    private void setAnimatedCache(Node node, boolean enabled) {
+        if (node == null) return;
+        node.setCache(enabled);
+        node.setCacheHint(enabled ? CacheHint.SPEED : CacheHint.DEFAULT);
+    }
+
+    private void animateDetailSections() {
+        double stagger = PANEL_STAGGER_DURATION.toMillis();
+        animateNodeEntrance(detailName, 0, 12);
+        animateNodeEntrance(detailImage != null ? detailImage.getParent() : null, stagger, 18);
+        animateNodeEntrance(detailTitleLarge, stagger * 1.5, 12);
+        animateNodeEntrance(auctionLiveBox != null && auctionLiveBox.isVisible() ? auctionLiveBox : auctionSuccessBox, stagger * 2, 18);
+        animateNodeEntrance(currentInfoBox != null && currentInfoBox.isVisible() ? currentInfoBox : null, stagger * 2.5, 14);
+        animateNodeEntrance(chartBox != null ? chartBox.getParent() : priceChart != null ? priceChart.getParent() : null, stagger * 3, 16);
+        animateNodePop(detailPrice);
+    }
+
+    private void animateDetailRefresh() {
+        animateNodePop(detailStatus);
+        animateNodePop(detailPrice);
+        animateNodePop(detailTimer);
+        animateNodePop(detailLeader);
+    }
+
+    private void animateNodeEntrance(Node node, double delayMillis, double offsetY) {
+        if (node == null || !node.isVisible()) return;
+        setAnimatedCache(node, true);
+        node.setOpacity(0);
+        node.setTranslateY(offsetY);
+
+        FadeTransition fade = new FadeTransition(RESULT_ANIMATION_DURATION, node);
+        fade.setToValue(1);
+        fade.setDelay(javafx.util.Duration.millis(delayMillis));
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition move = new TranslateTransition(RESULT_ANIMATION_DURATION, node);
+        move.setToY(0);
+        move.setDelay(javafx.util.Duration.millis(delayMillis));
+        move.setInterpolator(Interpolator.EASE_OUT);
+
+        ParallelTransition transition = new ParallelTransition(fade, move);
+        transition.setOnFinished(event -> setAnimatedCache(node, false));
+        transition.play();
+    }
+
+    private void animateNodePop(Node node) {
+        if (node == null || !node.isVisible()) return;
+        setAnimatedCache(node, true);
+
+        ScaleTransition up = new ScaleTransition(FIELD_FEEDBACK_DURATION, node);
+        up.setToX(1.045);
+        up.setToY(1.045);
+        up.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition down = new ScaleTransition(FIELD_FEEDBACK_DURATION, node);
+        down.setToX(1.0);
+        down.setToY(1.0);
+        down.setInterpolator(Interpolator.EASE_BOTH);
+
+        SequentialTransition sequence = new SequentialTransition(up, down);
+        sequence.setOnFinished(event -> setAnimatedCache(node, false));
+        sequence.play();
+    }
+
+    private void animateResultLabel(Label label, boolean success) {
+        if (label == null) return;
+        label.setOpacity(0);
+        label.setTranslateY(success ? 8 : 0);
+
+        FadeTransition fade = new FadeTransition(RESULT_ANIMATION_DURATION, label);
+        fade.setToValue(1);
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition move = new TranslateTransition(RESULT_ANIMATION_DURATION, label);
+        move.setToY(0);
+        move.setInterpolator(Interpolator.EASE_OUT);
+
+        ParallelTransition transition = new ParallelTransition(fade, move);
+        transition.play();
+
+        if (success) {
+            animateNodePop(label);
+        } else {
+            shakeNode(label);
+        }
+    }
+    private void shakeNode(Node node) {
+        if (node == null) return;
+        TranslateTransition left = new TranslateTransition(javafx.util.Duration.millis(38), node);
+        left.setByX(-7);
+        TranslateTransition right = new TranslateTransition(javafx.util.Duration.millis(58), node);
+        right.setByX(14);
+        TranslateTransition back = new TranslateTransition(javafx.util.Duration.millis(58), node);
+        back.setByX(-14);
+        TranslateTransition settle = new TranslateTransition(javafx.util.Duration.millis(38), node);
+        settle.setByX(7);
+        new SequentialTransition(left, right, back, settle).play();
+    }
+
+    private void installBidFormMotion() {
+        installFocusMotion(bidAmountField);
+        installFocusMotion(autoMaxBidField);
+        installFocusMotion(autoIncrementField);
+    }
+
+    private void installSeeAllButtonMotion() {
+        prepareSeeAllButton(upcomingAllButton);
+        prepareSeeAllButton(runningAllButton);
+        prepareSeeAllButton(pastAllButton);
+    }
+
+    private void prepareSeeAllButton(Button button) {
+        if (button == null) return;
+        button.setMinHeight(32);
+        button.setFocusTraversable(false);
+    }
+
+    private void installFocusMotion(Node node) {
+        if (node == null || Boolean.TRUE.equals(node.getProperties().get(MOTION_INSTALLED_KEY))) {
+            return;
+        }
+        node.getProperties().put(MOTION_INSTALLED_KEY, true);
+        node.focusedProperty().addListener((obs, oldValue, focused) ->
+                animateScale(node, focused ? 1.012 : 1.0, FIELD_FEEDBACK_DURATION));
+    }
+
+    private void installCardMotion(VBox card) {
+        if (card == null) return;
+        card.setOnMouseEntered(event -> {
+            card.setStyle(CARD_HOVER_STYLE);
+            animateCard(card, 1.018, -4);
+        });
+        card.setOnMouseExited(event -> {
+            card.setStyle(CARD_BASE_STYLE);
+            animateCard(card, 1.0, 0);
+        });
+        card.setOnMousePressed(event -> animateCard(card, 0.982, 0));
+        card.setOnMouseReleased(event -> {
+            boolean hover = card.isHover();
+            card.setStyle(hover ? CARD_HOVER_STYLE : CARD_BASE_STYLE);
+            animateCard(card, hover ? 1.018 : 1.0, hover ? -4 : 0);
+        });
+    }
+
+    private void animateCard(Node node, double scale, double translateY) {
+        setAnimatedCache(node, true);
+
+        ScaleTransition scaleTransition = new ScaleTransition(CARD_ANIMATION_DURATION, node);
+        scaleTransition.setToX(scale);
+        scaleTransition.setToY(scale);
+        scaleTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+        TranslateTransition translate = new TranslateTransition(CARD_ANIMATION_DURATION, node);
+        translate.setToY(translateY);
+        translate.setInterpolator(Interpolator.EASE_BOTH);
+
+        ParallelTransition transition = new ParallelTransition(scaleTransition, translate);
+        transition.setOnFinished(event -> setAnimatedCache(node, false));
+        transition.play();
+    }
+
+    private void animateScale(Node node, double scale, javafx.util.Duration duration) {
+        if (node == null) return;
+        ScaleTransition transition = new ScaleTransition(duration, node);
+        transition.setToX(scale);
+        transition.setToY(scale);
+        transition.setInterpolator(Interpolator.EASE_BOTH);
+        transition.play();
+    }
+
+    private void animateSelectionFlash(Node node) {
+        if (node == null) return;
+        ScaleTransition up = new ScaleTransition(javafx.util.Duration.millis(75), node);
+        up.setToX(1.025);
+        up.setToY(1.025);
+        up.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition down = new ScaleTransition(javafx.util.Duration.millis(95), node);
+        down.setToX(node.isHover() ? 1.018 : 1.0);
+        down.setToY(node.isHover() ? 1.018 : 1.0);
+        down.setInterpolator(Interpolator.EASE_BOTH);
+        new SequentialTransition(up, down).play();
+    }
+
+    private void animateSeeAllButton(Node node) {
+        if (node == null) return;
+        setAnimatedCache(node, true);
+
+        ScaleTransition press = new ScaleTransition(javafx.util.Duration.millis(70), node);
+        press.setToX(0.94);
+        press.setToY(0.94);
+        press.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition lift = new ScaleTransition(javafx.util.Duration.millis(95), node);
+        lift.setToX(1.055);
+        lift.setToY(1.055);
+        lift.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition settle = new ScaleTransition(javafx.util.Duration.millis(120), node);
+        settle.setToX(1.0);
+        settle.setToY(1.0);
+        settle.setInterpolator(Interpolator.EASE_BOTH);
+
+        SequentialTransition sequence = new SequentialTransition(press, lift, settle);
+        sequence.setOnFinished(event -> setAnimatedCache(node, false));
+        sequence.play();
+    }
+
+    private void animateFocusedSection(Node source) {
+        TilePane pane = null;
+        if (source == upcomingAllButton) {
+            pane = upcomingCards;
+        } else if (source == runningAllButton) {
+            pane = runningCards;
+        } else if (source == pastAllButton) {
+            pane = pastCards;
+        }
+        if (pane == null) return;
+
+        FadeTransition fade = new FadeTransition(javafx.util.Duration.millis(120), pane);
+        fade.setFromValue(0.72);
+        fade.setToValue(1.0);
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition move = new TranslateTransition(javafx.util.Duration.millis(140), pane);
+        move.setFromY(6);
+        move.setToY(0);
+        move.setInterpolator(Interpolator.EASE_OUT);
+
+        new ParallelTransition(fade, move).play();
     }
 
     /** Nút "← Quay lại" trong màn hình chi tiết */
@@ -202,8 +578,18 @@ public class AuctionsController {
         auctionTable.setRowFactory(tv -> {
             TableRow<Auction> row = new TableRow<>();
             row.setOnMouseClicked(e -> {
-                if (!row.isEmpty()) onSelectAuction(row.getItem());
+                if (!row.isEmpty()) {
+                    animateSelectionFlash(row);
+                    onSelectAuction(row.getItem());
+                }
             });
+            row.setOnMousePressed(e -> {
+                if (!row.isEmpty()) animateScale(row, 0.994, CARD_ANIMATION_DURATION);
+            });
+            row.setOnMouseReleased(e -> {
+                if (!row.isEmpty()) animateScale(row, 1.0, CARD_ANIMATION_DURATION);
+            });
+            row.setOnMouseExited(e -> animateScale(row, 1.0, CARD_ANIMATION_DURATION));
             return row;
         });
 
@@ -229,6 +615,15 @@ public class AuctionsController {
 
     @FXML
     private void handleRefresh(ActionEvent event) {
+        loadAuctions();
+    }
+
+    @FXML
+    private void handleShowAllAuctions(ActionEvent event) {
+        Node source = event.getSource() instanceof Node node ? node : null;
+        animateSeeAllButton(source);
+        animateFocusedSection(source);
+        setStatus("Đang tải tất cả phiên đấu giá...");
         loadAuctions();
     }
 
@@ -340,15 +735,14 @@ public class AuctionsController {
         VBox card = new VBox(10);
         card.setPrefWidth(320);
         card.setMinHeight(330);
-        card.setStyle("-fx-background-color: #15191d; -fx-border-color: #31363c;"
-                + "-fx-border-radius: 14; -fx-background-radius: 14; -fx-padding: 14; -fx-cursor: hand;");
-        card.setOnMouseClicked(e -> onSelectAuction(a));
+        card.setStyle(CARD_BASE_STYLE);
+        card.setOnMouseClicked(e -> { animateSelectionFlash(card); onSelectAuction(a); });
 
         ImageView image = new ImageView();
         image.setImage(loadItemImage(a.getItem()));
         image.setFitWidth(270);
         image.setFitHeight(145);
-        image.setPreserveRatio(false);
+        image.setPreserveRatio(true);
         image.setSmooth(true);
 
         String badgeText = switch (group) {
@@ -367,6 +761,9 @@ public class AuctionsController {
                 + "-fx-background-radius: 999; -fx-padding: 3 8;");
 
         HBox imageWrap = new HBox(image);
+        imageWrap.setMinSize(270, 145);
+        imageWrap.setPrefSize(270, 145);
+        imageWrap.setMaxSize(270, 145);
         imageWrap.setStyle("-fx-alignment: center; -fx-background-color: #0b0f13; -fx-background-radius: 10;");
 
         Label name = new Label(shortText(a.getItem().getName(), 70));
@@ -375,10 +772,11 @@ public class AuctionsController {
         name.setStyle("-fx-text-fill: #f8fafc; -fx-font-size: 15; -fx-font-weight: bold;");
 
         HBox row1 = infoRow("Giá khởi điểm:", fmtVND(a.getItem().getStartingPrice()));
-        HBox row2 = infoRow("Tiền đặt trước:", fmtVND(Math.max(a.getItem().getStartingPrice() * 0.1, 0)));
+        HBox row2 = infoRow("Giá hiện tại:", fmtVND(a.getCurrentPrice()));
         HBox row3 = infoRow("Thời gian tổ chức:", formatAuctionTime(a));
 
         card.getChildren().addAll(imageWrap, badge, name, row1, row2, row3);
+        animateNodeEntrance(card, 0, 12);
         return card;
     }
 
@@ -409,15 +807,27 @@ public class AuctionsController {
     // ── Chọn phiên → hiện chi tiết ───────────────────────────────
 
     private void onSelectAuction(Auction auction) {
+        if (auction == null) return;
+
+        selectedAuction = auction;
+        renderDetail(auction);
+        showDetail();
+        startTimerRefresh();
+        setStatus("Đang cập nhật chi tiết phiên...");
         new Thread(() -> {
             SocketMessage res = ClientContext.getInstance()
                     .getClient().getAuction(auction.getAuctionId());
             Platform.runLater(() -> {
-                if (res.isOk()) {
-                    selectedAuction = (Auction) res.get("auction");
-                    renderDetail(selectedAuction);
-                    showDetail(); // chuyển sang màn hình chi tiết
-                    startTimerRefresh();
+                if (res.isOk() && res.get("auction") instanceof Auction fresh) {
+                    if (selectedAuction != null
+                            && selectedAuction.getAuctionId().equals(fresh.getAuctionId())) {
+                        selectedAuction = fresh;
+                        renderDetail(fresh);
+                        animateDetailRefresh();
+                        setStatus("Đã cập nhật chi tiết phiên.");
+                    }
+                } else {
+                    setStatus("Không tải được chi tiết mới nhất.");
                 }
             });
         }).start();
@@ -500,10 +910,119 @@ public class AuctionsController {
         }
         if (bidHistoryList != null) bidHistoryList.setItems(history);
 
-        boolean canBid = a.getStatus() == Auction.AuctionStatus.OPEN
-                || a.getStatus() == Auction.AuctionStatus.RUNNING;
-        if (placeBidButton != null) placeBidButton.setDisable(!canBid);
+        updateBidControls(a);
         if (bidResultLabel != null) bidResultLabel.setText("");
+        if (autoBidResultLabel != null) autoBidResultLabel.setText("");
+        if (isOwnAuction(a)) {
+            if (bidResultLabel != null) {
+                bidResultLabel.setStyle("-fx-text-fill: #ef4444;");
+                bidResultLabel.setText("Bạn không được tự đặt giá ở phiên đấu giá của mình.");
+            }
+            if (autoBidResultLabel != null) {
+                autoBidResultLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 12;");
+                autoBidResultLabel.setText("Bạn không được tự đặt giá ở phiên đấu giá của mình.");
+            }
+        }
+    }
+
+    private boolean canAcceptBid(Auction a) {
+        return a != null
+                && !isOwnAuction(a)
+                && (a.getStatus() == Auction.AuctionStatus.OPEN
+                || a.getStatus() == Auction.AuctionStatus.RUNNING);
+    }
+
+    private boolean isOwnAuction(Auction a) {
+        User user = ClientContext.getInstance().getCurrentUser();
+        return a != null
+                && a.getItem() != null
+                && a.getItem().getSellerId() != null
+                && user != null
+                && a.getItem().getSellerId().equals(user.getId());
+    }
+
+    private void updateBidControls(Auction a) {
+        boolean canBid = canAcceptBid(a);
+        if (bidAmountField != null) bidAmountField.setDisable(!canBid);
+
+        if (placeBidButton != null) placeBidButton.setDisable(!canBid);
+        if (autoMaxBidField != null) autoMaxBidField.setDisable(!canBid);
+        if (autoIncrementField != null) autoIncrementField.setDisable(!canBid);
+        if (autoBidButton != null) autoBidButton.setDisable(!canBid);
+        if (cancelAutoBidButton != null) cancelAutoBidButton.setDisable(!canBid);
+    }
+
+    private void setAutoBidLoading(boolean loading) {
+        boolean disabled = loading || !canAcceptBid(selectedAuction);
+        if (autoMaxBidField != null) autoMaxBidField.setDisable(disabled);
+        if (autoIncrementField != null) autoIncrementField.setDisable(disabled);
+        if (autoBidButton != null) {
+            autoBidButton.setDisable(disabled);
+            autoBidButton.setText(loading ? "Đang xử lý..." : "Kích hoạt");
+        }
+        if (cancelAutoBidButton != null) cancelAutoBidButton.setDisable(disabled);
+    }
+
+    private double parseMoney(TextField field, String fieldName) {
+        if (field == null) throw new IllegalArgumentException("Thiếu ô nhập " + fieldName + ".");
+        String raw = field.getText().trim().replaceAll("[^0-9]", "");
+        if (raw.isEmpty()) {
+            throw new IllegalArgumentException("Nhập " + fieldName + " hợp lệ.");
+        }
+        try {
+            return Double.parseDouble(raw);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException(fieldName + " không hợp lệ.");
+        }
+    }
+
+    private void showBidResult(String msg, boolean success) {
+        if (bidResultLabel == null) return;
+        bidResultLabel.setStyle(success
+                ? "-fx-text-fill: #10b981; -fx-font-size: 12; -fx-font-weight: bold;"
+                : "-fx-text-fill: #ef4444; -fx-font-size: 12;");
+        bidResultLabel.setText((success ? "OK: " : "Lỗi: ") + safeText(msg, ""));
+        animateResultLabel(bidResultLabel, success);
+    }
+
+    private void showAutoBidResult(String msg, boolean success) {
+        if (autoBidResultLabel == null) return;
+        autoBidResultLabel.setStyle(success
+                ? "-fx-text-fill: #10b981; -fx-font-size: 12; -fx-font-weight: bold;"
+                : "-fx-text-fill: #ef4444; -fx-font-size: 12;");
+        autoBidResultLabel.setText((success ? "OK: " : "Lỗi: ") + safeText(msg, ""));
+        animateResultLabel(autoBidResultLabel, success);
+    }
+
+    private void animateBidSuccess() {
+        animateNodePop(detailPrice);
+        animateNodePop(currentInfoBox);
+        animateNodePop(priceChart);
+        animateNodeEntrance(bidResultLabel, 0, 8);
+    }
+
+    private void animateAutoBidSuccess() {
+        animateNodePop(autoBidButton);
+        animateNodePop(auctionLiveBox);
+        animateNodeEntrance(autoBidResultLabel, 0, 8);
+    }
+
+    private void updateCurrentUser(SocketMessage res) {
+        Object updatedUser = res.get("user");
+        if (updatedUser instanceof User user) {
+            ClientContext.getInstance().setCurrentUser(user);
+        }
+    }
+
+    private void applyAuctionUpdate(Auction updated) {
+        selectedAuction = updated;
+        for (int i = 0; i < auctions.size(); i++) {
+            if (auctions.get(i).getAuctionId().equals(updated.getAuctionId())) {
+                auctions.set(i, updated);
+                break;
+            }
+        }
+        renderDetail(updated);
     }
 
 
@@ -610,6 +1129,13 @@ public class AuctionsController {
     // ── Biểu đồ ──────────────────────────────────────────────────
 
     private void renderChart(Auction a) {
+        List<BidTransaction> history = a.getBidHistory();
+        int historySize = history != null ? history.size() : 0;
+        String chartKey = a.getAuctionId() + ":" + historySize + ":" + Math.round(a.getCurrentPrice());
+        if (chartKey.equals(renderedChartKey)) {
+            return;
+        }
+        renderedChartKey = chartKey;
         if (priceChart == null) {
             xAxis = new NumberAxis();
             yAxis = new NumberAxis();
@@ -627,12 +1153,22 @@ public class AuctionsController {
                 chartBox.getChildren().setAll(priceChart);
             }
         }
-
+        if (xAxis != null) {
+            xAxis.setAutoRanging(false);
+            xAxis.setLowerBound(0);
+            xAxis.setUpperBound(Math.max(1, historySize));
+            xAxis.setTickUnit(Math.max(1, historySize / 8.0));
+        }
+        if (yAxis != null) {
+            yAxis.setAutoRanging(true);
+        }
+        priceChart.setCreateSymbols(historySize <= 24);
+        priceChart.setAnimated(false);
         priceChart.getData().clear();
         XYChart.Series<Number,Number> series = new XYChart.Series<>();
         series.setName("Giá đấu");
 
-        List<BidTransaction> history = a.getBidHistory();
+        //List<BidTransaction> history = a.getBidHistory(); (Khóa tạm)
         series.getData().add(new XYChart.Data<>(0, a.getItem().getStartingPrice()));
         if (history != null) {
             for (int i = 0; i < history.size(); i++) {
@@ -640,6 +1176,94 @@ public class AuctionsController {
             }
         }
         priceChart.getData().add(series);
+        Platform.runLater(() -> {
+            installChartTooltips(series, history);
+            animatePriceHistoryChart(series);
+        });
+    }
+
+    private void installChartTooltips(XYChart.Series<Number, Number> series, List<BidTransaction> history) {
+        for (int i = 0; i < series.getData().size(); i++) {
+            XYChart.Data<Number, Number> point = series.getData().get(i);
+            String text;
+            if (i == 0) {
+                text = "Giá khởi điểm: " + fmtVND(point.getYValue().doubleValue());
+            } else {
+                BidTransaction bid = history != null && i - 1 < history.size() ? history.get(i - 1) : null;
+                text = bid == null
+                        ? "Giá: " + fmtVND(point.getYValue().doubleValue())
+                        : "Lượt " + i + ": " + fmtVND(bid.getAmount());
+            }
+            installPointTooltip(point, text);
+        }
+    }
+
+    private void installPointTooltip(XYChart.Data<Number, Number> point, String text) {
+        if (point.getNode() == null) return;
+
+        Tooltip tooltip = new Tooltip(text);
+        tooltip.setStyle("-fx-background-color: #0f172a; -fx-text-fill: #f8fafc;"
+                + "-fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 6 9;"
+                + "-fx-background-radius: 6;");
+
+        point.getNode().setOnMouseEntered(event -> {
+            Bounds bounds = point.getNode().localToScreen(point.getNode().getBoundsInLocal());
+            tooltip.show(point.getNode(),
+                    bounds.getMinX() + bounds.getWidth() / 2 - 48,
+                    bounds.getMinY() - 36);
+        });
+        point.getNode().setOnMouseExited(event -> tooltip.hide());
+    }
+
+    private void animatePriceHistoryChart(XYChart.Series<Number, Number> series) {
+        Node chartNode = chartBox != null ? chartBox : priceChart;
+        if (chartNode != null) {
+            setAnimatedCache(chartNode, true);
+            chartNode.setOpacity(0.76);
+            chartNode.setTranslateY(8);
+
+            FadeTransition fade = new FadeTransition(javafx.util.Duration.millis(220), chartNode);
+            fade.setToValue(1);
+            fade.setInterpolator(Interpolator.EASE_OUT);
+
+            TranslateTransition move = new TranslateTransition(javafx.util.Duration.millis(220), chartNode);
+            move.setToY(0);
+            move.setInterpolator(Interpolator.EASE_OUT);
+
+            ParallelTransition transition = new ParallelTransition(fade, move);
+            transition.setOnFinished(event -> setAnimatedCache(chartNode, false));
+            transition.play();
+        }
+
+        if (series.getNode() != null) {
+            series.getNode().setOpacity(0);
+            FadeTransition lineFade = new FadeTransition(javafx.util.Duration.millis(240), series.getNode());
+            lineFade.setToValue(1);
+            lineFade.setInterpolator(Interpolator.EASE_OUT);
+            lineFade.play();
+        }
+
+        for (int i = 0; i < series.getData().size(); i++) {
+            Node pointNode = series.getData().get(i).getNode();
+            if (pointNode == null) continue;
+
+            pointNode.setOpacity(0);
+            pointNode.setScaleX(0.55);
+            pointNode.setScaleY(0.55);
+
+            FadeTransition fade = new FadeTransition(javafx.util.Duration.millis(150), pointNode);
+            fade.setDelay(javafx.util.Duration.millis(Math.min(i * 18L, 180)));
+            fade.setToValue(1);
+            fade.setInterpolator(Interpolator.EASE_OUT);
+
+            ScaleTransition scale = new ScaleTransition(javafx.util.Duration.millis(150), pointNode);
+            scale.setDelay(fade.getDelay());
+            scale.setToX(1);
+            scale.setToY(1);
+            scale.setInterpolator(Interpolator.EASE_OUT);
+
+            new ParallelTransition(fade, scale).play();
+        }
     }
 
     // ── Đặt giá ──────────────────────────────────────────────────
@@ -648,10 +1272,17 @@ public class AuctionsController {
     private void handlePlaceBid(ActionEvent event) {
         if (selectedAuction == null) return;
 
+        if (isOwnAuction(selectedAuction)) {
+            showBidResult("Bạn không được tự đặt giá ở phiên đấu giá của mình.", false);
+            shakeNode(placeBidButton);
+            updateBidControls(selectedAuction);
+            return;
+        }
+
         String raw = bidAmountField.getText().trim().replaceAll("[^0-9]", "");
         if (raw.isEmpty()) {
-            bidResultLabel.setStyle("-fx-text-fill: #ef4444;");
-            bidResultLabel.setText("Nhập số tiền hợp lệ.");
+            showBidResult("Nhập số tiền hợp lệ.", false);
+            shakeNode(bidAmountField);
             return;
         }
 
@@ -659,26 +1290,144 @@ public class AuctionsController {
         try {
             amount = Double.parseDouble(raw);
         } catch (NumberFormatException ex) {
-            bidResultLabel.setText("Số tiền không hợp lệ.");
+            showBidResult("Số tiền không hợp lệ.", false);
+            shakeNode(bidAmountField);
             return;
         }
 
         placeBidButton.setDisable(true);
+        placeBidButton.setText("Đang đặt giá...");
+        animateNodePop(placeBidButton);
         final String auctionId = selectedAuction.getAuctionId();
 
         new Thread(() -> {
-            SocketMessage res = ClientContext.getInstance()
-                    .getClient().placeBid(auctionId, amount);
+            var client = ClientContext.getInstance().getClient();
+            SocketMessage res = client.placeBid(auctionId, amount);
+            SocketMessage detailRes = null;
+            if (res.isOk() && !(res.get("auction") instanceof Auction)) {
+                detailRes = client.getAuction(auctionId);
+            }
+            final SocketMessage detailResponse = detailRes;
             Platform.runLater(() -> {
                 placeBidButton.setDisable(false);
+                placeBidButton.setText("Đặt giá ngay");
                 if (res.isOk()) {
-                    bidResultLabel.setStyle("-fx-text-fill: #10b981;");
-                    bidResultLabel.setText("✅ Đặt giá " + fmtVND(amount) + " thành công!");
+                    updateCurrentUser(res);
+
+                    Auction updated = null;
+                    Object auctionPayload = res.get("auction");
+                    if (auctionPayload instanceof Auction auction) {
+                        updated = auction;
+                    } else if (detailResponse != null && detailResponse.isOk()
+                            && detailResponse.get("auction") instanceof Auction auction) {
+                        updated = auction;
+                    }
+                    if (updated != null) {
+                        applyAuctionUpdate(updated);
+                    }
+
+                    showBidResult("Đặt giá " + fmtVND(amount) + " thành công!", true);
                     bidAmountField.clear();
-                    onSelectAuction(selectedAuction);
+                    animateBidSuccess();
                 } else {
-                    bidResultLabel.setStyle("-fx-text-fill: #ef4444;");
-                    bidResultLabel.setText("❌ " + res.getMessage());
+                    showBidResult(res.getMessage(), false);
+                    shakeNode(placeBidButton);
+                }
+            });
+        }).start();
+    }
+
+    @FXML
+    private void handleSetAutoBid(ActionEvent event) {
+        if (selectedAuction == null) return;
+
+        if (isOwnAuction(selectedAuction)) {
+            showAutoBidResult("Bạn không được tự đặt giá ở phiên đấu giá của mình.", false);
+            shakeNode(autoBidButton);
+            updateBidControls(selectedAuction);
+            return;
+        }
+
+        if (!canAcceptBid(selectedAuction)) {
+            showAutoBidResult("Phiên này không còn nhận Auto-Bid.", false);
+            shakeNode(autoBidButton);
+            return;
+        }
+
+        final double maxBid;
+        final double increment;
+        try {
+            maxBid = parseMoney(autoMaxBidField, "giá tối đa");
+            increment = parseMoney(autoIncrementField, "bước giá");
+        } catch (IllegalArgumentException ex) {
+            showAutoBidResult(ex.getMessage(), false);
+            shakeNode(autoMaxBidField);
+            shakeNode(autoIncrementField);
+            return;
+        }
+
+        if (maxBid <= selectedAuction.getCurrentPrice()) {
+            showAutoBidResult("Giá tối đa phải lớn hơn giá hiện tại: " + fmtVND(selectedAuction.getCurrentPrice()), false);
+            shakeNode(autoMaxBidField);
+            return;
+        }
+        if (increment <= 0) {
+            showAutoBidResult("Bước giá phải lớn hơn 0.", false);
+            shakeNode(autoIncrementField);
+            return;
+        }
+
+        setAutoBidLoading(true);
+        animateNodePop(autoBidButton);
+        final String auctionId = selectedAuction.getAuctionId();
+
+        new Thread(() -> {
+            SocketMessage res = ClientContext.getInstance().getClient()
+                    .registerAutoBid(auctionId, maxBid, increment);
+            SocketMessage detailRes = res.isOk()
+                    ? ClientContext.getInstance().getClient().getAuction(auctionId)
+                    : null;
+
+            Platform.runLater(() -> {
+                setAutoBidLoading(false);
+                if (res.isOk()) {
+                    updateCurrentUser(res);
+                    if (detailRes != null && detailRes.isOk()) {
+                        Auction updated = (Auction) detailRes.get("auction");
+                        if (updated != null) applyAuctionUpdate(updated);
+                    }
+                    autoMaxBidField.clear();
+                    autoIncrementField.clear();
+                    showAutoBidResult("Đã kích hoạt Auto-Bid. Max: "
+                            + fmtVND(maxBid) + " | Bước: " + fmtVND(increment), true);
+                    animateAutoBidSuccess();
+                } else {
+                    showAutoBidResult(res.getMessage(), false);
+                    shakeNode(autoBidButton);
+                }
+            });
+        }).start();
+    }
+
+    @FXML
+    private void handleCancelAutoBid(ActionEvent event) {
+        if (selectedAuction == null) return;
+
+        setAutoBidLoading(true);
+        animateNodePop(cancelAutoBidButton);
+        final String auctionId = selectedAuction.getAuctionId();
+
+        new Thread(() -> {
+            SocketMessage res = ClientContext.getInstance().getClient()
+                    .cancelAutoBid(auctionId);
+            Platform.runLater(() -> {
+                setAutoBidLoading(false);
+                if (res.isOk()) {
+                    showAutoBidResult("Đã hủy Auto-Bid cho phiên này.", true);
+                    animateNodePop(cancelAutoBidButton);
+                } else {
+                    showAutoBidResult(res.getMessage(), false);
+                    shakeNode(cancelAutoBidButton);
                 }
             });
         }).start();
