@@ -73,7 +73,7 @@ public class AdminController {
         tabAucBtn.setStyle(TAB_INACTIVE);
         panelUsers.setVisible(true);    panelUsers.setManaged(true);
         panelAuctions.setVisible(false); panelAuctions.setManaged(false);
-        adminStatusLabel.setText("");
+        hideStatus();
     }
 
     @FXML
@@ -82,7 +82,7 @@ public class AdminController {
         tabUserBtn.setStyle(TAB_INACTIVE);
         panelAuctions.setVisible(true);  panelAuctions.setManaged(true);
         panelUsers.setVisible(false);    panelUsers.setManaged(false);
-        adminStatusLabel.setText("");
+        hideStatus();
     }
 
     // ── Setup tables ─────────────────────────────────────────────
@@ -266,10 +266,19 @@ public class AdminController {
 
     // ── Helpers ──────────────────────────────────────────────────
 
+    private void hideStatus() {
+        if (adminStatusLabel == null) return;
+        adminStatusLabel.setText("");
+        adminStatusLabel.setVisible(false);
+        adminStatusLabel.setManaged(false);
+    }
+
     private void showStatus(String msg, boolean success) {
+        adminStatusLabel.setVisible(true);
+        adminStatusLabel.setManaged(true);
         adminStatusLabel.setStyle(success
-                ? "-fx-text-fill: #10b981; -fx-font-size: 12;"
-                : "-fx-text-fill: #ef4444; -fx-font-size: 12;");
+                ? "-fx-background-color: rgba(16,185,129,0.12); -fx-border-color: rgba(16,185,129,0.35); -fx-border-radius: 8; -fx-background-radius: 8; -fx-text-fill: #34d399; -fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 9 12;"
+                : "-fx-background-color: rgba(239,68,68,0.12); -fx-border-color: rgba(239,68,68,0.35); -fx-border-radius: 8; -fx-background-radius: 8; -fx-text-fill: #f87171; -fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 9 12;");
         adminStatusLabel.setText(msg);
     }
 
