@@ -20,16 +20,12 @@ import java.util.Locale;
  */
 public class AutoBidController {
 
-    @FXML
-    private ComboBox<Auction> auctionCombo;
-    @FXML
-    private TextField maxBidField;
-    @FXML
-    private TextField incrementField;
-    @FXML
-    private Label resultLabel;
+    @FXML private ComboBox<Auction> auctionCombo;
+    @FXML private TextField         maxBidField;
+    @FXML private TextField         incrementField;
+    @FXML private Label             resultLabel;
 
-    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi", "VN"));
+    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi","VN"));
 
     @FXML
     public void initialize() {
@@ -37,8 +33,7 @@ public class AutoBidController {
 
         // Hiển thị tên phiên trong ComboBox
         auctionCombo.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Auction a, boolean empty) {
+            @Override protected void updateItem(Auction a, boolean empty) {
                 super.updateItem(a, empty);
                 setText(empty || a == null ? null
                         : a.getItem().getName() + " — " + fmtVND(a.getCurrentPrice()));
@@ -68,26 +63,21 @@ public class AutoBidController {
     @FXML
     private void handleSetAutoBid(ActionEvent event) {
         Auction selected = auctionCombo.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showResult("❌ Chọn phiên đấu giá.", false);
-            return;
-        }
+        if (selected == null) { showResult("❌ Chọn phiên đấu giá.", false); return; }
 
-        String maxStr = maxBidField.getText().trim().replaceAll("[^0-9]", "");
-        String incStr = incrementField.getText().trim().replaceAll("[^0-9]", "");
+        String maxStr = maxBidField.getText().trim().replaceAll("[^0-9]","");
+        String incStr = incrementField.getText().trim().replaceAll("[^0-9]","");
 
         if (maxStr.isEmpty() || incStr.isEmpty()) {
-            showResult("❌ Điền đủ giá tối đa và bước giá.", false);
-            return;
+            showResult("❌ Điền đủ giá tối đa và bước giá.", false); return;
         }
 
         double maxBid, increment;
         try {
-            maxBid = Double.parseDouble(maxStr);
+            maxBid    = Double.parseDouble(maxStr);
             increment = Double.parseDouble(incStr);
         } catch (NumberFormatException e) {
-            showResult("❌ Số tiền không hợp lệ.", false);
-            return;
+            showResult("❌ Số tiền không hợp lệ.", false); return;
         }
 
         if (maxBid <= selected.getCurrentPrice()) {
@@ -95,8 +85,7 @@ public class AutoBidController {
             return;
         }
         if (increment <= 0) {
-            showResult("❌ Bước giá phải > 0.", false);
-            return;
+            showResult("❌ Bước giá phải > 0.", false); return;
         }
 
         new Thread(() -> {

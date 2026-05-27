@@ -109,6 +109,7 @@ public class ClientHandler implements Runnable {
             case GET_ALL_USERS -> handleGetAllUsers();
             case UPDATE_USER -> handleUpdateUser(msg);
             case DELETE_USER -> handleDeleteUser(msg);
+            case DEPOSIT_USER -> handleDepositUser(msg);
 
             default -> SocketMessage.error(msg.getAction(), "Action không được hỗ trợ: " + msg.getAction());
         };
@@ -506,6 +507,31 @@ public class ClientHandler implements Runnable {
 
         } catch (IllegalArgumentException e) {
             return SocketMessage.error(Action.DELETE_USER, e.getMessage());
+        }
+    }
+
+    private SocketMessage handleDepositUser(SocketMessage msg) {
+        if (!isLoggedIn()) return requireLogin(Action.DEPOSIT_USER);
+
+        String userId = msg.getString("userId");
+        double amount = msg.getDouble("amount");
+
+        if (userId == null || userId.isBlank()) {
+            return SocketMessage.error(Action.DEPOSIT_USER, "Thieu userId");
+        }
+
+        if (!currentUser.getId().equals(userId)) {
+            return SocketMessage.error(Action.DEPOSIT_USER, "Khong the nap tien cho tai khoan khac");
+        }
+
+        try {
+            boolean ok = userService.deposit(userId, amount);
+            return ok
+                    ? SocketMessage.ok(Action.DEPOSIT_USER, "Nap tien thanh cong")
+                    .put("user", userService.getUserById(userId))
+                    : SocketMessage.error(Action.DEPOSIT_USER, "Nap tien that bai");
+        } catch (IllegalArgumentException e) {
+            return SocketMessage.error(Action.DEPOSIT_USER, e.getMessage());
         }
     }
     // ══════════════════════════════════════════════════════════════

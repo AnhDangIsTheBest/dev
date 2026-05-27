@@ -28,18 +28,13 @@ import java.util.Locale;
 
 public class HistoryController {
 
-    @FXML
-    private ListView<String> allBidsList;
-    @FXML
-    private ComboBox<Auction> auctionFilter;
-    @FXML
-    private LineChart<Number, Number> priceLineChart; // Đổi String→Number ở X
-    @FXML
-    private NumberAxis xAxis;
-    @FXML
-    private Label statsLabel;
+    @FXML private ListView<String>           allBidsList;
+    @FXML private ComboBox<Auction>          auctionFilter;
+    @FXML private LineChart<Number, Number>  priceLineChart; // Đổi String→Number ở X
+    @FXML private NumberAxis                 xAxis;
+    @FXML private Label                      statsLabel;
 
-    private final ObservableList<String> bidLogs = FXCollections.observableArrayList();
+    private final ObservableList<String>  bidLogs  = FXCollections.observableArrayList();
     private final ObservableList<Auction> auctions = FXCollections.observableArrayList();
 
     private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi", "VN"));
@@ -51,8 +46,7 @@ public class HistoryController {
 
         auctionFilter.setItems(auctions);
         auctionFilter.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Auction a, boolean empty) {
+            @Override protected void updateItem(Auction a, boolean empty) {
                 super.updateItem(a, empty);
                 setText(empty || a == null ? null
                         : "[" + a.getAuctionId() + "] " + a.getItem().getName());
@@ -60,9 +54,7 @@ public class HistoryController {
         });
         auctionFilter.setButtonCell(auctionFilter.getCellFactory().call(null));
         auctionFilter.getSelectionModel().selectedItemProperty().addListener(
-                (obs, old, neu) -> {
-                    if (neu != null) renderChart(neu);
-                });
+                (obs, old, neu) -> { if (neu != null) renderChart(neu); });
 
         loadHistory();
 
@@ -116,7 +108,6 @@ public class HistoryController {
 
     private void renderChart(Auction auction) {
         if (priceLineChart == null) return;
-
         List<BidTransaction> history = auction.getBidHistory();
         int historySize = history != null ? history.size() : 0;
         String chartKey = auction.getAuctionId() + ":" + historySize + ":" + Math.round(auction.getCurrentPrice());

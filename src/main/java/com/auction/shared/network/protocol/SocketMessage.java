@@ -27,7 +27,7 @@ public class SocketMessage implements Serializable {
         CREATE_ITEM, UPDATE_ITEM, DELETE_ITEM, GET_ITEMS_BY_SELLER,
 
         // User
-        GET_ALL_USERS, UPDATE_USER, DELETE_USER,
+        GET_ALL_USERS, UPDATE_USER, DELETE_USER, DEPOSIT_USER,
 
         // Server → Client push (realtime)
         BROADCAST_BID_UPDATE,   // Có bid mới

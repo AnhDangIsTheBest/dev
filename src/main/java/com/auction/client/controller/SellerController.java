@@ -32,60 +32,36 @@ import java.nio.file.Files;
 public class SellerController {
 
     // ── Items ────────────────────────────────────────────────────
-    @FXML
-    private ComboBox<String> itemTypeCombo;
-    @FXML
-    private ComboBox<String> itemCondCombo;
-    @FXML
-    private TextField itemNameField;
-    @FXML
-    private TextInputControl itemDescField;
-    @FXML
-    private TextField itemPriceField;
-    @FXML
-    private TableView<Item> itemTable;
-    @FXML
-    private TableColumn<Item, String> colItemName;
-    @FXML
-    private TableColumn<Item, String> colItemCat;
-    @FXML
-    private TableColumn<Item, String> colItemPrice;
-    @FXML
-    private TableColumn<Item, String> colItemCond;
-    @FXML
-    private Label selectedImageLabel;
-    @FXML
-    private ImageView selectedImagePreview;
+    @FXML private ComboBox<String>            itemTypeCombo;
+    @FXML private ComboBox<String>            itemCondCombo;
+    @FXML private TextField                   itemNameField;
+    @FXML private TextInputControl          itemDescField;
+    @FXML private TextField                   itemPriceField;
+    @FXML private TableView<Item>             itemTable;
+    @FXML private TableColumn<Item,String>    colItemName;
+    @FXML private TableColumn<Item,String>    colItemCat;
+    @FXML private TableColumn<Item,String>    colItemPrice;
+    @FXML private TableColumn<Item,String>    colItemCond;
+    @FXML private Label                      selectedImageLabel;
+    @FXML private ImageView                  selectedImagePreview;
 
     // ── Auctions ─────────────────────────────────────────────────
-    @FXML
-    private DatePicker startDatePicker;
-    @FXML
-    private Spinner<Integer> startHourSpinner;
-    @FXML
-    private Spinner<Integer> startMinSpinner;
-    @FXML
-    private DatePicker endDatePicker;
-    @FXML
-    private Spinner<Integer> endHourSpinner;
-    @FXML
-    private Spinner<Integer> endMinSpinner;
-    @FXML
-    private CheckBox antiSnipeCheck;
+    @FXML private DatePicker  startDatePicker;
+    @FXML private Spinner<Integer> startHourSpinner;
+    @FXML private Spinner<Integer> startMinSpinner;
+    @FXML private DatePicker  endDatePicker;
+    @FXML private Spinner<Integer> endHourSpinner;
+    @FXML private Spinner<Integer> endMinSpinner;
+    @FXML private CheckBox    antiSnipeCheck;
 
-    @FXML
-    private TableView<Auction> auctionTable;
-    @FXML
-    private TableColumn<Auction, String> colAucName;
-    @FXML
-    private TableColumn<Auction, String> colAucStatus;
-    @FXML
-    private TableColumn<Auction, String> colAucPrice;
+    @FXML private TableView<Auction>          auctionTable;
+    @FXML private TableColumn<Auction,String> colAucName;
+    @FXML private TableColumn<Auction,String> colAucStatus;
+    @FXML private TableColumn<Auction,String> colAucPrice;
 
-    @FXML
-    private Label sellerResultLabel;
+    @FXML private Label sellerResultLabel;
 
-    private final ObservableList<Item> items = FXCollections.observableArrayList();
+    private final ObservableList<Item>    items    = FXCollections.observableArrayList();
     private final ObservableList<Auction> auctions = FXCollections.observableArrayList();
     private File selectedImageFile;
 
@@ -119,17 +95,11 @@ public class SellerController {
         endHourSpinner.getValueFactory().setValue((now.getHour() + 1) % 24);
         endMinSpinner.getValueFactory().setValue(now.getMinute());
 
-        setupItemTable();
-        setupAuctionTable();
-        loadMyItems();
-        loadMyAuctions();
     }
 
     // ── Nút tiện ích thời gian ───────────────────────────────────
 
-    /**
-     * Đặt thời gian bắt đầu = ngay bây giờ
-     */
+    /** Đặt thời gian bắt đầu = ngay bây giờ */
     @FXML
     private void handleSetStartNow(ActionEvent event) {
         LocalDateTime now = LocalDateTime.now();
@@ -138,9 +108,7 @@ public class SellerController {
         startMinSpinner.getValueFactory().setValue(now.getMinute());
     }
 
-    /**
-     * Cộng thêm 1 giờ vào thời gian kết thúc
-     */
+    /** Cộng thêm 1 giờ vào thời gian kết thúc */
     @FXML
     private void handleAddOneHour(ActionEvent event) {
         LocalDateTime current = getEndTime();
@@ -208,14 +176,12 @@ public class SellerController {
 
     private void loadMyAuctions() {
         new Thread(() -> {
-            SocketMessage res = ClientContext.getInstance().getClient().getAllAuctions();
+            SocketMessage res = ClientContext.getInstance().getClient().getMySellerAuctions();
             Platform.runLater(() -> {
                 if (res.isOk()) {
                     @SuppressWarnings("unchecked")
                     List<Auction> all = (List<Auction>) res.get("auctions");
-                    auctions.setAll(all.stream()
-                            .filter(a -> a.getItem() != null)
-                            .toList());
+                    auctions.setAll(all);
                 }
             });
         }).start();
@@ -225,10 +191,10 @@ public class SellerController {
 
     @FXML
     private void handleAddItem(ActionEvent event) {
-        String name = itemNameField.getText().trim();
-        String desc = itemDescField.getText().trim();
-        String type = itemTypeCombo.getValue();
-        String cond = itemCondCombo != null ? itemCondCombo.getValue() : "NEW";
+        String name     = itemNameField.getText().trim();
+        String desc     = itemDescField.getText().trim();
+        String type     = itemTypeCombo.getValue();
+        String cond     = itemCondCombo != null ? itemCondCombo.getValue() : "NEW";
         String priceStr = itemPriceField.getText().trim().replaceAll("[^0-9]", "");
 
         if (name.isEmpty() || priceStr.isEmpty()) {
@@ -237,12 +203,8 @@ public class SellerController {
         }
 
         double price;
-        try {
-            price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException e) {
-            showResult("❌ Giá không hợp lệ.", false);
-            return;
-        }
+        try { price = Double.parseDouble(priceStr); }
+        catch (NumberFormatException e) { showResult("❌ Giá không hợp lệ.", false); return; }
 
         ItemType itemType = "OTHER".equals(type) ? ItemType.OTHERITEM : ItemType.valueOf(type);
         Item item = ItemFactory.createItem(
@@ -289,9 +251,9 @@ public class SellerController {
 
     @FXML
     private void handleAddItemAndCreateAuction(ActionEvent event) {
-        String name = itemNameField.getText().trim();
-        String desc = itemDescField.getText().trim();
-        String type = itemTypeCombo.getValue();
+        String name     = itemNameField.getText().trim();
+        String desc     = itemDescField.getText().trim();
+        String type     = itemTypeCombo.getValue();
         String priceStr = itemPriceField.getText().trim().replaceAll("[^0-9]", "");
 
         if (name.isEmpty() || priceStr.isEmpty()) {
@@ -300,15 +262,11 @@ public class SellerController {
         }
 
         double price;
-        try {
-            price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException e) {
-            showResult("❌ Giá không hợp lệ.", false);
-            return;
-        }
+        try { price = Double.parseDouble(priceStr); }
+        catch (NumberFormatException e) { showResult("❌ Giá không hợp lệ.", false); return; }
 
         LocalDateTime start = getStartTime();
-        LocalDateTime end = getEndTime();
+        LocalDateTime end   = getEndTime();
         if (!end.isAfter(start)) {
             showResult("❌ Thời gian kết thúc phải sau thời gian bắt đầu.", false);
             return;
@@ -358,7 +316,7 @@ public class SellerController {
         }
 
         LocalDateTime start = getStartTime();
-        LocalDateTime end = getEndTime();
+        LocalDateTime end   = getEndTime();
 
         if (!end.isAfter(start)) {
             showResult("❌ Thời gian kết thúc phải sau thời gian bắt đầu.", false);
@@ -394,8 +352,7 @@ public class SellerController {
     private void handleEndAuction(ActionEvent event) {
         Auction selected = auctionTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showResult("❌ Chọn phiên đấu giá cần kết thúc.", false);
-            return;
+            showResult("❌ Chọn phiên đấu giá cần kết thúc.", false); return;
         }
 
         new Thread(() -> {

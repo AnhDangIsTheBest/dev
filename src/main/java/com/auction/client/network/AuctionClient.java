@@ -224,6 +224,12 @@ public class AuctionClient {
                 .put("userId", userId));
     }
 
+    public SocketMessage depositUser(String userId, double amount) {
+        return send(SocketMessage.request(Action.DEPOSIT_USER)
+                .put("userId", userId)
+                .put("amount", amount));
+    }
+
     // ══════════════════════════════════════════════════════════════
     //  CORE: Gửi request và nhận response đồng bộ
     // ══════════════════════════════════════════════════════════════

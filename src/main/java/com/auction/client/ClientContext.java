@@ -1,7 +1,7 @@
 package com.auction.client;
 
-import com.auction.shared.model.User.User;
 import com.auction.client.network.AuctionClient;
+import com.auction.shared.model.User.User;
 
 /**
  * Singleton giữ trạng thái client: kết nối socket + user đang đăng nhập.
@@ -14,8 +14,7 @@ public class ClientContext {
     private AuctionClient client;
     private User currentUser;
 
-    private ClientContext() {
-    }
+    private ClientContext() {}
 
     public static ClientContext getInstance() {
         if (instance == null) {

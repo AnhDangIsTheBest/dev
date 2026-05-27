@@ -3,27 +3,45 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="14" style="-fx-background-color: #0a0b0f; -fx-padding: 20;"
-      xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
+<VBox spacing="16"
+      style="-fx-background-color: #0a0b0f; -fx-padding: 24 28 28 28;"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.auction.client.controller.MySellController">
 
-    <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e2e8f0;" text="💰 Sản phẩm của tôi"/>
-    <Label fx:id="summaryLabel" style="-fx-text-fill: #64748b; -fx-font-size: 12;" text=""/>
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="3">
+            <Label text="Sản phẩm của tôi"
+                   style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #f8fafc;"/>
+            <Label text="Danh sách tài sản đã đăng và trạng thái hiện tại"
+                   style="-fx-text-fill: #64748b; -fx-font-size: 12;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="summaryLabel"
+               text=""
+               style="-fx-text-fill: #cbd5e1; -fx-font-size: 12; -fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 999; -fx-background-radius: 999; -fx-padding: 7 12;"/>
+    </HBox>
 
-    <TableView fx:id="itemTable" prefHeight="400.0" prefWidth="842.0"
-               style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08);" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colItemName" prefWidth="275.0" text="Tên"/>
-            <TableColumn fx:id="colItemType" prefWidth="85.5" text="Loại"/>
-            <TableColumn fx:id="colItemPrice" prefWidth="154.0" text="Giá khởi điểm"/>
-            <TableColumn fx:id="colItemCPrice" prefWidth="165.5" text="Giá hiện tại"/>
-            <TableColumn fx:id="colItemStatus" prefWidth="158.5" text="Trạng thái"/>
-        </columns>
-        <placeholder>
-            <Label style="-fx-text-fill: #64748b;" text="Bạn chưa tham gia phiên nào"/>
-        </placeholder>
-    </TableView>
+    <VBox VBox.vgrow="ALWAYS"
+          style="-fx-background-color: #12141a; -fx-background-radius: 10; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 10; -fx-padding: 12;">
+        <TableView fx:id="itemTable"
+                   VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <columns>
+                <TableColumn fx:id="colItemName" prefWidth="280" text="Tên"/>
+                <TableColumn fx:id="colItemType" prefWidth="110" text="Loại"/>
+                <TableColumn fx:id="colItemPrice" prefWidth="170" text="Giá khởi điểm"/>
+                <TableColumn fx:id="colItemCPrice" prefWidth="170" text="Giá hiện tại"/>
+                <TableColumn fx:id="colItemStatus" prefWidth="150" text="Trạng thái"/>
+                <TableColumn fx:id="colAction" prefWidth="150" text="Thao tác"/>
+            </columns>
+            <placeholder>
+                <Label style="-fx-text-fill: #64748b;" text="Bạn chưa đăng sản phẩm nào"/>
+            </placeholder>
+        </TableView>
+    </VBox>
 </VBox>

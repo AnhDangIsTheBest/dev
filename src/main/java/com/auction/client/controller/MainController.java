@@ -6,61 +6,50 @@ import com.auction.shared.model.Auction;
 import com.auction.shared.model.User.Admin;
 import com.auction.shared.model.User.User;
 
-import javafx.animation.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.Parent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.io.IOException;
 
-/**
- * Controller cho main.fxml - layout chính (sidebar + content area).
- * Mỗi mục sidebar load FXML con vào mainPane.
- */
 public class MainController {
 
     private static MainController activeInstance;
-    @FXML
-    private Label userNameLabel;
-    @FXML
-    private Label userRoleLabel;
-    @FXML
-    private Label statusLabel;
-    @FXML
-    private BorderPane mainPane;
-    @FXML
-    private VBox sidebar;
 
-    // Sidebar buttons
-    @FXML
-    private Button btnDashboard;
-    @FXML
-    private Button btnMyBids;
-    @FXML
-    private Button btnAutoBid;
-    @FXML
-    private Button btnSeller;
-    @FXML
-    private Button btnAdmin;
-    @FXML
-    private Button btnHistory;
-    @FXML
-    private Button btnMySell;
+    @FXML private Label       userNameLabel;
+    @FXML private Label       userRoleLabel;
+    @FXML private Label       statusLabel;
+    @FXML private StackPane   rootPane;
+    @FXML private BorderPane  mainPane;
+    @FXML private VBox        sidebar;
+
+    @FXML private Button btnDashboard;
+    @FXML private Button btnMyBids;
+    @FXML private Button btnSeller;
+    @FXML private Button btnAdmin;
+    @FXML private Button btnHistory;
+    @FXML private Button btnMySell;
+    @FXML private Button btnDeposit;
 
     private Button activeBtn;
 
-    // Style constants
     private static final String ACTIVE_STYLE =
             "-fx-background-color: rgba(245,158,11,0.15); -fx-text-fill: #f59e0b;" +
                     "-fx-font-weight: bold; -fx-padding: 10 16; -fx-cursor: hand; " +
@@ -68,79 +57,46 @@ public class MainController {
     private static final String INACTIVE_STYLE =
             "-fx-background-color: transparent; -fx-text-fill: #94a3b8;" +
                     "-fx-padding: 10 16; -fx-cursor: hand; " +
-                    "-fx-alignment: CENTER_LEFT; -fx-font-size: 13;";
-    private static final String BUTTON_ANIMATION_KEY = "auction.buttonAnimationInstalled";
-    private static final String BUTTON_SCALE_TRANSITION_KEY = "auction.buttonScaleTransition";
+            "-fx-alignment: CENTER_LEFT; -fx-font-size: 13;";
     private static final Duration CONTENT_ANIMATION_DURATION = Duration.millis(150);
     private static final Duration BUTTON_ANIMATION_DURATION = Duration.millis(90);
+    private static final String BUTTON_ANIMATION_KEY = "auction.buttonAnimationInstalled";
+    private static final String BUTTON_SCALE_TRANSITION_KEY = "auction.buttonScaleTransition";
 
     @FXML
     public void initialize() {
+        activeInstance = this;
         User user = ClientContext.getInstance().getCurrentUser();
         if (user != null) {
             userNameLabel.setText(user.getUsername());
-            userRoleLabel.setText(user.getRole());
+            userRoleLabel.setText(formatRole(user));
         }
 
-        // Ẩn nút Admin nếu không phải admin
+        installButtonFeedback(rootPane);
+
         btnAdmin.setVisible(user instanceof Admin);
         btnAdmin.setManaged(user instanceof Admin);
 
-        // Ẩn Seller nếu không phải seller
-        boolean isSeller = user != null && "SELLER".equalsIgnoreCase(user.getRole());
-        btnSeller.setVisible(isSeller);
-        btnSeller.setManaged(isSeller);
-        btnMySell.setVisible(isSeller);
-        btnMySell.setManaged(isSeller);
+        btnSeller.setVisible(true);
+        btnSeller.setManaged(true);
+        btnMySell.setVisible(true);
+        btnMySell.setManaged(true);
+        btnMyBids.setVisible(true);
+        btnMyBids.setManaged(true);
+        btnDeposit.setVisible(true);
+        btnDeposit.setManaged(true);
 
-        // Ẩn MyBids/AutoBid nếu là seller hoặc admin
-        boolean showBidderMenus = !isSeller && !(user instanceof Admin);
-        btnMyBids.setVisible(showBidderMenus);
-        btnMyBids.setManaged(showBidderMenus);
-        btnAutoBid.setVisible(showBidderMenus);
-        btnAutoBid.setManaged(showBidderMenus);
-
-        // Mở Dashboard mặc định
-        setStatus("Đã kết nối đến server.");
+        setStatus("\u0110\u00e3 k\u1ebft n\u1ed1i \u0111\u1ebfn server.");
         showDashboard(null);
     }
 
-    // ── Điều hướng ───────────────────────────────────────────────
-
-    @FXML
-    public void showDashboard(ActionEvent e) {
-        loadContent("dashboard.fxml", btnDashboard);
-    }
-
-    @FXML
-    public void showMyBids(ActionEvent e) {
-        loadContent("my-bids.fxml", btnMyBids);
-    }
-
-    @FXML
-    public void showAutoBid(ActionEvent e) {
-        loadContent("auto-bid.fxml", btnAutoBid);
-    }
-
-    @FXML
-    public void showSeller(ActionEvent e) {
-        loadContent("seller.fxml", btnSeller);
-    }
-
-    @FXML
-    public void showMySell(ActionEvent e) {
-        loadContent("my-sell.fxml", btnMySell);
-    }
-
-    @FXML
-    public void showAdmin(ActionEvent e) {
-        loadContent("admin.fxml", btnAdmin);
-    }
-
-    @FXML
-    public void showHistory(ActionEvent e) {
-        loadContent("history.fxml", btnHistory);
-    }
+    @FXML public void showDashboard(ActionEvent e) { loadContent("dashboard.fxml", btnDashboard); }
+    @FXML public void showMyBids(ActionEvent e)    { loadContent("my-bids.fxml",   btnMyBids); }
+    @FXML public void showSeller(ActionEvent e)    { loadContent("seller.fxml",    btnSeller); }
+    @FXML public void showMySell(ActionEvent e)    { loadContent("my-sell.fxml",   btnMySell); }
+    @FXML public void showAdmin(ActionEvent e)     { loadContent("admin.fxml",     btnAdmin); }
+    @FXML public void showHistory(ActionEvent e)   { loadContent("history.fxml",   btnHistory); }
+    @FXML public void showDeposit(ActionEvent e)   { loadContent("deposit.fxml",   btnDeposit); }
 
     public static MainController getActiveInstance() {
         return activeInstance;
@@ -188,8 +144,6 @@ public class MainController {
                     SceneManager.getInstance().switchTo("login2.fxml", 600, 520));
         }).start();
     }
-
-    // ── Helpers ──────────────────────────────────────────────────
 
     private void loadContent(String fxmlFile, Button activeButton) {
         try {
@@ -281,6 +235,11 @@ public class MainController {
         transition.setInterpolator(Interpolator.EASE_BOTH);
         button.getProperties().put(BUTTON_SCALE_TRANSITION_KEY, transition);
         transition.play();
+    }
+
+    private String formatRole(User user) {
+        if (user instanceof Admin) return "ADMIN";
+        return "T\u00c0I KHO\u1ea2N \u0110\u1ea4U GI\u00c1";
     }
 
     public void setStatus(String msg) {

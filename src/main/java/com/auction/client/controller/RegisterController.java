@@ -7,31 +7,22 @@ import com.auction.shared.network.protocol.SocketMessage;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 public class RegisterController {
 
-    @FXML
-    private TextField fullNameField;
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField emailField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private Label messageLabel;
-    @FXML
-    private Button registerButton;
-    @FXML
-    private ToggleButton btnBidder;
-    @FXML
-    private ToggleButton btnSeller;
+    @FXML private TextField     fullNameField;
+    @FXML private TextField     usernameField;
+    @FXML private TextField     emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private Label         messageLabel;
+    @FXML private Button        registerButton;
 
-    // Vai trò đang chọn — mặc định BIDDER
-    private String selectedRole = "BIDDER";
     private static final String SERVER_HOST = "localhost";
-    private static final int SERVER_PORT = 9090;
+    private static final int    SERVER_PORT = 9090;
 
     @FXML
     public void initialize() {
@@ -41,33 +32,8 @@ public class RegisterController {
         if (ctx.getClient() == null || !ctx.getClient().isConnected()) {
             boolean ok = ctx.connect(SERVER_HOST, SERVER_PORT);
             if (!ok) {
-                showMsg("Không thể kết nối server. Hãy khởi động AuctionServer trước.", false);
+                showMsg("Khong the ket noi server. Hay khoi dong AuctionServer truoc.", false);
             }
-        }
-
-
-        // Toggle Bidder
-        btnBidder.setOnAction(e -> selectRole("BIDDER"));
-
-        // Toggle Seller
-        btnSeller.setOnAction(e -> selectRole("SELLER"));
-
-        // Mặc định chọn BIDDER
-        selectRole("BIDDER");
-    }
-
-    private void selectRole(String role) {
-        selectedRole = role;
-
-        String activeStyle = "-fx-background-color: #f59e0b; -fx-text-fill: #000; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8; -fx-cursor: hand;";
-        String inactiveStyle = "-fx-background-color: #1a1d26; -fx-text-fill: #94a3b8; -fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 8; -fx-padding: 8; -fx-cursor: hand;";
-
-        if ("BIDDER".equals(role)) {
-            btnBidder.setStyle(activeStyle);
-            btnSeller.setStyle(inactiveStyle);
-        } else {
-            btnSeller.setStyle(activeStyle);
-            btnBidder.setStyle(inactiveStyle);
         }
     }
 
@@ -75,23 +41,23 @@ public class RegisterController {
     private void handleRegister(ActionEvent event) {
         String fullName = fullNameField.getText().trim();
         String username = usernameField.getText().trim();
-        String email = emailField.getText().trim();
+        String email    = emailField.getText().trim();
         String password = passwordField.getText().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            showMsg("Tài khoản và mật khẩu không được trống.", false);
+            showMsg("Tai khoan va mat khau khong duoc trong.", false);
             return;
         }
-        if (fullName.isEmpty()) {
-            showMsg("Họ và tên không được trống.", false);
+        if (fullName.isEmpty()){
+            showMsg("Ho va ten khong duoc trong.", false);
             return;
         }
-        if (email.isEmpty()) {
-            showMsg("Email không được trống.", false);
+        if (email.isEmpty()){
+            showMsg("Email khong duoc trong.", false);
             return;
         }
         if (password.length() < 6) {
-            showMsg("Mật khẩu phải có ít nhất 6 ký tự.", false);
+            showMsg("Mat khau phai co it nhat 6 ky tu.", false);
             return;
         }
 
@@ -100,23 +66,20 @@ public class RegisterController {
         new Thread(() -> {
             SocketMessage res = ClientContext.getInstance()
                     .getClient()
-                    .register(selectedRole, username, email, password, fullName);
+                    .register("BIDDER", username, email, password, fullName);
 
             Platform.runLater(() -> {
                 registerButton.setDisable(false);
                 if (res.isOk()) {
-                    showMsg("Đăng ký thành công! Đang chuyển về đăng nhập...", true);
+                    showMsg("Dang ky thanh cong! Dang chuyen ve dang nhap...", true);
                     new Thread(() -> {
-                        try {
-                            Thread.sleep(1200);
-                        } catch (InterruptedException ignored) {
-                        }
+                        try { Thread.sleep(1200); } catch (InterruptedException ignored) {}
                         Platform.runLater(() ->
                                 SceneManager.getInstance().switchTo("login2.fxml"));
                     }).start();
                 } else {
                     showMsg(res.getMessage() != null
-                            ? res.getMessage() : "Đăng ký thất bại.", false);
+                            ? res.getMessage() : "Dang ky that bai.", false);
                 }
             });
         }).start();

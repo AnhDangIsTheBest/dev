@@ -10,14 +10,14 @@
     <VBox alignment="CENTER" spacing="16" maxWidth="380"
           style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 32;">
 
-        <Label text="⚡ AuctionX - Đăng ký" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+        <Label text="AuctionX - Dang ky" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
 
         <VBox spacing="8" fillWidth="true">
-            <Label text="Họ và tên" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
-            <TextField fx:id="fullNameField" promptText="Nguyễn Văn A"
+            <Label text="Ho va ten" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <TextField fx:id="fullNameField" promptText="Nguyen Van A"
                        style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
 
-            <Label text="Tên đăng nhập" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <Label text="Ten dang nhap" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
             <TextField fx:id="usernameField" promptText="username"
                        style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
 
@@ -25,32 +25,19 @@
             <TextField fx:id="emailField" promptText="email@gmail.com"
                        style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
 
-            <Label text="Mật khẩu" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
-            <PasswordField fx:id="passwordField" promptText="Tối thiểu 6 ký tự"
+            <Label text="Mat khau" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <PasswordField fx:id="passwordField" promptText="Toi thieu 6 ky tu"
                            style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
 
-            <!-- Chọn vai trò -->
-            <Label text="Vai trò" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
-            <HBox spacing="10">
-                <ToggleButton fx:id="btnBidder" text="🙋 Bidder" maxWidth="Infinity"
-                              HBox.hgrow="ALWAYS"
-                              style="-fx-background-color: #f59e0b; -fx-text-fill: #000; -fx-font-weight: bold;
-                                     -fx-background-radius: 8; -fx-padding: 8; -fx-cursor: hand;"/>
-                <ToggleButton fx:id="btnSeller" text="🏷️ Seller" maxWidth="Infinity"
-                              HBox.hgrow="ALWAYS"
-                              style="-fx-background-color: #1a1d26; -fx-text-fill: #94a3b8;
-                                     -fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 8;
-                                     -fx-padding: 8; -fx-cursor: hand;"/>
-            </HBox>
-            <Label text="Bidder: đặt giá phiên đấu giá  •  Seller: đăng sản phẩm đấu giá"
+            <Label text="Tai khoan co the dat gia va dang san pham dau gia."
                    style="-fx-text-fill: #475569; -fx-font-size: 10;" wrapText="true"/>
         </VBox>
 
         <Label fx:id="messageLabel" text="" wrapText="true" style="-fx-font-size: 12;"/>
 
-        <Button fx:id="registerButton" text="Đăng ký" onAction="#handleRegister" maxWidth="Infinity"
+        <Button fx:id="registerButton" text="Dang ky" onAction="#handleRegister" maxWidth="Infinity"
                 style="-fx-background-color: #f59e0b; -fx-text-fill: #000; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 8; -fx-cursor: hand;"/>
-        <Button text="← Quay lại đăng nhập" onAction="#handleBack" maxWidth="Infinity"
+        <Button text="Quay lai dang nhap" onAction="#handleBack" maxWidth="Infinity"
                 style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 8; -fx-padding: 8; -fx-cursor: hand;"/>
     </VBox>
 </VBox>

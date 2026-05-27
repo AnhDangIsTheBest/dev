@@ -1,7 +1,5 @@
 package com.auction.client;
 
-import com.auction.client.SceneManager;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,7 +21,7 @@ public class MainApplication extends Application {
         Parent root = FXMLLoader.load(
                 getClass().getResource("/fxml/login2.fxml"));
 
-        primaryStage.setTitle("⚡ Auction76 – Đấu giá bằng cả tính mạng");
+        primaryStage.setTitle("⚡ AuctionX – Hệ thống đấu giá trực tuyến");
         primaryStage.setScene(new Scene(root, 600, 520));
         primaryStage.setResizable(true);
         primaryStage.setMinWidth(600);
