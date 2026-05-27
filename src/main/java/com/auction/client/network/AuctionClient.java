@@ -9,14 +9,14 @@ import java.util.function.Consumer;
 
 /**
  * Client kết nối đến AuctionServer.
- *
+ * <p>
  * Cách dùng:
- *   AuctionClient client = new AuctionClient("localhost", 9090);
- *   client.connect();
- *   client.setBroadcastListener(msg -> { ... cập nhật UI ... });
- *
- *   SocketMessage res = client.login("alice", "pass123");
- *   SocketMessage res = client.placeBid("AUCTION_01", "user01", "Alice", 5000000);
+ * AuctionClient client = new AuctionClient("localhost", 9090);
+ * client.connect();
+ * client.setBroadcastListener(msg -> { ... cập nhật UI ... });
+ * <p>
+ * SocketMessage res = client.login("alice", "pass123");
+ * SocketMessage res = client.placeBid("AUCTION_01", "user01", "Alice", 5000000);
  */
 public class AuctionClient {
 
@@ -48,9 +48,9 @@ public class AuctionClient {
     public boolean connect() {
         try {
             socket = new Socket(host, port);
-            out    = new ObjectOutputStream(socket.getOutputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
-            in     = new ObjectInputStream(socket.getInputStream());
+            in = new ObjectInputStream(socket.getInputStream());
             connected = true;
 
             // Thread lắng nghe broadcast từ server (không block UI thread)
@@ -66,9 +66,18 @@ public class AuctionClient {
 
     public void disconnect() {
         connected = false;
-        try { if (out != null) out.close(); } catch (IOException ignored) {}
-        try { if (in != null)  in.close();  } catch (IOException ignored) {}
-        try { if (socket != null) socket.close(); } catch (IOException ignored) {}
+        try {
+            if (out != null) out.close();
+        } catch (IOException ignored) {
+        }
+        try {
+            if (in != null) in.close();
+        } catch (IOException ignored) {
+        }
+        try {
+            if (socket != null) socket.close();
+        } catch (IOException ignored) {
+        }
         System.out.println("[Client] Đã ngắt kết nối");
     }
 
@@ -255,12 +264,12 @@ public class AuctionClient {
     /**
      * Thread riêng lắng nghe message chủ động từ server (BROADCAST_BID_UPDATE,
      * BROADCAST_AUCTION_END). Khi nhận được sẽ gọi broadcastListener.
-     *
+     * <p>
      * LƯU Ý: Với Java Serialization + blocking I/O, cách phổ biến nhất là
      * server chỉ gửi broadcast SAU KHI client gửi request (piggyback).
      * Nếu muốn nhận push thực sự, cần tách kết nối đọc/ghi riêng,
      * hoặc dùng thêm một socket riêng để nhận broadcast.
-     *
+     * <p>
      * Ở đây mình dùng cách đơn giản nhất: sau mỗi response bình thường,
      * nếu action là BROADCAST thì forward cho listener.
      */
@@ -278,11 +287,11 @@ public class AuctionClient {
     /**
      * JavaFX Controller gọi cái này để nhận realtime update.
      * Ví dụ:
-     *   client.setBroadcastListener(msg -> {
-     *       if (msg.getAction() == Action.BROADCAST_BID_UPDATE) {
-     *           Platform.runLater(() -> updateUI(msg));
-     *       }
-     *   });
+     * client.setBroadcastListener(msg -> {
+     * if (msg.getAction() == Action.BROADCAST_BID_UPDATE) {
+     * Platform.runLater(() -> updateUI(msg));
+     * }
+     * });
      */
     public void setBroadcastListener(Consumer<SocketMessage> listener) {
         this.broadcastListener = listener;
@@ -296,6 +305,11 @@ public class AuctionClient {
         return connected;
     }
 
-    public String getHost() { return host; }
-    public int    getPort() { return port; }
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
 }

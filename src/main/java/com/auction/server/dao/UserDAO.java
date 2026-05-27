@@ -1,9 +1,10 @@
-package com.auction.dao;
+package com.auction.server.dao;
 
-import com.auction.config.DBConnection;
-import com.auction.model.User.Admin;
-import com.auction.model.User.Bidder;
-import com.auction.model.User.User;
+import com.auction.server.config.DBConnection;
+import com.auction.shared.model.User.Admin;
+import com.auction.shared.model.User.Bidder;
+import com.auction.shared.model.User.Seller;
+import com.auction.shared.model.User.User;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -221,40 +222,44 @@ public class UserDAO {
         String role = rs.getString("role");
 
         String normalizedRole = role == null ? "" : role.toUpperCase();
-        User user = switch (normalizedRole) {
+        return switch (normalizedRole) {
             case "ADMIN" -> new Admin(id, username, email, password, fullname);
-            case "BIDDER", "SELLER" -> new Bidder(
+            case "BIDDER" -> new Bidder(
                     id, username, email, fullname, password,
                     rs.getDouble("balance"),
                     rs.getInt("total_bids"),
                     rs.getInt("won_auctions")
+            );
+            case "SELLER" -> new Seller(
+                    id, username, email, password, fullname,
+                    rs.getInt("total_items_listed"),
+                    rs.getDouble("total_revenue")
             );
             default -> {
                 System.err.println("[UserDAO] mapRow: unknown role: " + role);
                 yield null;
             }
         };
-
-        if (user != null) {
-            hydrateUserStats(user, rs);
-        }
-        return user;
-    }
-
-    private void hydrateUserStats(User user, ResultSet rs) throws SQLException {
-        user.setBalance(rs.getDouble("balance"));
-        user.setTotalBids(rs.getInt("total_bids"));
-        user.setWonAuctions(rs.getInt("won_auctions"));
-        user.setTotalItemslisted(rs.getInt("total_items_listed"));
-        user.setTotalRevenue(rs.getDouble("total_revenue"));
     }
 
     private void fillAllRoleFields(PreparedStatement ps, User user, int startIndex) throws SQLException {
-        ps.setDouble(startIndex, user.getBalance());
-        ps.setInt(startIndex + 1, user.getTotalBids());
-        ps.setInt(startIndex + 2, user.getWonAuctions());
-        ps.setInt(startIndex + 3, user.getTotalItemslisted());
-        ps.setDouble(startIndex + 4, user.getTotalRevenue());
+        if (user instanceof Bidder bidder) {
+            ps.setDouble(startIndex, bidder.getBalance());
+            ps.setInt(startIndex + 1, bidder.getTotalBids());
+            ps.setInt(startIndex + 2, bidder.getWonAuctions());
+        } else {
+            ps.setDouble(startIndex, 0);
+            ps.setInt(startIndex + 1, 0);
+            ps.setInt(startIndex + 2, 0);
+        }
+
+        if (user instanceof Seller seller) {
+            ps.setInt(startIndex + 3, seller.getTotalItemslisted());
+            ps.setDouble(startIndex + 4, seller.getTotalRevenue());
+        } else {
+            ps.setInt(startIndex + 3, 0);
+            ps.setDouble(startIndex + 4, 0);
+        }
     }
 
     private void ensureUserSchema(Connection conn) throws SQLException {

@@ -7,7 +7,15 @@ import java.util.List;
 
 public class UserService {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO;
+
+    public UserService() {
+        this(new UserDAO());
+    }
+
+    UserService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     public List<User> getAllUsers() {
         return userDAO.getAll();
@@ -43,5 +51,12 @@ public class UserService {
         }
 
         return userDAO.delete(userId);
+    }
+    public boolean deposit(String id, double amount){
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Số tiền phải là số dương");
+        }
+
+        return userDAO.deposit(id,amount);
     }
 }

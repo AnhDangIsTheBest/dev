@@ -1,7 +1,7 @@
-package com.auction.dao;
+package com.auction.server.dao;
 
-import com.auction.config.DBConnection;
-import com.auction.model.BidTransaction;
+import com.auction.server.config.DBConnection;
+import com.auction.shared.model.BidTransaction;
 
 import java.sql.*;
 import java.time.LocalDateTime;

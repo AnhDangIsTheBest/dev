@@ -23,18 +23,27 @@ import java.util.Map;
  */
 public class MyBidsController {
 
-    @FXML private TableView<Auction>           table;
-    @FXML private TableColumn<Auction,String>  colName;
-    @FXML private TableColumn<Auction,String>  colMyBid;
-    @FXML private TableColumn<Auction,String>  colCurrent;
-    @FXML private TableColumn<Auction,String>  colStatus;
-    @FXML private TableColumn<Auction,String>  colResult;
-    @FXML private Label summaryLabel;
+    @FXML
+    private TableView<Auction> table;
+    @FXML
+    private TableColumn<Auction, String> colName;
+    @FXML
+    private TableColumn<Auction, String> colMyBid;
+    @FXML
+    private TableColumn<Auction, String> colCurrent;
+    @FXML
+    private TableColumn<Auction, String> colStatus;
+    @FXML
+    private TableColumn<Auction, String> colResult;
+    @FXML
+    private Label summaryLabel;
 
     private final ObservableList<Auction> rows = FXCollections.observableArrayList();
-    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi","VN"));
+    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi", "VN"));
 
-    /** Map<auctionId, giá cao nhất của user> — nhận từ server cùng response */
+    /**
+     * Map<auctionId, giá cao nhất của user> — nhận từ server cùng response
+     */
     private Map<String, Double> myBestBids = Collections.emptyMap();
 
     @FXML
@@ -71,15 +80,20 @@ public class MyBidsController {
 
         // Tô màu cột kết quả
         colResult.setCellFactory(col -> new TableCell<>() {
-            @Override protected void updateItem(String val, boolean empty) {
+            @Override
+            protected void updateItem(String val, boolean empty) {
                 super.updateItem(val, empty);
-                if (empty || val == null) { setText(null); setStyle(""); return; }
+                if (empty || val == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
                 setText(val);
                 setStyle(val.contains("Thắng")
                         ? "-fx-text-fill: #10b981; -fx-font-weight: bold;"
                         : val.contains("Thua")
-                        ? "-fx-text-fill: #ef4444;"
-                        : "-fx-text-fill: #94a3b8;");
+                          ? "-fx-text-fill: #ef4444;"
+                          : "-fx-text-fill: #94a3b8;");
             }
         });
 

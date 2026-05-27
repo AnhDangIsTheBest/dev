@@ -4,11 +4,13 @@ import com.auction.client.ClientContext;
 import com.auction.shared.model.Auction;
 import com.auction.shared.model.Item.Item;
 import com.auction.shared.network.protocol.SocketMessage;
+
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,27 +20,41 @@ import javafx.scene.control.*;
 
 
 public class MySellController {
-    @FXML private DatePicker startDatePicker;
-    @FXML private Spinner<Integer> startHourSpinner;
-    @FXML private Spinner<Integer> startMinSpinner;
-    @FXML private DatePicker  endDatePicker;
-    @FXML private Spinner<Integer> endHourSpinner;
-    @FXML private Spinner<Integer> endMinSpinner;
-    @FXML private CheckBox    antiSnipeCheck;
-    @FXML private TableView<Item>           itemTable;
+    @FXML
+    private DatePicker startDatePicker;
+    @FXML
+    private Spinner<Integer> startHourSpinner;
+    @FXML
+    private Spinner<Integer> startMinSpinner;
+    @FXML
+    private DatePicker endDatePicker;
+    @FXML
+    private Spinner<Integer> endHourSpinner;
+    @FXML
+    private Spinner<Integer> endMinSpinner;
+    @FXML
+    private CheckBox antiSnipeCheck;
+    @FXML
+    private TableView<Item> itemTable;
 
-    @FXML private TableColumn<Item,String>  colItemName;
-    @FXML private TableColumn<Item,String>  colItemType;
-    @FXML private TableColumn<Item,String>  colItemPrice;
-    @FXML private TableColumn<Item,String>  colItemCPrice;
-    @FXML private TableColumn<Item,String>  colItemStatus;
-    @FXML private Label summaryLabel;
+    @FXML
+    private TableColumn<Item, String> colItemName;
+    @FXML
+    private TableColumn<Item, String> colItemType;
+    @FXML
+    private TableColumn<Item, String> colItemPrice;
+    @FXML
+    private TableColumn<Item, String> colItemCPrice;
+    @FXML
+    private TableColumn<Item, String> colItemStatus;
+    @FXML
+    private Label summaryLabel;
 
 
     private final ObservableList<Auction> rows = FXCollections.observableArrayList();
-    private final ObservableList<Item>    items    = FXCollections.observableArrayList();
+    private final ObservableList<Item> items = FXCollections.observableArrayList();
 
-    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi","VN"));
+    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi", "VN"));
 
     @FXML
     public void initialize() {
@@ -73,6 +89,7 @@ public class MySellController {
         }).start();
 
     }
+
     private LocalDateTime getStartTime() {
         LocalDate date = startDatePicker.getValue();
         if (date == null) date = LocalDate.now();

@@ -51,86 +51,147 @@ import java.util.concurrent.TimeUnit;
 /**
  * Controller cho auctions.fxml.
  * Layout dùng StackPane với 2 lớp:
- *   - listView:   danh sách phiên đấu giá (mặc định hiện)
- *   - detailPanel: chi tiết phiên (hiện khi click row, ẩn khi ấn "Quay lại")
+ * - listView:   danh sách phiên đấu giá (mặc định hiện)
+ * - detailPanel: chi tiết phiên (hiện khi click row, ẩn khi ấn "Quay lại")
  */
 public class AuctionsController {
 
     // ── FXML: Views ──────────────────────────────────────────────
-    @FXML private VBox listView;
-    @FXML private Region detailPanel;
+    @FXML
+    private VBox listView;
+    @FXML
+    private Region detailPanel;
 
     // ── FXML: Stat cards (chỉ có trong dashboard.fxml) ──────────
-    @FXML private Label statRunning;  // PHIÊN ĐANG CHẠY
-    @FXML private Label statTotal;    // TỔNG PHIÊN
-    @FXML private Label statBids;     // TỔNG BID
+    @FXML
+    private Label statRunning;  // PHIÊN ĐANG CHẠY
+    @FXML
+    private Label statTotal;    // TỔNG PHIÊN
+    @FXML
+    private Label statBids;     // TỔNG BID
 
     // ── FXML: Danh sách ──────────────────────────────────────────
-    @FXML private TableView<Auction>          auctionTable;
-    @FXML private TilePane                    upcomingCards;
-    @FXML private TilePane                    runningCards;
-    @FXML private TilePane                    pastCards;
-    @FXML private Button                      upcomingAllButton;
-    @FXML private Button                      runningAllButton;
-    @FXML private Button                      pastAllButton;
-    @FXML private TableColumn<Auction,String> colName;
-    @FXML private TableColumn<Auction,String> colCategory;
-    @FXML private TableColumn<Auction,String> colPrice;
-    @FXML private TableColumn<Auction,String> colStatus;
-    @FXML private TableColumn<Auction,String> colTimer;
-    @FXML private TableColumn<Auction,String> colLeader;
-    @FXML private Label                       statusLabel;
+    @FXML
+    private TableView<Auction> auctionTable;
+    @FXML
+    private TilePane upcomingCards;
+    @FXML
+    private TilePane runningCards;
+    @FXML
+    private TilePane pastCards;
+    @FXML
+    private Button upcomingAllButton;
+    @FXML
+    private Button runningAllButton;
+    @FXML
+    private Button pastAllButton;
+    @FXML
+    private TableColumn<Auction, String> colName;
+    @FXML
+    private TableColumn<Auction, String> colCategory;
+    @FXML
+    private TableColumn<Auction, String> colPrice;
+    @FXML
+    private TableColumn<Auction, String> colStatus;
+    @FXML
+    private TableColumn<Auction, String> colTimer;
+    @FXML
+    private TableColumn<Auction, String> colLeader;
+    @FXML
+    private Label statusLabel;
 
     // ── FXML: Chi tiết ───────────────────────────────────────────
-    @FXML private Label   detailName;
-    @FXML private Label   detailTitleLarge;
-    @FXML private Label   detailAssetCode;
-    @FXML private Label   detailStartingPrice;
-    @FXML private Label   detailStepPrice;
-    @FXML private Label   detailDeposit;
-    @FXML private Label   detailFee;
-    @FXML private Label   detailStartTime;
-    @FXML private Label   detailEndTime;
-    @FXML private Label   detailAddress;
-    @FXML private Label   detailType;
-    @FXML private Label   countdownDays;
-    @FXML private Label   countdownHours;
-    @FXML private Label   countdownMinutes;
-    @FXML private Label   countdownSeconds;
-    @FXML private ImageView detailImage;
-    @FXML private Label   detailPrice;
-    @FXML private Label   detailTimer;
-    @FXML private Label   detailStatus;
-    @FXML private Label   detailLeader;
-    @FXML private Label   detailDesc;
-    @FXML private Label   detailAntiSnipe;
-    @FXML private Label   countdownTitle;
-    @FXML private Label   bidResultLabel;
-    @FXML private VBox     auctionLiveBox;
-    @FXML private VBox     auctionSuccessBox;
-    @FXML private VBox     currentInfoBox;
-    @FXML private Label   successStartingPrice;
-    @FXML private Label   successWinningPrice;
-    @FXML private Label   successWinnerCode;
+    @FXML
+    private Label detailName;
+    @FXML
+    private Label detailTitleLarge;
+    @FXML
+    private Label detailAssetCode;
+    @FXML
+    private Label detailStartingPrice;
+    @FXML
+    private Label detailStepPrice;
+    @FXML
+    private Label detailDeposit;
+    @FXML
+    private Label detailFee;
+    @FXML
+    private Label detailStartTime;
+    @FXML
+    private Label detailEndTime;
+    @FXML
+    private Label detailAddress;
+    @FXML
+    private Label detailType;
+    @FXML
+    private Label countdownDays;
+    @FXML
+    private Label countdownHours;
+    @FXML
+    private Label countdownMinutes;
+    @FXML
+    private Label countdownSeconds;
+    @FXML
+    private ImageView detailImage;
+    @FXML
+    private Label detailPrice;
+    @FXML
+    private Label detailTimer;
+    @FXML
+    private Label detailStatus;
+    @FXML
+    private Label detailLeader;
+    @FXML
+    private Label detailDesc;
+    @FXML
+    private Label detailAntiSnipe;
+    @FXML
+    private Label countdownTitle;
+    @FXML
+    private Label bidResultLabel;
+    @FXML
+    private VBox auctionLiveBox;
+    @FXML
+    private VBox auctionSuccessBox;
+    @FXML
+    private VBox currentInfoBox;
+    @FXML
+    private Label successStartingPrice;
+    @FXML
+    private Label successWinningPrice;
+    @FXML
+    private Label successWinnerCode;
 
     // ── FXML: Đặt giá ────────────────────────────────────────────
-    @FXML private TextField bidAmountField;
-    @FXML private Button    placeBidButton;
-    @FXML private TextField autoMaxBidField;
-    @FXML private TextField autoIncrementField;
-    @FXML private Button    autoBidButton;
-    @FXML private Button    cancelAutoBidButton;
-    @FXML private Label     autoBidResultLabel;
+    @FXML
+    private TextField bidAmountField;
+    @FXML
+    private Button placeBidButton;
+    @FXML
+    private TextField autoMaxBidField;
+    @FXML
+    private TextField autoIncrementField;
+    @FXML
+    private Button autoBidButton;
+    @FXML
+    private Button cancelAutoBidButton;
+    @FXML
+    private Label autoBidResultLabel;
 
 
     // ── FXML: Chart ──────────────────────────────────────────────
-    @FXML private LineChart<Number,Number> priceChart;
-    @FXML private NumberAxis xAxis;
-    @FXML private NumberAxis yAxis;
-    @FXML private VBox chartBox;
+    @FXML
+    private LineChart<Number, Number> priceChart;
+    @FXML
+    private NumberAxis xAxis;
+    @FXML
+    private NumberAxis yAxis;
+    @FXML
+    private VBox chartBox;
 
     // ── FXML: Lịch sử ────────────────────────────────────────────
-    @FXML private ListView<String> bidHistoryList;
+    @FXML
+    private ListView<String> bidHistoryList;
 
     // ── State ─────────────────────────────────────────────────────
     private final ObservableList<Auction> auctions = FXCollections.observableArrayList();
@@ -187,7 +248,9 @@ public class AuctionsController {
 
     // ── Navigation ────────────────────────────────────────s───────
 
-    /** Hiện danh sách, ẩn chi tiết */
+    /**
+     * Hiện danh sách, ẩn chi tiết
+     */
     private void showList() {
         // listView/detailPanel chỉ có trong auctions.fxml, không có trong dashboard.fxml
         switchAuctionView(false);
@@ -195,7 +258,9 @@ public class AuctionsController {
         selectedAuction = null;
     }
 
-    /** Hiện chi tiết, ẩn danh sách */
+    /**
+     * Hiện chi tiết, ẩn danh sách
+     */
     private void showDetail() {
         switchAuctionView(true);
     }
@@ -403,6 +468,7 @@ public class AuctionsController {
             shakeNode(label);
         }
     }
+
     private void shakeNode(Node node) {
         if (node == null) return;
         TranslateTransition left = new TranslateTransition(javafx.util.Duration.millis(38), node);
@@ -549,7 +615,9 @@ public class AuctionsController {
         new ParallelTransition(fade, move).play();
     }
 
-    /** Nút "← Quay lại" trong màn hình chi tiết */
+    /**
+     * Nút "← Quay lại" trong màn hình chi tiết
+     */
     @FXML
     private void handleBack(ActionEvent event) {
         showList();
@@ -595,16 +663,21 @@ public class AuctionsController {
 
         // Color status
         colStatus.setCellFactory(col -> new TableCell<>() {
-            @Override protected void updateItem(String val, boolean empty) {
+            @Override
+            protected void updateItem(String val, boolean empty) {
                 super.updateItem(val, empty);
-                if (empty || val == null) { setText(null); setStyle(""); return; }
+                if (empty || val == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
                 setText(val);
                 String color = switch (val) {
-                    case "🟢 RUNNING"  -> "#10b981";
-                    case "⬜ OPEN"     -> "#94a3b8";
+                    case "🟢 RUNNING" -> "#10b981";
+                    case "⬜ OPEN" -> "#94a3b8";
                     case "🏁 FINISHED" -> "#f59e0b";
-                    case "✅ PAID"     -> "#3b82f6";
-                    default            -> "#ef4444";
+                    case "✅ PAID" -> "#3b82f6";
+                    default -> "#ef4444";
                 };
                 setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
             }
@@ -721,7 +794,8 @@ public class AuctionsController {
                 try {
                     var in = getClass().getResourceAsStream("/img/uploads/" + itemId + ext);
                     if (in != null) return new Image(in);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
         try {
@@ -736,7 +810,10 @@ public class AuctionsController {
         card.setPrefWidth(320);
         card.setMinHeight(330);
         card.setStyle(CARD_BASE_STYLE);
-        card.setOnMouseClicked(e -> { animateSelectionFlash(card); onSelectAuction(a); });
+        card.setOnMouseClicked(e -> {
+            animateSelectionFlash(card);
+            onSelectAuction(a);
+        });
 
         ImageView image = new ImageView();
         image.setImage(loadItemImage(a.getItem()));
@@ -879,7 +956,8 @@ public class AuctionsController {
         if (detailFee != null) detailFee.setText(fmtVND(200_000));
         if (detailStartTime != null) detailStartTime.setText(formatDateTime(a.getStartTime()));
         if (detailEndTime != null) detailEndTime.setText(formatDateTime(a.getEndTime()));
-        if (detailAddress != null) detailAddress.setText(safeText(a.getItem().getDescription(), "Chưa cập nhật địa điểm"));
+        if (detailAddress != null)
+            detailAddress.setText(safeText(a.getItem().getDescription(), "Chưa cập nhật địa điểm"));
         if (detailType != null) detailType.setText(a.getItem().getType());
 
         if (detailPrice != null) detailPrice.setText(fmtVND(a.getCurrentPrice()));
@@ -888,7 +966,8 @@ public class AuctionsController {
         if (detailLeader != null) {
             detailLeader.setText(safeText(a.getLeadBidderName(), "Chưa có người dẫn"));
         }
-        if (detailDesc != null) detailDesc.setText(safeText(a.getItem().getDescription(), "Chưa cập nhật thông tin xem tài sản."));
+        if (detailDesc != null)
+            detailDesc.setText(safeText(a.getItem().getDescription(), "Chưa cập nhật thông tin xem tài sản."));
 
         updateCountdown(a);
 
@@ -1165,7 +1244,7 @@ public class AuctionsController {
         priceChart.setCreateSymbols(historySize <= 24);
         priceChart.setAnimated(false);
         priceChart.getData().clear();
-        XYChart.Series<Number,Number> series = new XYChart.Series<>();
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName("Giá đấu");
 
         //List<BidTransaction> history = a.getBidHistory(); (Khóa tạm)
@@ -1509,10 +1588,10 @@ public class AuctionsController {
     private String statusDisplay(Auction.AuctionStatus status) {
         return switch (status) {
             case PENDING -> "PENĐING";
-            case OPEN     -> "⬜ OPEN";
-            case RUNNING  -> "🟢 RUNNING";
+            case OPEN -> "⬜ OPEN";
+            case RUNNING -> "🟢 RUNNING";
             case FINISHED -> "🏁 FINISHED";
-            case PAID     -> "✅ PAID";
+            case PAID -> "✅ PAID";
             case CANCELED -> "❌ CANCELED";
         };
     }
@@ -1522,7 +1601,7 @@ public class AuctionsController {
     }
 
     private void updateStatCards(List<Auction> list) {
-        if (statTotal   != null) statTotal.setText(String.valueOf(list.size()));
+        if (statTotal != null) statTotal.setText(String.valueOf(list.size()));
         if (statRunning != null) {
             long running = list.stream()
                     .filter(this::isRunningAuction)

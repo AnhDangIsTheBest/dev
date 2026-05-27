@@ -24,7 +24,9 @@
     <!-- Divider -->
     <Region style="-fx-background-color: rgba(255,255,255,0.07); -fx-pref-height: 1; -fx-min-height: 1;"
             VBox.vgrow="NEVER">
-        <VBox.margin><Insets top="12" bottom="20"/></VBox.margin>
+        <VBox.margin>
+            <Insets top="12" bottom="20"/>
+        </VBox.margin>
     </Region>
 
     <!-- Main Content -->

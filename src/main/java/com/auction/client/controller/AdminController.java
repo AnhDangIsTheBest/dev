@@ -22,33 +22,50 @@ import java.util.Optional;
 public class AdminController {
 
     // Stats
-    @FXML private Label totalUsersLabel;
-    @FXML private Label totalAuctionsLabel;
-    @FXML private Label totalBidsLabel;
-    @FXML private Label adminStatusLabel;
+    @FXML
+    private Label totalUsersLabel;
+    @FXML
+    private Label totalAuctionsLabel;
+    @FXML
+    private Label totalBidsLabel;
+    @FXML
+    private Label adminStatusLabel;
 
     // Tabs
-    @FXML private Button tabUserBtn;
-    @FXML private Button tabAucBtn;
-    @FXML private VBox   panelUsers;
-    @FXML private VBox   panelAuctions;
+    @FXML
+    private Button tabUserBtn;
+    @FXML
+    private Button tabAucBtn;
+    @FXML
+    private VBox panelUsers;
+    @FXML
+    private VBox panelAuctions;
 
     // Users table
-    @FXML private TableView<User>          userTable;
-    @FXML private TableColumn<User,String> colUserName;
-    @FXML private TableColumn<User,String> colUserRole;
-    @FXML private TableColumn<User,String> colUserEmail;
+    @FXML
+    private TableView<User> userTable;
+    @FXML
+    private TableColumn<User, String> colUserName;
+    @FXML
+    private TableColumn<User, String> colUserRole;
+    @FXML
+    private TableColumn<User, String> colUserEmail;
 
     // Auctions table
-    @FXML private TableView<Auction>            adminAucTable;
-    @FXML private TableColumn<Auction,String>   colAdminAucName;
-    @FXML private TableColumn<Auction,String>   colAdminAucStatus;
-    @FXML private TableColumn<Auction,String>   colAdminAucPrice;
-    @FXML private TableColumn<Auction,String>   colAdminAucBids;
+    @FXML
+    private TableView<Auction> adminAucTable;
+    @FXML
+    private TableColumn<Auction, String> colAdminAucName;
+    @FXML
+    private TableColumn<Auction, String> colAdminAucStatus;
+    @FXML
+    private TableColumn<Auction, String> colAdminAucPrice;
+    @FXML
+    private TableColumn<Auction, String> colAdminAucBids;
 
-    private final ObservableList<User>    users    = FXCollections.observableArrayList();
+    private final ObservableList<User> users = FXCollections.observableArrayList();
     private final ObservableList<Auction> auctions = FXCollections.observableArrayList();
-    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi","VN"));
+    private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi", "VN"));
 
     // ── Tab styles ───────────────────────────────────────────────
     private static final String TAB_ACTIVE =
@@ -71,8 +88,10 @@ public class AdminController {
     private void handleTabUser(ActionEvent e) {
         tabUserBtn.setStyle(TAB_ACTIVE);
         tabAucBtn.setStyle(TAB_INACTIVE);
-        panelUsers.setVisible(true);    panelUsers.setManaged(true);
-        panelAuctions.setVisible(false); panelAuctions.setManaged(false);
+        panelUsers.setVisible(true);
+        panelUsers.setManaged(true);
+        panelAuctions.setVisible(false);
+        panelAuctions.setManaged(false);
         hideStatus();
     }
 
@@ -80,8 +99,10 @@ public class AdminController {
     private void handleTabAuction(ActionEvent e) {
         tabAucBtn.setStyle(TAB_ACTIVE);
         tabUserBtn.setStyle(TAB_INACTIVE);
-        panelAuctions.setVisible(true);  panelAuctions.setManaged(true);
-        panelUsers.setVisible(false);    panelUsers.setManaged(false);
+        panelAuctions.setVisible(true);
+        panelAuctions.setManaged(true);
+        panelUsers.setVisible(false);
+        panelUsers.setManaged(false);
         hideStatus();
     }
 
@@ -97,14 +118,19 @@ public class AdminController {
 
         // Tô màu vai trò
         colUserRole.setCellFactory(col -> new TableCell<>() {
-            @Override protected void updateItem(String val, boolean empty) {
+            @Override
+            protected void updateItem(String val, boolean empty) {
                 super.updateItem(val, empty);
-                if (empty || val == null) { setText(null); setStyle(""); return; }
+                if (empty || val == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
                 setText(val);
                 setStyle(switch (val) {
-                    case "ADMIN"  -> "-fx-text-fill: #ef4444; -fx-font-weight: bold;";
+                    case "ADMIN" -> "-fx-text-fill: #ef4444; -fx-font-weight: bold;";
                     case "SELLER" -> "-fx-text-fill: #3b82f6;";
-                    default       -> "-fx-text-fill: #10b981;";
+                    default -> "-fx-text-fill: #10b981;";
                 });
             }
         });
@@ -124,17 +150,22 @@ public class AdminController {
 
         // Tô màu trạng thái
         colAdminAucStatus.setCellFactory(col -> new TableCell<>() {
-            @Override protected void updateItem(String val, boolean empty) {
+            @Override
+            protected void updateItem(String val, boolean empty) {
                 super.updateItem(val, empty);
-                if (empty || val == null) { setText(null); setStyle(""); return; }
+                if (empty || val == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
                 setText(val);
                 setStyle(switch (val) {
-                    case "RUNNING"  -> "-fx-text-fill: #10b981; -fx-font-weight: bold;";
-                    case "OPEN"     -> "-fx-text-fill: #3b82f6;";
+                    case "RUNNING" -> "-fx-text-fill: #10b981; -fx-font-weight: bold;";
+                    case "OPEN" -> "-fx-text-fill: #3b82f6;";
                     case "FINISHED" -> "-fx-text-fill: #64748b;";
-                    case "PAID"     -> "-fx-text-fill: #f59e0b;";
+                    case "PAID" -> "-fx-text-fill: #f59e0b;";
                     case "CANCELED" -> "-fx-text-fill: #ef4444;";
-                    default         -> "-fx-text-fill: #94a3b8;";
+                    default -> "-fx-text-fill: #94a3b8;";
                 });
             }
         });
@@ -145,12 +176,14 @@ public class AdminController {
     // ── Load ─────────────────────────────────────────────────────
 
     @FXML
-    private void handleRefresh(ActionEvent e) { loadAll(); }
+    private void handleRefresh(ActionEvent e) {
+        loadAll();
+    }
 
     private void loadAll() {
         new Thread(() -> {
             SocketMessage resUsers = ClientContext.getInstance().getClient().getAllUsers();
-            SocketMessage resAucs  = ClientContext.getInstance().getClient().getAllAuctions();
+            SocketMessage resAucs = ClientContext.getInstance().getClient().getAllAuctions();
             Platform.runLater(() -> {
                 if (resUsers.isOk()) {
                     @SuppressWarnings("unchecked")
@@ -176,10 +209,12 @@ public class AdminController {
     private void handleDeleteUser(ActionEvent e) {
         User selected = userTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showStatus("⚠️  Chọn tài khoản cần xóa trước.", false); return;
+            showStatus("⚠️  Chọn tài khoản cần xóa trước.", false);
+            return;
         }
         if ("ADMIN".equals(selected.getRole())) {
-            showStatus("❌  Không thể xóa tài khoản Admin.", false); return;
+            showStatus("❌  Không thể xóa tài khoản Admin.", false);
+            return;
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -210,12 +245,14 @@ public class AdminController {
     private void handleEndSelectedAuction(ActionEvent e) {
         Auction selected = adminAucTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showStatus("⚠️  Chọn phiên cần dừng trước.", false); return;
+            showStatus("⚠️  Chọn phiên cần dừng trước.", false);
+            return;
         }
         if (selected.getStatus() == Auction.AuctionStatus.FINISHED
                 || selected.getStatus() == Auction.AuctionStatus.CANCELED
                 || selected.getStatus() == Auction.AuctionStatus.PAID) {
-            showStatus("⚠️  Phiên này đã kết thúc rồi.", false); return;
+            showStatus("⚠️  Phiên này đã kết thúc rồi.", false);
+            return;
         }
 
         new Thread(() -> {
@@ -238,7 +275,8 @@ public class AdminController {
     private void handleDeleteAuction(ActionEvent e) {
         Auction selected = adminAucTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showStatus("⚠️  Chọn phiên cần xóa trước.", false); return;
+            showStatus("⚠️  Chọn phiên cần xóa trước.", false);
+            return;
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);

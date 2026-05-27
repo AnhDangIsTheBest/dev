@@ -31,20 +31,32 @@ import java.io.IOException;
 public class MainController {
 
     private static MainController activeInstance;
-    @FXML private Label       userNameLabel;
-    @FXML private Label       userRoleLabel;
-    @FXML private Label       statusLabel;
-    @FXML private BorderPane  mainPane;
-    @FXML private VBox        sidebar;
+    @FXML
+    private Label userNameLabel;
+    @FXML
+    private Label userRoleLabel;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private BorderPane mainPane;
+    @FXML
+    private VBox sidebar;
 
     // Sidebar buttons
-    @FXML private Button btnDashboard;
-    @FXML private Button btnMyBids;
-    @FXML private Button btnAutoBid;
-    @FXML private Button btnSeller;
-    @FXML private Button btnAdmin;
-    @FXML private Button btnHistory;
-    @FXML private Button btnMySell;
+    @FXML
+    private Button btnDashboard;
+    @FXML
+    private Button btnMyBids;
+    @FXML
+    private Button btnAutoBid;
+    @FXML
+    private Button btnSeller;
+    @FXML
+    private Button btnAdmin;
+    @FXML
+    private Button btnHistory;
+    @FXML
+    private Button btnMySell;
 
     private Button activeBtn;
 
@@ -95,13 +107,40 @@ public class MainController {
 
     // ── Điều hướng ───────────────────────────────────────────────
 
-    @FXML public void showDashboard(ActionEvent e) { loadContent("dashboard.fxml", btnDashboard); }
-    @FXML public void showMyBids(ActionEvent e)    { loadContent("my-bids.fxml",   btnMyBids); }
-    @FXML public void showAutoBid(ActionEvent e)   { loadContent("auto-bid.fxml",  btnAutoBid); }
-    @FXML public void showSeller(ActionEvent e)    { loadContent("seller.fxml",    btnSeller); }
-    @FXML public void showMySell(ActionEvent e)    { loadContent("my-sell.fxml",   btnMySell); }
-    @FXML public void showAdmin(ActionEvent e)     { loadContent("admin.fxml",     btnAdmin); }
-    @FXML public void showHistory(ActionEvent e)   { loadContent("history.fxml",   btnHistory); }
+    @FXML
+    public void showDashboard(ActionEvent e) {
+        loadContent("dashboard.fxml", btnDashboard);
+    }
+
+    @FXML
+    public void showMyBids(ActionEvent e) {
+        loadContent("my-bids.fxml", btnMyBids);
+    }
+
+    @FXML
+    public void showAutoBid(ActionEvent e) {
+        loadContent("auto-bid.fxml", btnAutoBid);
+    }
+
+    @FXML
+    public void showSeller(ActionEvent e) {
+        loadContent("seller.fxml", btnSeller);
+    }
+
+    @FXML
+    public void showMySell(ActionEvent e) {
+        loadContent("my-sell.fxml", btnMySell);
+    }
+
+    @FXML
+    public void showAdmin(ActionEvent e) {
+        loadContent("admin.fxml", btnAdmin);
+    }
+
+    @FXML
+    public void showHistory(ActionEvent e) {
+        loadContent("history.fxml", btnHistory);
+    }
 
     public static MainController getActiveInstance() {
         return activeInstance;

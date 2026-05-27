@@ -1,13 +1,24 @@
 package com.auction.server.service;
 
 import com.auction.server.dao.ItemDAO;
+import com.auction.server.dao.UserDAO;
 import com.auction.shared.model.Item.Item;
 
 import java.util.List;
 
 public class ItemService {
 
-    private final ItemDAO itemDAO = new ItemDAO();
+    private final ItemDAO itemDAO;
+    private final UserDAO userDAO;
+
+    public ItemService() {
+        this(new ItemDAO(), new UserDAO());
+    }
+
+    ItemService(ItemDAO itemDAO, UserDAO userDAO) {
+        this.itemDAO = itemDAO;
+        this.userDAO = userDAO;
+    }
 
     public boolean createItem(Item item, String sellerId) {
         validateItem(item);
@@ -16,7 +27,11 @@ public class ItemService {
             throw new IllegalArgumentException("sellerId không được trống");
         }
 
-        return itemDAO.insert(item, sellerId);
+        boolean created = itemDAO.insert(item, sellerId);
+        if (created) {
+            userDAO.incrementTotalItemsListed(sellerId);
+        }
+        return created;
     }
 
     public Item getItemById(String itemId) {

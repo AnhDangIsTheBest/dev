@@ -34,8 +34,8 @@ public class ClientHandler implements Runnable {
 
     // Services & DAOs
     private final AuctionService auctionService = new AuctionService();
-    private final BidService     bidService     = new BidService();
-    private final AuthService    authService    = new AuthService();
+    private final BidService bidService = new BidService();
+    private final AuthService authService = new AuthService();
     private final UserService userService = new UserService();
     private final ItemService itemService = new ItemService();
 
@@ -54,7 +54,7 @@ public class ClientHandler implements Runnable {
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
-            in  = new ObjectInputStream(socket.getInputStream());
+            in = new ObjectInputStream(socket.getInputStream());
 
             System.out.println("[Server] Client kết nối: " + socket.getRemoteSocketAddress());
 
@@ -79,36 +79,36 @@ public class ClientHandler implements Runnable {
 
         return switch (msg.getAction()) {
             // Auth
-            case LOGIN    -> handleLogin(msg);
-            case LOGOUT   -> handleLogout();
+            case LOGIN -> handleLogin(msg);
+            case LOGOUT -> handleLogout();
             case REGISTER -> handleRegister(msg);
 
             // Auction
             case GET_ALL_AUCTIONS -> handleGetAllAuctions();
             case GET_MY_SELLER_AUCTIONS -> handleGetMySellerAuctions();
-            case GET_AUCTION      -> handleGetAuction(msg);
-            case CREATE_AUCTION   -> handleCreateAuction(msg);
-            case START_AUCTION    -> handleStartAuction(msg);
-            case FINISH_AUCTION   -> handleFinishAuction(msg);
-            case CANCEL_AUCTION   -> handleCancelAuction(msg);
-            case DELETE_AUCTION   -> handleDeleteAuction(msg);
+            case GET_AUCTION -> handleGetAuction(msg);
+            case CREATE_AUCTION -> handleCreateAuction(msg);
+            case START_AUCTION -> handleStartAuction(msg);
+            case FINISH_AUCTION -> handleFinishAuction(msg);
+            case CANCEL_AUCTION -> handleCancelAuction(msg);
+            case DELETE_AUCTION -> handleDeleteAuction(msg);
 
             // Bid
-            case PLACE_BID          -> handlePlaceBid(msg);
-            case REGISTER_AUTO_BID  -> handleRegisterAutoBid(msg);
-            case CANCEL_AUTO_BID    -> handleCancelAutoBid(msg);
-            case GET_MY_BIDS        -> handleGetMyBids(msg);
+            case PLACE_BID -> handlePlaceBid(msg);
+            case REGISTER_AUTO_BID -> handleRegisterAutoBid(msg);
+            case CANCEL_AUTO_BID -> handleCancelAutoBid(msg);
+            case GET_MY_BIDS -> handleGetMyBids(msg);
 
             // Item
-            case CREATE_ITEM         -> handleCreateItem(msg);
-            case UPDATE_ITEM         -> handleUpdateItem(msg);
-            case DELETE_ITEM         -> handleDeleteItem(msg);
+            case CREATE_ITEM -> handleCreateItem(msg);
+            case UPDATE_ITEM -> handleUpdateItem(msg);
+            case DELETE_ITEM -> handleDeleteItem(msg);
             case GET_ITEMS_BY_SELLER -> handleGetItemsBySeller(msg);
 
             // User
             case GET_ALL_USERS -> handleGetAllUsers();
-            case UPDATE_USER   -> handleUpdateUser(msg);
-            case DELETE_USER   -> handleDeleteUser(msg);
+            case UPDATE_USER -> handleUpdateUser(msg);
+            case DELETE_USER -> handleDeleteUser(msg);
 
             default -> SocketMessage.error(msg.getAction(), "Action không được hỗ trợ: " + msg.getAction());
         };
@@ -147,10 +147,10 @@ public class ClientHandler implements Runnable {
 
     /**
      * Client gửi kèm theo payload:
-     *   "userType" : "BIDDER" hoặc "SELLER"
-     *   "username" : String
-     *   "password" : String
-     *
+     * "userType" : "BIDDER" hoặc "SELLER"
+     * "username" : String
+     * "password" : String
+     * <p>
      * AuthService sẽ kiểm tra trùng username và tạo đúng loại user.
      */
     private SocketMessage handleRegister(SocketMessage msg) {
@@ -172,9 +172,9 @@ public class ClientHandler implements Runnable {
         int result;
 
         if ("SELLER".equalsIgnoreCase(userType)) {
-            result = authService.registerSeller(username,email, password,fullName);
+            result = authService.registerSeller(username, email, password, fullName);
         } else if ("BIDDER".equalsIgnoreCase(userType)) {
-            result = authService.registerBidder(username,email, password,fullName);
+            result = authService.registerBidder(username, email, password, fullName);
         } else {
             return SocketMessage.error(Action.REGISTER, "userType không hợp lệ, chỉ nhận BIDDER hoặc SELLER");
         }
@@ -222,12 +222,12 @@ public class ClientHandler implements Runnable {
     private SocketMessage handleCreateAuction(SocketMessage msg) {
         if (!isLoggedIn()) return requireLogin(Action.CREATE_AUCTION);
 
-        Item item            = (Item) msg.get("item");
-        LocalDateTime start  = (LocalDateTime) msg.get("startTime");
-        LocalDateTime end    = (LocalDateTime) msg.get("endTime");
-        boolean antiSniping  = msg.getBoolean("antiSnipingEnabled");
-        int snipeWindow      = msg.getInt("snipeWindowSeconds");
-        int snipeExtend      = msg.getInt("snipeExtendSeconds");
+        Item item = (Item) msg.get("item");
+        LocalDateTime start = (LocalDateTime) msg.get("startTime");
+        LocalDateTime end = (LocalDateTime) msg.get("endTime");
+        boolean antiSniping = msg.getBoolean("antiSnipingEnabled");
+        int snipeWindow = msg.getInt("snipeWindowSeconds");
+        int snipeExtend = msg.getInt("snipeExtendSeconds");
 
         if (item == null || start == null || end == null)
             return SocketMessage.error(Action.CREATE_AUCTION, "Thiếu thông tin auction");
@@ -306,7 +306,7 @@ public class ClientHandler implements Runnable {
         if (!isLoggedIn()) return requireLogin(Action.PLACE_BID);
 
         String auctionId = msg.getString("auctionId");
-        double amount    = msg.getDouble("amount");
+        double amount = msg.getDouble("amount");
 
         if (auctionId == null || auctionId.isBlank()) {
             return SocketMessage.error(Action.PLACE_BID, "Thiếu auctionId");
@@ -349,7 +349,7 @@ public class ClientHandler implements Runnable {
         if (!isLoggedIn()) return requireLogin(Action.REGISTER_AUTO_BID);
 
         String auctionId = msg.getString("auctionId");
-        double maxBid    = msg.getDouble("maxBid");
+        double maxBid = msg.getDouble("maxBid");
         double increment = msg.getDouble("increment");
 
         if (auctionId == null || auctionId.isBlank()) {
@@ -512,7 +512,9 @@ public class ClientHandler implements Runnable {
     //  UTILITIES
     // ══════════════════════════════════════════════════════════════
 
-    /** Gửi response về client, thread-safe */
+    /**
+     * Gửi response về client, thread-safe
+     */
     public synchronized void sendResponse(SocketMessage msg) {
         try {
             out.writeObject(msg);
@@ -541,9 +543,18 @@ public class ClientHandler implements Runnable {
 
     private void cleanup() {
         server.removeClient(this);
-        try { if (in != null)  in.close();  } catch (IOException ignored) {}
-        try { if (out != null) out.close(); } catch (IOException ignored) {}
-        try { socket.close(); } catch (IOException ignored) {}
+        try {
+            if (in != null) in.close();
+        } catch (IOException ignored) {
+        }
+        try {
+            if (out != null) out.close();
+        } catch (IOException ignored) {
+        }
+        try {
+            socket.close();
+        } catch (IOException ignored) {
+        }
         System.out.println("[Server] Client ngắt kết nối: " + socket.getRemoteSocketAddress());
     }
 }

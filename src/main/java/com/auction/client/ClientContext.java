@@ -14,7 +14,8 @@ public class ClientContext {
     private AuctionClient client;
     private User currentUser;
 
-    private ClientContext() {}
+    private ClientContext() {
+    }
 
     public static ClientContext getInstance() {
         if (instance == null) {

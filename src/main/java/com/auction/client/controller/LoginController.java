@@ -18,14 +18,20 @@ public class LoginController {
 
     // ── Server config (có thể đọc từ config file sau) ────────────
     private static final String SERVER_HOST = "localhost";
-    private static final int    SERVER_PORT = 9090;
+    private static final int SERVER_PORT = 9090;
 
-    @FXML private TextField       usernameField;
-    @FXML private PasswordField   passwordField;
-    @FXML private Label           errorLabel;
-    @FXML private ProgressIndicator loadingIndicator;
-    @FXML private Button          loginButton;
-    @FXML private Button          registerButton;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private Label errorLabel;
+    @FXML
+    private ProgressIndicator loadingIndicator;
+    @FXML
+    private Button loginButton;
+    @FXML
+    private Button registerButton;
 
     @FXML
     public void initialize() {

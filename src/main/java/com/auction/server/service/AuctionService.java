@@ -10,8 +10,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class AuctionService {
-    private final AuctionDAO auctionDAO = new AuctionDAO();
-    private final BidDAO bidDAO = new BidDAO();
+    private final AuctionDAO auctionDAO;
+    private final BidDAO bidDAO;
+
+    public AuctionService() {
+        this(new AuctionDAO(), new BidDAO());
+    }
+
+    AuctionService(AuctionDAO auctionDAO, BidDAO bidDAO) {
+        this.auctionDAO = auctionDAO;
+        this.bidDAO = bidDAO;
+    }
 
     public String createAuction(Item item, LocalDateTime startTime, LocalDateTime endTime,
                                 boolean antiSnipingEnabled, int snipeWindowSeconds, int snipeExtendSeconds) {

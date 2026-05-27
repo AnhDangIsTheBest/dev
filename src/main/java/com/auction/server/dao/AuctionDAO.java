@@ -1,4 +1,4 @@
-package com.auction.dao;
+package com.auction.server.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.auction.config.DBConnection;
-import com.auction.model.Auction;
-import com.auction.model.Auction.AuctionStatus;
-import com.auction.model.BidTransaction;
-import com.auction.model.Item.Art;
-import com.auction.model.Item.Electronics;
-import com.auction.model.Item.Item;
-import com.auction.model.Item.OtherItem;
-import com.auction.model.Item.Vehicle;
+import com.auction.server.config.DBConnection;
+import com.auction.shared.model.Auction;
+import com.auction.shared.model.Auction.AuctionStatus;
+import com.auction.shared.model.BidTransaction;
+import com.auction.shared.model.Item.Art;
+import com.auction.shared.model.Item.Electronics;
+import com.auction.shared.model.Item.Item;
+import com.auction.shared.model.Item.OtherItem;
+import com.auction.shared.model.Item.Vehicle;
 
 public class AuctionDAO {
     private final BidDAO bidDAO = new BidDAO();
@@ -273,27 +273,27 @@ public class AuctionDAO {
 
     private Auction mapRow(ResultSet rs) throws SQLException {
         // ── Auction fields ────────────────────────────────────────
-        String id             = rs.getString("id");
-        String itemId         = rs.getString("item_id");
-        double currentPrice   = rs.getDouble("current_price");
-        String leadBidderId   = rs.getString("lead_bidder_id");
+        String id = rs.getString("id");
+        String itemId = rs.getString("item_id");
+        double currentPrice = rs.getDouble("current_price");
+        String leadBidderId = rs.getString("lead_bidder_id");
         String leadBidderName = rs.getString("lead_bidder_name");
         LocalDateTime startTime = rs.getTimestamp("start_time").toLocalDateTime();
-        LocalDateTime endTime   = rs.getTimestamp("end_time").toLocalDateTime();
-        AuctionStatus status    = AuctionStatus.valueOf(rs.getString("status"));
-        boolean antiSniping     = rs.getBoolean("anti_sniping_enabled");
-        int snipeWindow         = rs.getInt("snipe_window_seconds");
-        int snipeExtend         = rs.getInt("snipe_extend_seconds");
+        LocalDateTime endTime = rs.getTimestamp("end_time").toLocalDateTime();
+        AuctionStatus status = AuctionStatus.valueOf(rs.getString("status"));
+        boolean antiSniping = rs.getBoolean("anti_sniping_enabled");
+        int snipeWindow = rs.getInt("snipe_window_seconds");
+        int snipeExtend = rs.getInt("snipe_extend_seconds");
 
         // ── Build Item từ JOIN — không cần thêm DB call ───────────
-        String itemType        = rs.getString("item_type");
-        String itemName        = rs.getString("item_name");
-        String itemDesc        = rs.getString("item_description");
-        double startingPrice   = rs.getDouble("starting_price");
+        String itemType = rs.getString("item_type");
+        String itemName = rs.getString("item_name");
+        String itemDesc = rs.getString("item_description");
+        double startingPrice = rs.getDouble("starting_price");
         double itemCurrentPrice = rs.getDouble("item_current_price");
-        String itemStatus      = rs.getString("item_status");
-        byte[] itemImageData   = rs.getBytes("item_image_data");
-        String itemSellerId    = rs.getString("item_seller_id");
+        String itemStatus = rs.getString("item_status");
+        byte[] itemImageData = rs.getBytes("item_image_data");
+        String itemSellerId = rs.getString("item_seller_id");
 
         Item item = switch (itemType.toUpperCase()) {
             case "ELECTRONICS" -> new Electronics(

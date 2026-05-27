@@ -1,11 +1,12 @@
-package com.auction.dao;
+package com.auction.server.dao;
 
-import com.auction.config.DBConnection;
-import com.auction.model.Item.Art;
-import com.auction.model.Item.Electronics;
-import com.auction.model.Item.Item;
-import com.auction.model.Item.OtherItem;
-import com.auction.model.Item.Vehicle;
+import com.auction.server.config.DBConnection;
+import com.auction.shared.model.Item.Art;
+import com.auction.shared.model.Item.Electronics;
+import com.auction.shared.model.Item.Item;
+import com.auction.shared.model.Item.OtherItem;
+import com.auction.shared.model.Item.Vehicle;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

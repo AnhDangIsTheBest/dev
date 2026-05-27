@@ -3,7 +3,7 @@ package com.auction.client.controller;
 import com.auction.client.ClientContext;
 import com.auction.shared.model.Auction;
 import com.auction.shared.model.BidTransaction;
-import com.auction.shared.network.protocol.SocketMessage ;
+import com.auction.shared.network.protocol.SocketMessage;
 import com.auction.shared.network.protocol.SocketMessage.Action;
 
 import javafx.animation.FadeTransition;
@@ -28,13 +28,18 @@ import java.util.Locale;
 
 public class HistoryController {
 
-    @FXML private ListView<String>           allBidsList;
-    @FXML private ComboBox<Auction>          auctionFilter;
-    @FXML private LineChart<Number, Number>  priceLineChart; // Đổi String→Number ở X
-    @FXML private NumberAxis                 xAxis;
-    @FXML private Label                      statsLabel;
+    @FXML
+    private ListView<String> allBidsList;
+    @FXML
+    private ComboBox<Auction> auctionFilter;
+    @FXML
+    private LineChart<Number, Number> priceLineChart; // Đổi String→Number ở X
+    @FXML
+    private NumberAxis xAxis;
+    @FXML
+    private Label statsLabel;
 
-    private final ObservableList<String>  bidLogs  = FXCollections.observableArrayList();
+    private final ObservableList<String> bidLogs = FXCollections.observableArrayList();
     private final ObservableList<Auction> auctions = FXCollections.observableArrayList();
 
     private static final NumberFormat VND = NumberFormat.getInstance(new Locale("vi", "VN"));
@@ -46,7 +51,8 @@ public class HistoryController {
 
         auctionFilter.setItems(auctions);
         auctionFilter.setCellFactory(lv -> new ListCell<>() {
-            @Override protected void updateItem(Auction a, boolean empty) {
+            @Override
+            protected void updateItem(Auction a, boolean empty) {
                 super.updateItem(a, empty);
                 setText(empty || a == null ? null
                         : "[" + a.getAuctionId() + "] " + a.getItem().getName());
@@ -54,7 +60,9 @@ public class HistoryController {
         });
         auctionFilter.setButtonCell(auctionFilter.getCellFactory().call(null));
         auctionFilter.getSelectionModel().selectedItemProperty().addListener(
-                (obs, old, neu) -> { if (neu != null) renderChart(neu); });
+                (obs, old, neu) -> {
+                    if (neu != null) renderChart(neu);
+                });
 
         loadHistory();
 

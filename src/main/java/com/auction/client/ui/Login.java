@@ -7,6 +7,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
+
 import java.io.IOException;
 
 public class Login {
@@ -29,10 +30,9 @@ public class Login {
         if (username.getText().toString().equals("nam") && password.getText().toString().equals("123")) {
             checkPass.setText("Login success!");
             m.changeScene("afterLogin.fxml");
-        } else if ( username.getText().isEmpty() || password.getText().isEmpty()){
+        } else if (username.getText().isEmpty() || password.getText().isEmpty()) {
             checkPass.setText("Nhập đủ vào");
-        }
-        else{
+        } else {
             checkPass.setText("Thông tin không chính xác");
         }
     }

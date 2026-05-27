@@ -59,12 +59,16 @@ public class SocketMessage implements Serializable {
 
     // ── Builder-style helpers ────────────────────────────────────
 
-    /** Tạo request từ client gửi lên server */
+    /**
+     * Tạo request từ client gửi lên server
+     */
     public static SocketMessage request(Action action) {
         return new SocketMessage(action);
     }
 
-    /** Tạo response thành công từ server */
+    /**
+     * Tạo response thành công từ server
+     */
     public static SocketMessage ok(Action action, String message) {
         SocketMessage msg = new SocketMessage(action);
         msg.status = Status.OK;
@@ -72,7 +76,9 @@ public class SocketMessage implements Serializable {
         return msg;
     }
 
-    /** Tạo response lỗi từ server */
+    /**
+     * Tạo response lỗi từ server
+     */
     public static SocketMessage error(Action action, String errorMessage) {
         SocketMessage msg = new SocketMessage(action);
         msg.status = Status.FAIL;
@@ -80,13 +86,17 @@ public class SocketMessage implements Serializable {
         return msg;
     }
 
-    /** Thêm dữ liệu vào payload, trả về chính nó để chain */
+    /**
+     * Thêm dữ liệu vào payload, trả về chính nó để chain
+     */
     public SocketMessage put(String key, Object value) {
         this.payload.put(key, value);
         return this;
     }
 
-    /** Lấy dữ liệu từ payload */
+    /**
+     * Lấy dữ liệu từ payload
+     */
     public Object get(String key) {
         return payload.get(key);
     }
@@ -118,17 +128,45 @@ public class SocketMessage implements Serializable {
     }
 
     // ── Getters / Setters ────────────────────────────────────────
-    public Action getAction()           { return action; }
-    public void setAction(Action a)     { this.action = a; }
-    public Status getStatus()           { return status; }
-    public void setStatus(Status s)     { this.status = s; }
-    public String getMessage()          { return message; }
-    public void setMessage(String m)    { this.message = m; }
-    public Map<String, Object> getPayload()          { return payload; }
-    public void setPayload(Map<String, Object> map)  { this.payload = map; }
+    public Action getAction() {
+        return action;
+    }
 
-    public boolean isOk()   { return status == Status.OK; }
-    public boolean isFail() { return status == Status.FAIL; }
+    public void setAction(Action a) {
+        this.action = a;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status s) {
+        this.status = s;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String m) {
+        this.message = m;
+    }
+
+    public Map<String, Object> getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Map<String, Object> map) {
+        this.payload = map;
+    }
+
+    public boolean isOk() {
+        return status == Status.OK;
+    }
+
+    public boolean isFail() {
+        return status == Status.FAIL;
+    }
 
     @Override
     public String toString() {

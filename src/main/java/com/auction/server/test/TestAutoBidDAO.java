@@ -141,7 +141,7 @@ public class TestAutoBidDAO {
             System.out.println("Delete bidder: " + deletedUser);
         } else {
             System.out.println("Không xoá bidder vì item vẫn còn liên kết.");
-}
+        }
 
         System.out.println("===== DONE =====");
     }

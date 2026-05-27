@@ -9,18 +9,31 @@ import java.util.stream.Collectors;
 import com.auction.server.dao.AuctionDAO;
 import com.auction.server.dao.AutoBidDAO;
 import com.auction.server.dao.BidDAO;
+import com.auction.server.dao.UserDAO;
 import com.auction.shared.model.Auction;
 import com.auction.shared.model.Auction.AuctionStatus;
 import com.auction.shared.model.AutoBidConfig;
 import com.auction.shared.model.BidTransaction;
 
 public class BidService {
-    private final AuctionDAO auctionDAO = new AuctionDAO();
-    private final BidDAO bidDAO = new BidDAO();
-    private final AutoBidDAO autoBidDAO = new AutoBidDAO();
+    private final AuctionDAO auctionDAO;
+    private final BidDAO bidDAO;
+    private final AutoBidDAO autoBidDAO;
+    private final UserDAO userDAO;
+
+    public BidService() {
+        this(new AuctionDAO(), new BidDAO(), new AutoBidDAO(), new UserDAO());
+    }
+
+    BidService(AuctionDAO auctionDAO, BidDAO bidDAO, AutoBidDAO autoBidDAO, UserDAO userDAO) {
+        this.auctionDAO = auctionDAO;
+        this.bidDAO = bidDAO;
+        this.autoBidDAO = autoBidDAO;
+        this.userDAO = userDAO;
+    }
 
     public String placeManualBid(String auctionId, String bidderId, String bidderName, double amount) {
-        Auction auction = validateAuctionForBid(auctionId);
+        Auction auction = validateAuctionForBid(auctionId, bidderId);
         validateBidAmount(auction, amount);
 
         BidTransaction manualBid = createBid(auctionId, bidderId, bidderName, amount, false);
@@ -29,6 +42,7 @@ public class BidService {
             return null;
         }
 
+        userDAO.incrementTotalBids(bidderId);
         auction.applyBid(manualBid);
         auctionDAO.updateAfterBid(auctionId, manualBid, auction.getEndTime());
 
@@ -37,7 +51,7 @@ public class BidService {
     }
 
     public boolean registerAutoBid(String auctionId, String bidderId, String bidderName, double maxBid, double increment) {
-        Auction auction = validateAuctionForBid(auctionId);
+        Auction auction = validateAuctionForBid(auctionId, bidderId);
 
         if (maxBid <= auction.getCurrentPrice()) {
             throw new IllegalArgumentException("Giá auto bid tối đa phải lớn hơn giá hiện tại");
@@ -68,7 +82,7 @@ public class BidService {
         return autoBidDAO.delete(auctionId, bidderId);
     }
 
-    private Auction validateAuctionForBid(String auctionId) {
+    private Auction validateAuctionForBid(String auctionId, String bidderId) {
         Auction auction = auctionDAO.getAuctionById(auctionId);
 
         if (auction == null) {
@@ -77,6 +91,10 @@ public class BidService {
 
         if (auction.getStatus() != AuctionStatus.OPEN && auction.getStatus() != AuctionStatus.RUNNING) {
             throw new IllegalStateException("Phiên đấu giá không còn nhận bid");
+        }
+
+        if (isAuctionOwner(auction, bidderId)) {
+            throw new IllegalStateException("Bạn không được tự đặt giá ở phiên đấu giá của mình");
         }
 
         if (LocalDateTime.now().isAfter(auction.getEndTime())) {
@@ -98,6 +116,14 @@ public class BidService {
         }
     }
 
+    private boolean isAuctionOwner(Auction auction, String bidderId) {
+        return auction != null
+                && auction.getItem() != null
+                && auction.getItem().getSellerId() != null
+                && bidderId != null
+                && auction.getItem().getSellerId().equals(bidderId);
+    }
+
     private void runAutoBidBattle(String auctionId) {
         Auction auction = auctionDAO.getAuctionById(auctionId);
         if (auction == null) {
@@ -106,10 +132,12 @@ public class BidService {
 
         double currentPrice = auction.getCurrentPrice();
         String leadBidderId = auction.getLeadBidderId();
+        String sellerId = auction.getItem() == null ? null : auction.getItem().getSellerId();
 
         List<AutoBidConfig> configs = autoBidDAO.getByAuction(auctionId)
                 .stream()
                 .filter(c -> c.getMaxBid() > currentPrice)
+                .filter(c -> sellerId == null || !c.getBidderId().equals(sellerId))
                 .filter(c -> leadBidderId == null || !c.getBidderId().equals(leadBidderId))
                 .sorted(Comparator.naturalOrder())
                 .collect(Collectors.toList());
@@ -149,6 +177,7 @@ public class BidService {
             String bidId = bidDAO.placeBid(autoBid);
 
             if (bidId != null) {
+                userDAO.incrementTotalBids(config.getBidderId());
                 auction.applyBid(autoBid);
                 auctionDAO.updateAfterBid(auctionId, autoBid, auction.getEndTime());
             }

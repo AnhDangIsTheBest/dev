@@ -16,7 +16,8 @@ public class SceneManager {
     private static volatile SceneManager instance;
     private Stage primaryStage;
 
-    private SceneManager() {}
+    private SceneManager() {
+    }
 
     public static SceneManager getInstance() {
         if (instance == null) {

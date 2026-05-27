@@ -44,9 +44,13 @@
           style="-fx-background-color: #12141a; -fx-border-color: rgba(139,92,246,0.3); -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 16;">
         <Label text="Cách hoạt động"
                style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #a78bfa;"/>
-        <Label text="1. Người dùng đặt giá tối đa (maxBid) và bước giá (increment)" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
-        <Label text="2. Khi có bid mới từ đối thủ, hệ thống tự động đặt giá = giá hiện tại + increment" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
-        <Label text="3. Nếu giá tự động vượt maxBid, hệ thống dừng lại" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
-        <Label text="4. Ưu tiên theo thời điểm đăng ký (PriorityQueue) khi xung đột" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <Label text="1. Người dùng đặt giá tối đa (maxBid) và bước giá (increment)"
+               style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <Label text="2. Khi có bid mới từ đối thủ, hệ thống tự động đặt giá = giá hiện tại + increment"
+               style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <Label text="3. Nếu giá tự động vượt maxBid, hệ thống dừng lại"
+               style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+        <Label text="4. Ưu tiên theo thời điểm đăng ký (PriorityQueue) khi xung đột"
+               style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
     </VBox>
 </VBox>

@@ -19,6 +19,8 @@
             <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="100"/>
             <TableColumn fx:id="colResult" text="Kết quả" prefWidth="120"/>
         </columns>
-        <placeholder><Label text="Bạn chưa tham gia phiên nào" style="-fx-text-fill: #64748b;"/></placeholder>
+        <placeholder>
+            <Label text="Bạn chưa tham gia phiên nào" style="-fx-text-fill: #64748b;"/>
+        </placeholder>
     </TableView>
 </VBox>

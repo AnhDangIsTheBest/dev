@@ -1,7 +1,7 @@
-package com.auction.dao;
+package com.auction.server.dao;
 
-import com.auction.config.DBConnection;
-import com.auction.model.AutoBidConfig;
+import com.auction.server.config.DBConnection;
+import com.auction.shared.model.AutoBidConfig;
 
 import java.sql.*;
 import java.util.ArrayList;

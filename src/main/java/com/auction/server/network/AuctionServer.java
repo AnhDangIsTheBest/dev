@@ -16,9 +16,9 @@ import java.util.concurrent.Executors;
 
 /**
  * Server chính của hệ thống đấu giá.
- *
+ * <p>
  * Chạy: new AuctionServer(9090).start();
- *
+ * <p>
  * Tính năng:
  * - Chấp nhận nhiều client đồng thời (thread pool)
  * - Broadcast realtime khi có bid mới hoặc phiên kết thúc
@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
  */
 public class AuctionServer {
 
-    private static final int DEFAULT_PORT    = 9090;
+    private static final int DEFAULT_PORT = 9090;
     private static final int THREAD_POOL_SIZE = 50;   // Tối đa 50 client cùng lúc
 
     private final int port;
@@ -38,10 +38,10 @@ public class AuctionServer {
     private ServerSocket serverSocket;
 
     public AuctionServer(int port) {
-        this.port             = port;
-        this.threadPool       = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        this.port = port;
+        this.threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         this.connectedClients = new CopyOnWriteArrayList<>();
-        this.auctionService   = new AuctionService();
+        this.auctionService = new AuctionService();
     }
 
     // ── Khởi động Server ──────────────────────────────────────────
@@ -51,7 +51,7 @@ public class AuctionServer {
             running = true;
             System.out.println("╔══════════════════════════════════════╗");
             System.out.println("║     AUCTION SERVER STARTED           ║");
-            System.out.printf ("║     Listening on port: %-4d          ║%n", port);
+            System.out.printf("║     Listening on port: %-4d          ║%n", port);
             System.out.println("╚══════════════════════════════════════╝");
 
             // Scheduler tự động kết thúc phiên hết giờ
@@ -145,6 +145,7 @@ public class AuctionServer {
     }
 
     // ── Auto-finish Scheduler ────────────────────────────────────
+
     /**
      * Chạy mỗi 30 giây, kiểm tra phiên nào hết giờ thì tự động FINISH
      * và broadcast cho các client đang xem.
@@ -169,8 +170,8 @@ public class AuctionServer {
     private void checkAndFinishExpiredAuctions() {
         try {
             List<Auction> active = new ArrayList<>();
-            active.addAll( auctionService.getAuctionsByStatus(AuctionStatus.OPEN));
-            active.addAll( auctionService.getAuctionsByStatus(AuctionStatus.RUNNING));
+            active.addAll(auctionService.getAuctionsByStatus(AuctionStatus.OPEN));
+            active.addAll(auctionService.getAuctionsByStatus(AuctionStatus.RUNNING));
             java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
             for (Auction auction : active) {
