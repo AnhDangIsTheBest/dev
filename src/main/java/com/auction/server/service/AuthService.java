@@ -37,7 +37,6 @@ public class AuthService {
             User newUser = new Bidder(null, username, email, fullName, password, 0.0, 0, 0);
             return userDao.insert(newUser) ? 0 : 2;
         } catch (RuntimeException e) {
-            System.err.println("[AuthService] registerBidder lỗi DB: " + e.getMessage());
             return 2;
         }
     }
