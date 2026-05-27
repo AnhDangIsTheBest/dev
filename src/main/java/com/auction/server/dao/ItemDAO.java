@@ -1,11 +1,11 @@
-package com.auction.server.dao;
+package com.auction.dao;
 
-import com.auction.server.config.DBConnection;
-import com.auction.shared.model.Item.Art;
-import com.auction.shared.model.Item.Electronics;
-import com.auction.shared.model.Item.Item;
-import com.auction.shared.model.Item.OtherItem;
-import com.auction.shared.model.Item.Vehicle;
+import com.auction.config.DBConnection;
+import com.auction.model.Item.Art;
+import com.auction.model.Item.Electronics;
+import com.auction.model.Item.Item;
+import com.auction.model.Item.OtherItem;
+import com.auction.model.Item.Vehicle;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,8 @@ public class ItemDAO {
 
         String sql = """
                 INSERT INTO items (
-                    id, name, description, type, starting_price, current_price, status, seller_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    id, name, description, type, starting_price, current_price, status, image_data, seller_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -31,7 +31,8 @@ public class ItemDAO {
                 ps.setDouble(5, item.getStartingPrice());
                 ps.setDouble(6, item.getCurrentPrice());
                 ps.setString(7, item.getStatus());
-                ps.setString(8, sellerId);
+                ps.setBytes(8, item.getImageData());
+                ps.setString(9, sellerId);
                 ps.executeUpdate();
             }
 
@@ -117,7 +118,7 @@ public class ItemDAO {
     public boolean update(Item item) {
         String sql = """
                 UPDATE items
-                SET name = ?, description = ?, type = ?, starting_price = ?, current_price = ?, status = ?
+                SET name = ?, description = ?, type = ?, starting_price = ?, current_price = ?, status = ?, image_data = ?
                 WHERE id = ?
                 """;
 
@@ -131,7 +132,8 @@ public class ItemDAO {
                 ps.setDouble(4, item.getStartingPrice());
                 ps.setDouble(5, item.getCurrentPrice());
                 ps.setString(6, item.getStatus());
-                ps.setString(7, item.getId());
+                ps.setBytes(7, item.getImageData());
+                ps.setString(8, item.getId());
                 ps.executeUpdate();
             }
 
@@ -185,8 +187,10 @@ public class ItemDAO {
         double startingPrice = rs.getDouble("starting_price");
         double currentPrice = rs.getDouble("current_price");
         String status = rs.getString("status");
+        byte[] imageData = rs.getBytes("image_data");
+        String sellerId = rs.getString("seller_id");
 
-        return switch (type.toUpperCase()) {
+        Item item = switch (type.toUpperCase()) {
             case "ELECTRONICS" -> new Electronics(
                     id, name, description, startingPrice, status, currentPrice,
                     rs.getString("electronics_brand"),
@@ -213,6 +217,11 @@ public class ItemDAO {
             );
             default -> throw new SQLException("[ItemDAO] mapRow: unknown item type: " + type);
         };
+
+        item.setImageData(imageData);
+        item.setSellerId(sellerId);
+        return item;
+
     }
 
     private void insertSpecific(Connection conn, String itemId, Item item) throws SQLException {

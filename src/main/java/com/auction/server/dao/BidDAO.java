@@ -1,14 +1,12 @@
-package com.auction.server.dao;
+package com.auction.dao;
 
-import com.auction.server.config.DBConnection;
-import com.auction.shared.model.BidTransaction;
+import com.auction.config.DBConnection;
+import com.auction.model.BidTransaction;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class BidDAO {
@@ -143,29 +141,29 @@ public class BidDAO {
         }
     }
 
-    public Map<String, Double> getMyBestBids(String bidderId) {
+    /**
+     * Trả về Map<auctionId, maxAmount> — giá cao nhất mà bidderId đã đặt
+     * trong mỗi phiên đấu giá họ từng tham gia.
+     */
+    public java.util.Map<String, Double> getMyBestBids(String bidderId) {
         String sql = """
-                SELECT auction_id, MAX(amount) AS max_amount
+                SELECT auction_id, MAX(amount) AS best
                 FROM bid_transactions
                 WHERE bidder_id = ?
                 GROUP BY auction_id
                 """;
-
-        Map<String, Double> bestBids = new HashMap<>();
-
+        java.util.Map<String, Double> result = new java.util.HashMap<>();
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, bidderId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                bestBids.put(rs.getString("auction_id"), rs.getDouble("max_amount"));
+                result.put(rs.getString("auction_id"), rs.getDouble("best"));
             }
         } catch (SQLException e) {
-            System.err.println("[BidDAO] getMyBestBids lá»—i: " + e.getMessage());
+            System.err.println("[BidDAO] getMyBestBids lỗi: " + e.getMessage());
         }
-
-        return bestBids;
+        return result;
     }
 
     private List<BidTransaction> mapResultSet(ResultSet rs) throws SQLException {

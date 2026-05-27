@@ -1,16 +1,18 @@
-package com.auction.server.dao;
+package com.auction.dao;
 
-import com.auction.server.config.DBConnection;
-import com.auction.shared.model.User.Admin;
-import com.auction.shared.model.User.Bidder;
-import com.auction.shared.model.User.Seller;
-import com.auction.shared.model.User.User;
+import com.auction.config.DBConnection;
+import com.auction.model.User.Admin;
+import com.auction.model.User.Bidder;
+import com.auction.model.User.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class UserDAO {
+    private static final Object SCHEMA_LOCK = new Object();
+    private static volatile boolean userSchemaReady = false;
 
     public boolean insert(User user) {
         String id = user.getId() != null && !user.getId().isBlank()
@@ -22,23 +24,23 @@ public class UserDAO {
                     id, username, email, password, fullname, role,
                     balance, total_bids, won_auctions,
                     total_items_listed, total_revenue
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, id);
-            ps.setString(2, user.getUsername());
-            ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPassword());
-            ps.setString(5, user.getFullname());
-            ps.setString(6, user.getRole());
-
-            fillRoleFields(ps, user);
-            return ps.executeUpdate() > 0;
+        try (Connection conn = DBConnection.getConnection()) {
+            ensureUserSchema(conn);
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                ps.setString(2, user.getUsername());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getPassword());
+                ps.setString(5, user.getFullname());
+                ps.setString(6, user.getRole());
+                fillAllRoleFields(ps, user, 7);
+                return ps.executeUpdate() > 0;
+            }
         } catch (SQLException e) {
-            System.err.println("[UserDAO] insert lỗi: " + e.getMessage());
+            System.err.println("[UserDAO] insert loi: " + e.getMessage());
             return false;
         }
     }
@@ -47,13 +49,13 @@ public class UserDAO {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+            ensureUserSchema(conn);
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1) > 0;
         } catch (SQLException e) {
-            System.err.println("[UserDAO] existsByUsername lỗi: " + e.getMessage());
-            // Ném exception để tầng trên biết DB bị lỗi, không im lặng trả false
-            throw new RuntimeException("Không thể kiểm tra username: " + e.getMessage(), e);
+            System.err.println("[UserDAO] existsByUsername loi: " + e.getMessage());
+            throw new RuntimeException("Khong the kiem tra username: " + e.getMessage(), e);
         }
         return false;
     }
@@ -64,42 +66,45 @@ public class UserDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ensureUserSchema(conn);
             ps.setString(1, username);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
         } catch (SQLException e) {
-            System.err.println("[UserDAO] login lỗi: " + e.getMessage());
+            System.err.println("[UserDAO] login loi: " + e.getMessage());
         }
         return null;
     }
+
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ensureUserSchema(conn);
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) return rs.getInt(1) > 0;
-
         } catch (SQLException e) {
-            System.err.println("[UserDAO] existsByEmail lỗi: " + e.getMessage());
-            throw new RuntimeException("Không thể kiểm tra email: " + e.getMessage(), e);
+            System.err.println("[UserDAO] existsByEmail loi: " + e.getMessage());
+            throw new RuntimeException("Khong the kiem tra email: " + e.getMessage(), e);
         }
         return false;
     }
+
     public User findById(String id) {
         String sql = "SELECT * FROM users WHERE id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ensureUserSchema(conn);
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
         } catch (SQLException e) {
-            System.err.println("[UserDAO] findById lỗi: " + e.getMessage());
+            System.err.println("[UserDAO] findById loi: " + e.getMessage());
         }
         return null;
     }
@@ -107,13 +112,14 @@ public class UserDAO {
     public List<User> getAll() {
         String sql = "SELECT * FROM users ORDER BY created_at DESC, id DESC";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            return mapResultSet(rs);
+        try (Connection conn = DBConnection.getConnection()) {
+            ensureUserSchema(conn);
+            try (PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                return mapResultSet(rs);
+            }
         } catch (SQLException e) {
-            System.err.println("[UserDAO] getAll lỗi: " + e.getMessage());
+            System.err.println("[UserDAO] getAll loi: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -122,24 +128,25 @@ public class UserDAO {
         String sql = """
                 UPDATE users SET
                     username = ?, email = ?, password = ?, fullname = ?, role = ?,
-                    admin_level = ?, balance = ?, total_bids = ?, won_auctions = ?,
+                    balance = ?, total_bids = ?, won_auctions = ?,
                     total_items_listed = ?, total_revenue = ?
                 WHERE id = ?
                 """;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, user.getUsername());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword());
-            ps.setString(4, user.getFullname());
-            ps.setString(5, user.getRole());
-            fillRoleFieldsForUpdate(ps, user);
-            ps.setString(12, user.getId());
-            return ps.executeUpdate() > 0;
+        try (Connection conn = DBConnection.getConnection()) {
+            ensureUserSchema(conn);
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getEmail());
+                ps.setString(3, user.getPassword());
+                ps.setString(4, user.getFullname());
+                ps.setString(5, user.getRole());
+                fillAllRoleFields(ps, user, 6);
+                ps.setString(11, user.getId());
+                return ps.executeUpdate() > 0;
+            }
         } catch (SQLException e) {
-            System.err.println("[UserDAO] update lỗi: " + e.getMessage());
+            System.err.println("[UserDAO] update loi: " + e.getMessage());
             return false;
         }
     }
@@ -153,7 +160,45 @@ public class UserDAO {
             ps.setString(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("[UserDAO] delete lỗi: " + e.getMessage());
+            System.err.println("[UserDAO] delete loi: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deposit(String id, double amount) {
+        String sql = "UPDATE users SET balance = COALESCE(balance, 0) + ? WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection()) {
+            ensureUserSchema(conn);
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setDouble(1, amount);
+                ps.setString(2, id);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserDAO] deposit loi: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean incrementTotalBids(String id) {
+        String sql = "UPDATE users SET total_bids = COALESCE(total_bids, 0) + 1 WHERE id = ?";
+        return updateCounter(sql, id);
+    }
+
+    public boolean incrementTotalItemsListed(String id) {
+        String sql = "UPDATE users SET total_items_listed = COALESCE(total_items_listed, 0) + 1 WHERE id = ?";
+        return updateCounter(sql, id);
+    }
+
+    private boolean updateCounter(String sql, String id) {
+        try (Connection conn = DBConnection.getConnection()) {
+            ensureUserSchema(conn);
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserDAO] updateCounter loi: " + e.getMessage());
             return false;
         }
     }
@@ -175,73 +220,78 @@ public class UserDAO {
         String fullname = rs.getString("fullname");
         String role = rs.getString("role");
 
-        return switch (role.toUpperCase()) {
-            case "ADMIN" -> new Admin(
-                    id, username, email, password, fullname
-            );
-            case "BIDDER" -> new Bidder(
+        String normalizedRole = role == null ? "" : role.toUpperCase();
+        User user = switch (normalizedRole) {
+            case "ADMIN" -> new Admin(id, username, email, password, fullname);
+            case "BIDDER", "SELLER" -> new Bidder(
                     id, username, email, fullname, password,
                     rs.getDouble("balance"),
                     rs.getInt("total_bids"),
                     rs.getInt("won_auctions")
-            );
-            case "SELLER" -> new Seller(
-                    id, username, email, password, fullname,
-                    rs.getInt("total_items_listed"),
-                    rs.getDouble("total_revenue")
             );
             default -> {
                 System.err.println("[UserDAO] mapRow: unknown role: " + role);
                 yield null;
             }
         };
+
+        if (user != null) {
+            hydrateUserStats(user, rs);
+        }
+        return user;
     }
 
-    private void fillRoleFields(PreparedStatement ps, User user) throws SQLException {
-        if (user instanceof Admin a) {
-            ps.setNull(8, Types.DECIMAL);
-            ps.setInt(9, 0);
-            ps.setInt(10, 0);
-            ps.setInt(11, 0);
-            ps.setDouble(12, 0.0);
-        } else if (user instanceof Bidder b) {
-            ps.setNull(7, Types.VARCHAR);
-            ps.setDouble(8, b.getBalance());
-            ps.setInt(9, b.getTotalBids());
-            ps.setInt(10, b.getWonAuctions());
-            ps.setInt(11, 0);
-            ps.setDouble(12, 0.0);
-        } else if (user instanceof Seller s) {
-            ps.setNull(7, Types.VARCHAR);
-            ps.setNull(8, Types.DECIMAL);
-            ps.setInt(9, 0);
-            ps.setInt(10, 0);
-            ps.setInt(11, s.getTotalItemslisted());
-            ps.setDouble(12, s.getTotalRevenue());
+    private void hydrateUserStats(User user, ResultSet rs) throws SQLException {
+        user.setBalance(rs.getDouble("balance"));
+        user.setTotalBids(rs.getInt("total_bids"));
+        user.setWonAuctions(rs.getInt("won_auctions"));
+        user.setTotalItemslisted(rs.getInt("total_items_listed"));
+        user.setTotalRevenue(rs.getDouble("total_revenue"));
+    }
+
+    private void fillAllRoleFields(PreparedStatement ps, User user, int startIndex) throws SQLException {
+        ps.setDouble(startIndex, user.getBalance());
+        ps.setInt(startIndex + 1, user.getTotalBids());
+        ps.setInt(startIndex + 2, user.getWonAuctions());
+        ps.setInt(startIndex + 3, user.getTotalItemslisted());
+        ps.setDouble(startIndex + 4, user.getTotalRevenue());
+    }
+
+    private void ensureUserSchema(Connection conn) throws SQLException {
+        if (userSchemaReady) return;
+
+        synchronized (SCHEMA_LOCK) {
+            if (userSchemaReady) return;
+
+            addColumnIfMissing(conn, "balance", "ALTER TABLE users ADD COLUMN balance DECIMAL(15,2) DEFAULT 0");
+            addColumnIfMissing(conn, "total_bids", "ALTER TABLE users ADD COLUMN total_bids INT DEFAULT 0");
+            addColumnIfMissing(conn, "won_auctions", "ALTER TABLE users ADD COLUMN won_auctions INT DEFAULT 0");
+            addColumnIfMissing(conn, "total_items_listed", "ALTER TABLE users ADD COLUMN total_items_listed INT DEFAULT 0");
+            addColumnIfMissing(conn, "total_revenue", "ALTER TABLE users ADD COLUMN total_revenue DECIMAL(15,2) DEFAULT 0");
+
+            userSchemaReady = true;
         }
     }
 
-    private void fillRoleFieldsForUpdate(PreparedStatement ps, User user) throws SQLException {
-        if (user instanceof Admin a) {
-            ps.setNull(7, Types.DECIMAL);
-            ps.setInt(8, 0);
-            ps.setInt(9, 0);
-            ps.setInt(10, 0);
-            ps.setDouble(11, 0.0);
-        } else if (user instanceof Bidder b) {
-            ps.setNull(6, Types.VARCHAR);
-            ps.setDouble(7, b.getBalance());
-            ps.setInt(8, b.getTotalBids());
-            ps.setInt(9, b.getWonAuctions());
-            ps.setInt(10, 0);
-            ps.setDouble(11, 0.0);
-        } else if (user instanceof Seller s) {
-            ps.setNull(6, Types.VARCHAR);
-            ps.setNull(7, Types.DECIMAL);
-            ps.setInt(8, 0);
-            ps.setInt(9, 0);
-            ps.setInt(10, s.getTotalItemslisted());
-            ps.setDouble(11, s.getTotalRevenue());
+    private void addColumnIfMissing(Connection conn, String columnName, String ddl) throws SQLException {
+        if (hasColumn(conn, columnName)) return;
+
+        try (Statement st = conn.createStatement()) {
+            st.executeUpdate(ddl);
+        } catch (SQLException e) {
+            if (!e.getMessage().toLowerCase().contains("duplicate column")) {
+                throw e;
+            }
+        }
+    }
+
+    private boolean hasColumn(Connection conn, String columnName) throws SQLException {
+        DatabaseMetaData meta = conn.getMetaData();
+        try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, "users", columnName)) {
+            if (rs.next()) return true;
+        }
+        try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, "USERS", columnName)) {
+            return rs.next();
         }
     }
 }

@@ -1,24 +1,27 @@
-package com.auction.server.dao;
+package com.auction.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.auction.server.config.DBConnection;
-import com.auction.shared.model.Auction;
-import com.auction.shared.model.Auction.AuctionStatus;
-import com.auction.shared.model.BidTransaction;
-import com.auction.shared.model.Item.Item;
+import com.auction.config.DBConnection;
+import com.auction.model.Auction;
+import com.auction.model.Auction.AuctionStatus;
+import com.auction.model.BidTransaction;
+import com.auction.model.Item.Art;
+import com.auction.model.Item.Electronics;
+import com.auction.model.Item.Item;
+import com.auction.model.Item.OtherItem;
+import com.auction.model.Item.Vehicle;
 
 public class AuctionDAO {
-    private final ItemDAO itemDAO = new ItemDAO();
+    private final BidDAO bidDAO = new BidDAO();
 
     private static final String SELECT_WITH_ITEM = """
             SELECT a.*,
@@ -49,6 +52,8 @@ public class AuctionDAO {
             LEFT JOIN item_arts        ar ON ar.item_id = i.id
             LEFT JOIN item_others      o  ON o.item_id  = i.id
             """;
+
+    // ── Create ────────────────────────────────────────────────────
 
     public String createAuction(Auction auction) {
         String sql = """
@@ -86,8 +91,10 @@ public class AuctionDAO {
         }
     }
 
+    // ── Read ──────────────────────────────────────────────────────
+
     public Auction getAuctionById(String auctionId) {
-        String sql = "SELECT * FROM auctions WHERE id = ?";
+        String sql = SELECT_WITH_ITEM + "WHERE a.id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -101,31 +108,21 @@ public class AuctionDAO {
         return null;
     }
 
-    public List<Auction> getAuctionsByStatus(AuctionStatus status) {
-        String sql = "SELECT * FROM auctions WHERE status = ? ORDER BY created_at DESC, id DESC";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, status.name());
-            return mapResultSet(ps.executeQuery());
-        } catch (SQLException e) {
-            System.err.println("[AuctionDAO] getAuctionsByStatus lỗi: " + e.getMessage());
-            return new ArrayList<>();
-        }
-    }
-
     public List<Auction> getAllAuctions() {
         String sql = SELECT_WITH_ITEM + "ORDER BY a.created_at DESC, a.id DESC";
         return queryList(sql);
     }
 
+    /**
+     * Lấy tất cả auction mà bidderId đã từng tham gia đặt giá.
+     */
     public List<Auction> getAuctionsByBidder(String bidderId) {
-        String sql = """
-                SELECT DISTINCT a.*
-                FROM auctions a
-                INNER JOIN bid_transactions b ON b.auction_id = a.id
-                WHERE b.bidder_id = ?
+        String sql = SELECT_WITH_ITEM + """
+                JOIN (
+                    SELECT DISTINCT auction_id
+                    FROM bid_transactions
+                    WHERE bidder_id = ?
+                ) b ON b.auction_id = a.id
                 ORDER BY a.created_at DESC, a.id DESC
                 """;
 
@@ -135,7 +132,7 @@ public class AuctionDAO {
             ps.setString(1, bidderId);
             return mapResultSet(ps.executeQuery());
         } catch (SQLException e) {
-            System.err.println("[AuctionDAO] getAuctionsByBidder lá»—i: " + e.getMessage());
+            System.err.println("[AuctionDAO] getAuctionsByBidder lỗi: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -154,8 +151,22 @@ public class AuctionDAO {
         }
     }
 
+    public List<Auction> getAuctionsByStatus(AuctionStatus status) {
+        String sql = SELECT_WITH_ITEM + "WHERE a.status = ? ORDER BY a.created_at DESC, a.id DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status.name());
+            return mapResultSet(ps.executeQuery());
+        } catch (SQLException e) {
+            System.err.println("[AuctionDAO] getAuctionsByStatus lỗi: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
     public Auction getAuctionByItemId(String itemId) {
-        String sql = "SELECT * FROM auctions WHERE item_id = ? ORDER BY created_at DESC, id DESC LIMIT 1";
+        String sql = SELECT_WITH_ITEM + "WHERE a.item_id = ? ORDER BY a.created_at DESC, a.id DESC LIMIT 1";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -168,6 +179,8 @@ public class AuctionDAO {
         }
         return null;
     }
+
+    // ── Update ────────────────────────────────────────────────────
 
     public boolean updatePriceAndEndTime(String auctionId, double newPrice, LocalDateTime newEndTime) {
         String sql = "UPDATE auctions SET current_price = ?, end_time = ? WHERE id = ?";
@@ -222,6 +235,8 @@ public class AuctionDAO {
         }
     }
 
+    // ── Delete ────────────────────────────────────────────────────
+
     public boolean deleteAuction(String auctionId) {
         String sql = "DELETE FROM auctions WHERE id = ?";
 
@@ -236,10 +251,12 @@ public class AuctionDAO {
         }
     }
 
+    // ── Helpers ───────────────────────────────────────────────────
+
     private List<Auction> queryList(String sql) {
         try (Connection conn = DBConnection.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             return mapResultSet(rs);
         } catch (SQLException e) {
@@ -255,25 +272,62 @@ public class AuctionDAO {
     }
 
     private Auction mapRow(ResultSet rs) throws SQLException {
-        String id = rs.getString("id");
-        String itemId = rs.getString("item_id");
-        double currentPrice = rs.getDouble("current_price");
-        String leadBidderId = rs.getString("lead_bidder_id");
+        // ── Auction fields ────────────────────────────────────────
+        String id             = rs.getString("id");
+        String itemId         = rs.getString("item_id");
+        double currentPrice   = rs.getDouble("current_price");
+        String leadBidderId   = rs.getString("lead_bidder_id");
         String leadBidderName = rs.getString("lead_bidder_name");
         LocalDateTime startTime = rs.getTimestamp("start_time").toLocalDateTime();
-        LocalDateTime endTime = rs.getTimestamp("end_time").toLocalDateTime();
-        AuctionStatus status = AuctionStatus.valueOf(rs.getString("status"));
-        boolean antiSnipingEnabled = rs.getBoolean("anti_sniping_enabled");
-        int snipeWindowSeconds = rs.getInt("snipe_window_seconds");
-        int snipeExtendSeconds = rs.getInt("snipe_extend_seconds");
+        LocalDateTime endTime   = rs.getTimestamp("end_time").toLocalDateTime();
+        AuctionStatus status    = AuctionStatus.valueOf(rs.getString("status"));
+        boolean antiSniping     = rs.getBoolean("anti_sniping_enabled");
+        int snipeWindow         = rs.getInt("snipe_window_seconds");
+        int snipeExtend         = rs.getInt("snipe_extend_seconds");
 
-        Item item = itemDAO.findById(itemId);
-        if (item == null) {
-            throw new SQLException("Không tìm thấy item cho auction: " + itemId);
-        }
+        // ── Build Item từ JOIN — không cần thêm DB call ───────────
+        String itemType        = rs.getString("item_type");
+        String itemName        = rs.getString("item_name");
+        String itemDesc        = rs.getString("item_description");
+        double startingPrice   = rs.getDouble("starting_price");
+        double itemCurrentPrice = rs.getDouble("item_current_price");
+        String itemStatus      = rs.getString("item_status");
+        byte[] itemImageData   = rs.getBytes("item_image_data");
+        String itemSellerId    = rs.getString("item_seller_id");
+
+        Item item = switch (itemType.toUpperCase()) {
+            case "ELECTRONICS" -> new Electronics(
+                    itemId, itemName, itemDesc, startingPrice, itemStatus, itemCurrentPrice,
+                    rs.getString("electronics_brand"),
+                    rs.getInt("warranty"),
+                    rs.getString("electronics_model")
+            );
+            case "VEHICLE" -> new Vehicle(
+                    itemId, itemName, startingPrice, itemCurrentPrice, itemStatus, itemDesc,
+                    rs.getString("vehicle_brand"),
+                    rs.getString("vehicle_model"),
+                    rs.getInt("year"),
+                    rs.getInt("mileage"),
+                    rs.getString("vehicle_type")
+            );
+            case "ART" -> new Art(
+                    itemId, itemName, startingPrice, itemCurrentPrice, itemStatus, itemDesc,
+                    rs.getString("artist"),
+                    rs.getInt("year_created"),
+                    rs.getString("material")
+            );
+            case "OTHER" -> new OtherItem(
+                    itemId, itemName, startingPrice, itemCurrentPrice, itemStatus, itemDesc,
+                    rs.getString("category")
+            );
+            default -> throw new SQLException("[AuctionDAO] mapRow: unknown item type: " + itemType);
+        };
 
         item.setCurrentPrice(currentPrice);
+        item.setImageData(itemImageData);
+        item.setSellerId(itemSellerId);
 
+        // ── Build Auction ─────────────────────────────────────────
         Auction auction = new Auction(
                 id,
                 item,
@@ -281,27 +335,15 @@ public class AuctionDAO {
                 endTime,
                 leadBidderName,
                 leadBidderId,
-                antiSnipingEnabled,
-                snipeWindowSeconds,
-                snipeExtendSeconds
+                antiSniping,
+                snipeWindow,
+                snipeExtend
         );
         auction.setCurrentPrice(currentPrice);
         auction.setStatus(status);
         auction.setEndTime(endTime);
-
-        // Constructor Auction hiện tại đang bỏ qua leadBidder/currentPrice truyền vào.
-        // Tạm đồng bộ lại bằng applyBid nếu DB có leader.
-        if (leadBidderId != null && !leadBidderId.isBlank()) {
-            auction.applyBid(new BidTransaction(
-                    "DB_LEAD",
-                    id,
-                    leadBidderId,
-                    leadBidderName != null ? leadBidderName : "Unknown",
-                    currentPrice,
-                    LocalDateTime.now(),
-                    false
-            ));
-        }
+        auction.setLeadBidder(leadBidderId, leadBidderName);
+        auction.setBidHistory(bidDAO.getBidsByAuction(id));
 
         return auction;
     }
