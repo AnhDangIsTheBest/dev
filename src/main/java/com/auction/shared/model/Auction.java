@@ -21,6 +21,7 @@ public class Auction implements Serializable{
     private LocalDateTime endTime;
     private AuctionStatus status;
     private List<BidTransaction> bidHistory; // Lịch sử người đấu giá
+    private int bidCount;
 
    
    
@@ -48,6 +49,7 @@ public class Auction implements Serializable{
         this.endTime = endTime;
         this.status = AuctionStatus.OPEN;
         this.bidHistory = new CopyOnWriteArrayList<>();
+        this.bidCount = 0;
         this.antiSnipingEnable =  antiSnipingEnable;
         this.snipeWindowSeconds = snipeWindowSeconds;
         this.snipeExtendSeconds = snipeExtendSeconds;
@@ -62,6 +64,10 @@ public class Auction implements Serializable{
     public synchronized double getCurrentPrice() { return currentPrice;}
     public synchronized AuctionStatus getStatus() { return status;}
     public List<BidTransaction> getBidHistory(){ return bidHistory;}
+    public synchronized int getBidCount(){
+        int historySize = bidHistory != null ? bidHistory.size() : 0;
+        return Math.max(bidCount, historySize);
+    }
     public boolean isAntiSnipingEnabled(){ return antiSnipingEnable;}
     public int snipeWindowSeconds(){ return snipeWindowSeconds;}
     public int snipeExtendSeconds(){ return snipeExtendSeconds;}
@@ -81,6 +87,11 @@ public class Auction implements Serializable{
         if (bidHistory != null) {
             this.bidHistory.addAll(bidHistory);
         }
+        this.bidCount = this.bidHistory.size();
+    }
+
+    public synchronized void setBidCount(int bidCount) {
+        this.bidCount = Math.max(0, bidCount);
     }
 
     public long getSecondRemaining(){ // thời gian còn lại trước khi phiên đấu giá kết thúc
@@ -94,6 +105,7 @@ public class Auction implements Serializable{
         this.leadBidderId  = lead.getBidderId();
         this.leadBidderName = lead.getBidderName();
         this.bidHistory.add(lead);
+        this.bidCount = this.bidHistory.size();
 
         if(antiSnipingEnable && getSecondRemaining() <= snipeWindowSeconds){
             this.endTime =  this.endTime.plusSeconds(snipeExtendSeconds);

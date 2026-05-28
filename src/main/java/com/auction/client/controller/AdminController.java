@@ -115,7 +115,7 @@ public class AdminController {
         colAdminAucPrice.setCellValueFactory(d ->
                 new SimpleStringProperty(VND.format((long) d.getValue().getCurrentPrice()) + " đ"));
         colAdminAucBids.setCellValueFactory(d ->
-                new SimpleStringProperty(String.valueOf(d.getValue().getBidHistory().size())));
+                new SimpleStringProperty(String.valueOf(d.getValue().getBidCount())));
 
         // Tô màu trạng thái
         colAdminAucStatus.setCellFactory(col -> new TableCell<>() {
@@ -158,7 +158,7 @@ public class AdminController {
                     List<Auction> list = (List<Auction>) resAucs.get("auctions");
                     auctions.setAll(list);
                     totalAuctionsLabel.setText(String.valueOf(list.size()));
-                    long totalBids = list.stream().mapToLong(a -> a.getBidHistory().size()).sum();
+                    long totalBids = list.stream().mapToLong(Auction::getBidCount).sum();
                     totalBidsLabel.setText(String.valueOf(totalBids));
                 }
             });

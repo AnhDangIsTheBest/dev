@@ -1,6 +1,7 @@
 package com.auction.server.network;
 
 import com.auction.shared.network.protocol.SocketMessage;
+import com.auction.server.dao.UserDAO;
 import com.auction.server.service.AuctionService;
 import com.auction.shared.model.Auction;
 import com.auction.shared.model.Auction.AuctionStatus;
@@ -53,6 +54,8 @@ public class AuctionServer {
             System.out.println("║     AUCTION SERVER STARTED           ║");
             System.out.printf("║     Listening on port: %-4d          ║%n", port);
             System.out.println("╚══════════════════════════════════════╝");
+
+            warmUpStorage();
 
             // Scheduler tự động kết thúc phiên hết giờ
             startAuctionScheduler();
@@ -145,6 +148,16 @@ public class AuctionServer {
     }
 
     // ── Auto-finish Scheduler ────────────────────────────────────
+
+    private void warmUpStorage() {
+        long started = System.currentTimeMillis();
+        try {
+            new UserDAO().prepareSchema();
+            System.out.printf("[Server] DB ready in %d ms%n", System.currentTimeMillis() - started);
+        } catch (RuntimeException e) {
+            System.err.println("[Server] DB warmup loi: " + e.getMessage());
+        }
+    }
 
     /**
      * Chạy mỗi 30 giây, kiểm tra phiên nào hết giờ thì tự động FINISH

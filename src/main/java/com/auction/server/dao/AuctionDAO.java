@@ -23,7 +23,11 @@ import com.auction.shared.model.Item.Vehicle;
 public class AuctionDAO {
     private final BidDAO bidDAO = new BidDAO();
 
-    private static final String SELECT_WITH_ITEM = """
+    private static final String SELECT_DETAIL_WITH_ITEM = selectWithItem("i.image_data");
+    private static final String SELECT_SUMMARY_WITH_ITEM = selectWithItem("NULL");
+
+    private static String selectWithItem(String imageExpression) {
+        return """
             SELECT a.*,
                    i.name          AS item_name,
                    i.description   AS item_description,
@@ -31,7 +35,7 @@ public class AuctionDAO {
                    i.starting_price,
                    i.current_price AS item_current_price,
                    i.status        AS item_status,
-                   i.image_data    AS item_image_data,
+                   %s              AS item_image_data,
                    i.seller_id     AS item_seller_id,
                    e.brand         AS electronics_brand,
                    e.model         AS electronics_model,
@@ -44,14 +48,21 @@ public class AuctionDAO {
                    ar.artist,
                    ar.year_created,
                    ar.material,
-                   o.category
+                   o.category,
+                   COALESCE(bc.bid_count, 0) AS bid_count
             FROM auctions a
             JOIN items i ON i.id = a.item_id
             LEFT JOIN item_electronics e  ON e.item_id  = i.id
             LEFT JOIN item_vehicles    v  ON v.item_id  = i.id
             LEFT JOIN item_arts        ar ON ar.item_id = i.id
             LEFT JOIN item_others      o  ON o.item_id  = i.id
-            """;
+            LEFT JOIN (
+                SELECT auction_id, COUNT(*) AS bid_count
+                FROM bid_transactions
+                GROUP BY auction_id
+            ) bc ON bc.auction_id = a.id
+            """.formatted(imageExpression);
+    }
 
     // ── Create ────────────────────────────────────────────────────
 
@@ -94,14 +105,14 @@ public class AuctionDAO {
     // ── Read ──────────────────────────────────────────────────────
 
     public Auction getAuctionById(String auctionId) {
-        String sql = SELECT_WITH_ITEM + "WHERE a.id = ?";
+        String sql = SELECT_DETAIL_WITH_ITEM + "WHERE a.id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, auctionId);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapRow(rs);
+            if (rs.next()) return mapRow(rs, true);
         } catch (SQLException e) {
             System.err.println("[AuctionDAO] getAuctionById lỗi: " + e.getMessage());
         }
@@ -109,15 +120,15 @@ public class AuctionDAO {
     }
 
     public List<Auction> getAllAuctions() {
-        String sql = SELECT_WITH_ITEM + "ORDER BY a.created_at DESC, a.id DESC";
-        return queryList(sql);
+        String sql = SELECT_SUMMARY_WITH_ITEM + "ORDER BY a.created_at DESC, a.id DESC";
+        return queryList(sql, false);
     }
 
     /**
      * Lấy tất cả auction mà bidderId đã từng tham gia đặt giá.
      */
     public List<Auction> getAuctionsByBidder(String bidderId) {
-        String sql = SELECT_WITH_ITEM + """
+        String sql = SELECT_SUMMARY_WITH_ITEM + """
                 JOIN (
                     SELECT DISTINCT auction_id
                     FROM bid_transactions
@@ -130,7 +141,7 @@ public class AuctionDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, bidderId);
-            return mapResultSet(ps.executeQuery());
+            return mapResultSet(ps.executeQuery(), false);
         } catch (SQLException e) {
             System.err.println("[AuctionDAO] getAuctionsByBidder lỗi: " + e.getMessage());
             return new ArrayList<>();
@@ -138,13 +149,13 @@ public class AuctionDAO {
     }
 
     public List<Auction> getAuctionsBySeller(String sellerId) {
-        String sql = SELECT_WITH_ITEM + "WHERE i.seller_id = ? ORDER BY a.created_at DESC, a.id DESC";
+        String sql = SELECT_SUMMARY_WITH_ITEM + "WHERE i.seller_id = ? ORDER BY a.created_at DESC, a.id DESC";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, sellerId);
-            return mapResultSet(ps.executeQuery());
+            return mapResultSet(ps.executeQuery(), false);
         } catch (SQLException e) {
             System.err.println("[AuctionDAO] getAuctionsBySeller loi: " + e.getMessage());
             return new ArrayList<>();
@@ -152,13 +163,13 @@ public class AuctionDAO {
     }
 
     public List<Auction> getAuctionsByStatus(AuctionStatus status) {
-        String sql = SELECT_WITH_ITEM + "WHERE a.status = ? ORDER BY a.created_at DESC, a.id DESC";
+        String sql = SELECT_SUMMARY_WITH_ITEM + "WHERE a.status = ? ORDER BY a.created_at DESC, a.id DESC";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, status.name());
-            return mapResultSet(ps.executeQuery());
+            return mapResultSet(ps.executeQuery(), false);
         } catch (SQLException e) {
             System.err.println("[AuctionDAO] getAuctionsByStatus lỗi: " + e.getMessage());
             return new ArrayList<>();
@@ -166,14 +177,14 @@ public class AuctionDAO {
     }
 
     public Auction getAuctionByItemId(String itemId) {
-        String sql = SELECT_WITH_ITEM + "WHERE a.item_id = ? ORDER BY a.created_at DESC, a.id DESC LIMIT 1";
+        String sql = SELECT_DETAIL_WITH_ITEM + "WHERE a.item_id = ? ORDER BY a.created_at DESC, a.id DESC LIMIT 1";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, itemId);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapRow(rs);
+            if (rs.next()) return mapRow(rs, true);
         } catch (SQLException e) {
             System.err.println("[AuctionDAO] getAuctionByItemId lỗi: " + e.getMessage());
         }
@@ -253,25 +264,25 @@ public class AuctionDAO {
 
     // ── Helpers ───────────────────────────────────────────────────
 
-    private List<Auction> queryList(String sql) {
+    private List<Auction> queryList(String sql, boolean includeBidHistory) {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
-            return mapResultSet(rs);
+            return mapResultSet(rs, includeBidHistory);
         } catch (SQLException e) {
             System.err.println("[AuctionDAO] queryList lỗi: " + e.getMessage());
             return new ArrayList<>();
         }
     }
 
-    private List<Auction> mapResultSet(ResultSet rs) throws SQLException {
+    private List<Auction> mapResultSet(ResultSet rs, boolean includeBidHistory) throws SQLException {
         List<Auction> list = new ArrayList<>();
-        while (rs.next()) list.add(mapRow(rs));
+        while (rs.next()) list.add(mapRow(rs, includeBidHistory));
         return list;
     }
 
-    private Auction mapRow(ResultSet rs) throws SQLException {
+    private Auction mapRow(ResultSet rs, boolean includeBidHistory) throws SQLException {
         // ── Auction fields ────────────────────────────────────────
         String id = rs.getString("id");
         String itemId = rs.getString("item_id");
@@ -343,7 +354,11 @@ public class AuctionDAO {
         auction.setStatus(status);
         auction.setEndTime(endTime);
         auction.setLeadBidder(leadBidderId, leadBidderName);
-        auction.setBidHistory(bidDAO.getBidsByAuction(id));
+        if (includeBidHistory) {
+            auction.setBidHistory(bidDAO.getBidsByAuction(id));
+        } else {
+            auction.setBidCount(rs.getInt("bid_count"));
+        }
 
         return auction;
     }

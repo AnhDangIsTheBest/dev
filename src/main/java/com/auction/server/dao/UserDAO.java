@@ -15,6 +15,14 @@ public class UserDAO {
     private static final Object SCHEMA_LOCK = new Object();
     private static volatile boolean userSchemaReady = false;
 
+    public void prepareSchema() {
+        try (Connection conn = DBConnection.getConnection()) {
+            ensureUserSchema(conn);
+        } catch (SQLException e) {
+            throw new RuntimeException("Khong the chuan bi schema users: " + e.getMessage(), e);
+        }
+    }
+
     public boolean insert(User user) {
         String id = user.getId() != null && !user.getId().isBlank()
                 ? user.getId()

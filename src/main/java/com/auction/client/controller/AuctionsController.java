@@ -1534,7 +1534,7 @@ public class AuctionsController {
         }
         if (statBids != null) {
             long totalBids = list.stream()
-                    .mapToLong(a -> a.getBidHistory() != null ? a.getBidHistory().size() : 0)
+                    .mapToLong(Auction::getBidCount)
                     .sum();
             statBids.setText(String.valueOf(totalBids));
         }
