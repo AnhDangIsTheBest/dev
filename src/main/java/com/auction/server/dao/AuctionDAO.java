@@ -24,7 +24,7 @@ public class AuctionDAO {
     private final BidDAO bidDAO = new BidDAO();
 
     private static final String SELECT_DETAIL_WITH_ITEM = selectWithItem("i.image_data");
-    private static final String SELECT_SUMMARY_WITH_ITEM = selectWithItem("NULL");
+    private static final String SELECT_SUMMARY_WITH_ITEM = selectWithItem("i.image_data");
 
     private static String selectWithItem(String imageExpression) {
         return """

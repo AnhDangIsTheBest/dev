@@ -29,6 +29,7 @@ CREATE TABLE items
     starting_price DECIMAL(15, 2) NOT NULL,
     current_price  DECIMAL(15, 2) NOT NULL,
     status         VARCHAR(50)    NOT NULL DEFAULT 'AVAILABLE',
+    image_data     LONGBLOB       DEFAULT NULL,
     seller_id      VARCHAR(36)    NOT NULL,
     CONSTRAINT chk_starting_price CHECK (starting_price > 0),
     FOREIGN KEY (seller_id) REFERENCES users (id)

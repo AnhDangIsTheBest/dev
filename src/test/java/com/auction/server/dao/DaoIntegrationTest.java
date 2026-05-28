@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -221,7 +222,9 @@ class DaoIntegrationTest {
         assertNotNull(loaded);
         assertEquals("ITEM-E", loaded.getItem().getId());
         assertTrue(loaded.isAntiSnipingEnabled());
-        assertEquals(1, auctionDAO.getAllAuctions().size());
+        List<Auction> summaryAuctions = auctionDAO.getAllAuctions();
+        assertEquals(1, summaryAuctions.size());
+        assertArrayEquals(new byte[] {1, 2}, summaryAuctions.get(0).getItem().getImageData());
         assertEquals(1, auctionDAO.getAuctionsBySeller("SELLER").size());
         assertEquals(1, auctionDAO.getAuctionsByStatus(AuctionStatus.OPEN).size());
         assertEquals(loaded.getAuctionId(), auctionDAO.getAuctionByItemId("ITEM-E").getAuctionId());
