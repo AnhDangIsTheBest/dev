@@ -1,0 +1,268 @@
+/* AuctionX - Dark theme stylesheet */
+.root {
+    -fx-background-color: #0a0b0f;
+    -fx-font-family: "Segoe UI", "Noto Sans", sans-serif;
+}
+
+.table-view {
+    -fx-background-color: #12141a;
+    -fx-border-color: rgba(255,255,255,0.08);
+    -fx-table-cell-border-color: rgba(255,255,255,0.05);
+}
+.table-view .column-header-background {
+    -fx-background-color: #1a1d26;
+}
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-size: 36;
+    -fx-border-color: transparent transparent rgba(255,255,255,0.08) transparent;
+}
+.table-view .column-header .label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+.table-row-cell {
+    -fx-background-color: #12141a;
+    -fx-border-color: transparent transparent rgba(255,255,255,0.04) transparent;
+    -fx-text-fill: #94a3b8;
+}
+.table-row-cell:odd {
+    -fx-background-color: #0f1117;
+}
+.table-row-cell:selected {
+    -fx-background-color: rgba(245,158,11,0.15);
+}
+.table-row-cell:hover {
+    -fx-background-color: #1a1d26;
+}
+.table-cell {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+    -fx-padding: 7 10;
+}
+
+.list-view {
+    -fx-background-color: #12141a;
+    -fx-border-color: rgba(255,255,255,0.08);
+}
+.list-cell {
+    -fx-background-color: #12141a;
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+    -fx-padding: 7 10;
+    -fx-border-color: transparent transparent rgba(255,255,255,0.04) transparent;
+}
+.list-cell:selected {
+    -fx-background-color: rgba(245,158,11,0.15);
+    -fx-text-fill: #e2e8f0;
+}
+.list-cell:hover {
+    -fx-background-color: #1a1d26;
+}
+
+.scroll-bar {
+    -fx-background-color: #12141a;
+}
+.scroll-bar .thumb {
+    -fx-background-color: #2d3148;
+    -fx-background-radius: 4;
+}
+.scroll-bar .track {
+    -fx-background-color: #12141a;
+}
+
+.split-pane {
+    -fx-background-color: #0a0b0f;
+    -fx-padding: 0;
+}
+.split-pane-divider {
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-padding: 0 1;
+}
+
+.combo-box {
+    -fx-background-color: #1a1d26;
+    -fx-border-color: rgba(255,255,255,0.1);
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-text-fill: #e2e8f0;
+}
+.combo-box .list-cell {
+    -fx-text-fill: #e2e8f0;
+    -fx-background-color: transparent;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: #1a1d26;
+    -fx-border-color: rgba(255,255,255,0.15);
+}
+
+.check-box {
+    -fx-text-fill: #94a3b8;
+}
+.check-box .box {
+    -fx-background-color: #1a1d26;
+    -fx-border-color: rgba(255,255,255,0.2);
+    -fx-border-radius: 4;
+}
+.check-box:selected .mark {
+    -fx-background-color: #f59e0b;
+}
+
+.separator .line {
+    -fx-border-color: rgba(255,255,255,0.08);
+}
+
+/* Chart */
+.chart {
+    -fx-background-color: transparent;
+    -fx-padding: 4;
+}
+.chart-content {
+    -fx-background-color: transparent;
+}
+.chart-plot-background {
+    -fx-background-color: #1e2130;
+    -fx-background-radius: 6;
+}
+.chart-vertical-grid-lines {
+    -fx-stroke: rgba(255,255,255,0.04);
+    -fx-stroke-dash-array: 4 4;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: rgba(255,255,255,0.06);
+    -fx-stroke-dash-array: 4 4;
+}
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+}
+.axis {
+    -fx-tick-label-fill: #64748b;
+    -fx-font-size: 10px;
+    -fx-color: rgba(255,255,255,0.08);
+}
+.axis-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+}
+.chart-series-line {
+    -fx-stroke: #f59e0b;
+    -fx-stroke-width: 2.5;
+    -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.4), 8, 0, 0, 0);
+}
+.chart-line-symbol {
+    -fx-background-color: #f59e0b, #1e2130;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+}
+.chart-legend {
+    -fx-background-color: rgba(30,33,48,0.9);
+    -fx-background-radius: 6;
+    -fx-padding: 6 10 6 10;
+}
+.chart-legend-item {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+}
+.chart-legend-item-symbol {
+    -fx-background-color: #f59e0b;
+}
+
+/* History feed list */
+#allBidsList {
+    -fx-background-color: transparent;
+}
+#allBidsList .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+    -fx-padding: 7 14 7 14;
+    -fx-border-color: transparent transparent rgba(255,255,255,0.04) transparent;
+}
+#allBidsList .list-cell:hover {
+    -fx-background-color: rgba(255,255,255,0.04);
+    -fx-text-fill: #cbd5e1;
+}
+#allBidsList .list-cell:odd {
+    -fx-background-color: rgba(255,255,255,0.02);
+}
+#allBidsList .list-cell:selected {
+    -fx-background-color: rgba(245,158,11,0.12);
+    -fx-text-fill: #f59e0b;
+}
+
+/* Scrollpane */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Progress indicator */
+.progress-indicator {
+    -fx-progress-color: #f59e0b;
+}
+
+/* Tab pane */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #12141a;
+}
+.tab-pane .tab {
+    -fx-background-color: #1a1d26;
+    -fx-text-fill: #94a3b8;
+}
+.tab-pane .tab:selected {
+    -fx-background-color: #0a0b0f;
+    -fx-text-fill: #f59e0b;
+}
+
+/* Admin panel - transparent table trên nền card */
+#userTable, #adminAucTable {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+#userTable .table-row-cell,
+#adminAucTable .table-row-cell {
+    -fx-background-color: transparent;
+}
+#userTable .table-row-cell:odd,
+#adminAucTable .table-row-cell:odd {
+    -fx-background-color: rgba(255,255,255,0.02);
+}
+#userTable .table-row-cell:hover,
+#adminAucTable .table-row-cell:hover {
+    -fx-background-color: rgba(255,255,255,0.05);
+}
+#userTable .table-row-cell:selected,
+#adminAucTable .table-row-cell:selected {
+    -fx-background-color: rgba(245,158,11,0.12);
+}
+#userTable .column-header-background,
+#adminAucTable .column-header-background {
+    -fx-background-color: rgba(255,255,255,0.04);
+}
+
+.auction-see-all-button {
+    -fx-background-color: rgba(245,158,11,0.10);
+    -fx-border-color: rgba(245,158,11,0.35);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-text-fill: #fbbf24;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 7 14 7 14;
+    -fx-cursor: hand;
+}
+
+.auction-see-all-button:hover {
+    -fx-background-color: rgba(245,158,11,0.18);
+    -fx-border-color: rgba(245,158,11,0.72);
+    -fx-text-fill: #fde68a;
+    -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.20), 14, 0.2, 0, 4);
+}
+
+.auction-see-all-button:pressed {
+    -fx-background-color: rgba(245,158,11,0.26);
+    -fx-border-color: #f59e0b;
+}

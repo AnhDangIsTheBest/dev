@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.RegisterController"
+      alignment="CENTER" spacing="0"
+      style="-fx-background-color: #0a0b0f;">
+
+    <VBox alignment="CENTER" spacing="16" maxWidth="380"
+          style="-fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 32;">
+
+        <Label text="AuctionX - Dang ky" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+
+        <VBox spacing="8" fillWidth="true">
+            <Label text="Ho va ten" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <TextField fx:id="fullNameField" promptText="Nguyen Van A"
+                       style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
+            <Label text="Ten dang nhap" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <TextField fx:id="usernameField" promptText="username"
+                       style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
+            <Label text="Email" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <TextField fx:id="emailField" promptText="email@gmail.com"
+                       style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
+            <Label text="Mat khau" style="-fx-text-fill: #94a3b8; -fx-font-size: 12;"/>
+            <PasswordField fx:id="passwordField" promptText="Toi thieu 6 ky tu"
+                           style="-fx-background-color: #1a1d26; -fx-text-fill: #e2e8f0; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10;"/>
+
+            <Label text="Tai khoan co the dat gia va dang san pham dau gia."
+                   style="-fx-text-fill: #475569; -fx-font-size: 10;" wrapText="true"/>
+        </VBox>
+
+        <Label fx:id="messageLabel" text="" wrapText="true" style="-fx-font-size: 12;"/>
+
+        <Button fx:id="registerButton" text="Dang ky" onAction="#handleRegister" maxWidth="Infinity"
+                style="-fx-background-color: #f59e0b; -fx-text-fill: #000; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 8; -fx-cursor: hand;"/>
+        <Button text="Quay lai dang nhap" onAction="#handleBack" maxWidth="Infinity"
+                style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 8; -fx-padding: 8; -fx-cursor: hand;"/>
+    </VBox>
+</VBox>

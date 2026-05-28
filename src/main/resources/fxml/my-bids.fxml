@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16"
+      style="-fx-background-color: #0a0b0f; -fx-padding: 24 28 28 28;"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.MyBidsController">
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="3">
+            <Label text="Giá của tôi"
+                   style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #f8fafc;"/>
+            <Label text="Theo dõi các phiên bạn đã đặt giá và kết quả hiện tại"
+                   style="-fx-text-fill: #64748b; -fx-font-size: 12;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="summaryLabel"
+               text=""
+               style="-fx-text-fill: #fbbf24; -fx-font-size: 12; -fx-font-weight: bold; -fx-background-color: rgba(245,158,11,0.12); -fx-border-color: rgba(245,158,11,0.28); -fx-border-radius: 999; -fx-background-radius: 999; -fx-padding: 7 12;"/>
+    </HBox>
+
+    <VBox VBox.vgrow="ALWAYS"
+          style="-fx-background-color: #12141a; -fx-background-radius: 10; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 10; -fx-padding: 12;">
+        <TableView fx:id="table"
+                   VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <columns>
+                <TableColumn fx:id="colName" text="Sản phẩm" prefWidth="260"/>
+                <TableColumn fx:id="colMyBid" text="Giá cao nhất của tôi" prefWidth="170"/>
+                <TableColumn fx:id="colCurrent" text="Giá hiện tại" prefWidth="150"/>
+                <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="120"/>
+                <TableColumn fx:id="colResult" text="Kết quả" prefWidth="130"/>
+            </columns>
+            <placeholder>
+                <Label text="Bạn chưa tham gia phiên đấu giá nào"
+                       style="-fx-text-fill: #64748b;"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+</VBox>

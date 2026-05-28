@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="0" style="-fx-background-color: #0d0f14; -fx-padding: 28 32 28 32;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.auction.client.controller.AdminController">
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label style="-fx-font-size: 22;" text="⚙️" />
+        <Label style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #f1f5f9;" text="Quản trị hệ thống" />
+    </HBox>
+
+    <Region style="-fx-background-color: rgba(255,255,255,0.07); -fx-pref-height: 1; -fx-min-height: 1;">
+        <VBox.margin><Insets bottom="20" top="14" /></VBox.margin>
+    </Region>
+
+    <HBox spacing="14">
+        <VBox style="-fx-background-color: #161820; -fx-border-color: rgba(59,130,246,0.25); -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 16 20;" HBox.hgrow="ALWAYS">
+            <Label style="-fx-text-fill: #64748b; -fx-font-size: 10; -fx-font-weight: bold;" text="TỔNG USERS" />
+            <Label fx:id="totalUsersLabel" style="-fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: #3b82f6;" text="..." />
+        </VBox>
+        <VBox style="-fx-background-color: #161820; -fx-border-color: rgba(16,185,129,0.25); -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 16 20;" HBox.hgrow="ALWAYS">
+            <Label style="-fx-text-fill: #64748b; -fx-font-size: 10; -fx-font-weight: bold;" text="TỔNG PHIÊN" />
+            <Label fx:id="totalAuctionsLabel" style="-fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: #10b981;" text="..." />
+        </VBox>
+        <VBox style="-fx-background-color: #161820; -fx-border-color: rgba(245,158,11,0.25); -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 16 20;" HBox.hgrow="ALWAYS">
+            <Label style="-fx-text-fill: #64748b; -fx-font-size: 10; -fx-font-weight: bold;" text="TỔNG BID" />
+            <Label fx:id="totalBidsLabel" style="-fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: #f59e0b;" text="..." />
+        </VBox>
+    </HBox>
+
+    <Region style="-fx-background-color: rgba(255,255,255,0.07); -fx-pref-height: 1; -fx-min-height: 1;">
+        <VBox.margin><Insets bottom="0" top="20" /></VBox.margin>
+    </Region>
+
+    <HBox spacing="0" style="-fx-background-color: #161820; -fx-border-color: rgba(255,255,255,0.07); -fx-border-width: 0 1 0 1;">
+        <Button fx:id="tabUserBtn" onAction="#handleTabUser"
+                style="-fx-background-color: #0d0f14; -fx-text-fill: #f1f5f9; -fx-font-size: 13; -fx-font-weight: bold; -fx-padding: 12 24; -fx-border-color: transparent transparent #f59e0b transparent; -fx-border-width: 0 0 2 0; -fx-cursor: hand;"
+                text="👥  Quản lý tài khoản" />
+        <Button fx:id="tabAucBtn" onAction="#handleTabAuction"
+                style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-font-size: 13; -fx-padding: 12 24; -fx-border-color: transparent; -fx-cursor: hand;"
+                text="🏷️  Quản lý phiên đấu giá" />
+    </HBox>
+
+    <VBox style="-fx-background-color: #161820; -fx-border-color: rgba(255,255,255,0.07); -fx-border-width: 0 1 1 1; -fx-border-radius: 0 0 10 10; -fx-background-radius: 0 0 10 10; -fx-padding: 0;" VBox.vgrow="ALWAYS">
+
+        <!-- Status label bị ẩn để không tạo dòng trống dưới tab -->
+        <Label fx:id="adminStatusLabel" maxWidth="Infinity" managed="false" visible="false" wrapText="true" text="" style="-fx-font-size: 12; -fx-padding: 0;">
+            <VBox.margin><Insets bottom="10" left="16" right="16" top="10" /></VBox.margin>
+        </Label>
+
+        <!-- TAB 1: USERS -->
+        <VBox fx:id="panelUsers" spacing="0" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 8 16; -fx-border-color: transparent transparent rgba(255,255,255,0.06) transparent;">
+                <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 12;" text="Danh sách người dùng" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleRefresh"
+                        style="-fx-background-color: #1e2130; -fx-text-fill: #94a3b8; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 6 14; -fx-cursor: hand; -fx-font-size: 11;"
+                        text="↻ Làm mới" />
+                <Button onAction="#handleDeleteUser"
+                        style="-fx-background-color: rgba(239,68,68,0.15); -fx-text-fill: #ef4444; -fx-border-color: rgba(239,68,68,0.3); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 6 14; -fx-cursor: hand; -fx-font-size: 11;"
+                        text="🗑  Xóa tài khoản" />
+            </HBox>
+            <TableView fx:id="userTable" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colUserName"  prefWidth="200" text="Họ tên" />
+                    <TableColumn fx:id="colUserRole"  prefWidth="100" text="Vai trò" />
+                    <TableColumn fx:id="colUserEmail" prefWidth="260" text="Email" />
+                </columns>
+                <placeholder><Label style="-fx-text-fill: #475569;" text="Không có user nào" /></placeholder>
+            </TableView>
+        </VBox>
+
+        <!-- TAB 2: AUCTIONS -->
+        <VBox fx:id="panelAuctions" managed="false" spacing="0" visible="false" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 8 16; -fx-border-color: transparent transparent rgba(255,255,255,0.06) transparent;">
+                <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 12;" text="Danh sách phiên đấu giá" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleRefresh"
+                        style="-fx-background-color: #1e2130; -fx-text-fill: #94a3b8; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 6 14; -fx-cursor: hand; -fx-font-size: 11;"
+                        text="↻ Làm mới" />
+                <Button onAction="#handleEndSelectedAuction"
+                        style="-fx-background-color: rgba(245,158,11,0.15); -fx-text-fill: #f59e0b; -fx-border-color: rgba(245,158,11,0.3); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 6 14; -fx-cursor: hand; -fx-font-size: 11;"
+                        text="⏹  Dừng phiên" />
+                <Button onAction="#handleDeleteAuction"
+                        style="-fx-background-color: rgba(239,68,68,0.15); -fx-text-fill: #ef4444; -fx-border-color: rgba(239,68,68,0.3); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 6 14; -fx-cursor: hand; -fx-font-size: 11;"
+                        text="🗑  Xóa phiên" />
+            </HBox>
+            <TableView fx:id="adminAucTable" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colAdminAucName"   prefWidth="220" text="Sản phẩm" />
+                    <TableColumn fx:id="colAdminAucStatus" prefWidth="110" text="Trạng thái" />
+                    <TableColumn fx:id="colAdminAucPrice"  prefWidth="140" text="Giá" />
+                    <TableColumn fx:id="colAdminAucBids"   prefWidth="70"  text="Bids" />
+                </columns>
+                <placeholder><Label style="-fx-text-fill: #475569;" text="Không có phiên nào" /></placeholder>
+            </TableView>
+        </VBox>
+
+    </VBox>
+</VBox>

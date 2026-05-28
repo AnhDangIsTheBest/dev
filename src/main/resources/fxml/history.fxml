@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16"
+      style="-fx-background-color: #0a0b0f; -fx-padding: 24 28 28 28;"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.auction.client.controller.HistoryController">
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="3">
+            <Label text="Lịch sử giá"
+                   style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #f8fafc;"/>
+            <Label text="Dòng đặt giá toàn hệ thống và biểu đồ biến động theo từng phiên"
+                   style="-fx-text-fill: #64748b; -fx-font-size: 12;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="statsLabel"
+               text=""
+               style="-fx-text-fill: #cbd5e1; -fx-font-size: 12; -fx-background-color: #12141a; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 999; -fx-background-radius: 999; -fx-padding: 7 12;"/>
+    </HBox>
+
+    <HBox spacing="16" VBox.vgrow="ALWAYS">
+        <VBox spacing="10"
+              prefWidth="360"
+              minWidth="300"
+              style="-fx-background-color: #12141a; -fx-background-radius: 10; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 10; -fx-padding: 14;">
+            <Label text="Lượt đặt giá mới nhất"
+                   style="-fx-text-fill: #e2e8f0; -fx-font-size: 13; -fx-font-weight: bold;"/>
+            <ListView fx:id="allBidsList"
+                      VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <placeholder>
+                    <Label text="Chưa có hoạt động nào"
+                           style="-fx-text-fill: #64748b;"/>
+                </placeholder>
+            </ListView>
+        </VBox>
+
+        <VBox spacing="12"
+              HBox.hgrow="ALWAYS"
+              style="-fx-background-color: #12141a; -fx-background-radius: 10; -fx-border-color: rgba(255,255,255,0.08); -fx-border-radius: 10; -fx-padding: 14;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <VBox spacing="2">
+                    <Label text="Biểu đồ giá đấu"
+                           style="-fx-text-fill: #e2e8f0; -fx-font-size: 13; -fx-font-weight: bold;"/>
+                    <Label text="Chọn một phiên để xem đường giá theo lượt bid"
+                           style="-fx-text-fill: #64748b; -fx-font-size: 11;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Phiên"
+                       style="-fx-text-fill: #64748b; -fx-font-size: 11;"/>
+                <ComboBox fx:id="auctionFilter"
+                          prefWidth="260"
+                          style="-fx-background-color: #0f1117; -fx-border-color: rgba(255,255,255,0.10); -fx-border-radius: 8; -fx-background-radius: 8; -fx-text-fill: #e2e8f0;"/>
+            </HBox>
+
+            <LineChart fx:id="priceLineChart"
+                       VBox.vgrow="ALWAYS"
+                       animated="false"
+                       legendVisible="false"
+                       createSymbols="true"
+                       style="-fx-background-color: transparent; -fx-plot-background-color: #1e2130; CHART_COLOR_1: #f59e0b;">
+                <xAxis>
+                    <NumberAxis fx:id="xAxis"
+                                label="Lượt bid"
+                                tickUnit="1"
+                                minorTickVisible="false"
+                                style="-fx-tick-label-fill: #64748b; -fx-color: rgba(255,255,255,0.10);"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Giá (đ)"
+                                forceZeroInRange="false"
+                                style="-fx-tick-label-fill: #64748b; -fx-color: rgba(255,255,255,0.10);"/>
+                </yAxis>
+            </LineChart>
+        </VBox>
+    </HBox>
+</VBox>
