@@ -28,7 +28,9 @@ import java.util.concurrent.Executors;
 public class AuctionServer {
 
     private static final int DEFAULT_PORT = 9090;
-    private static final int THREAD_POOL_SIZE = 50;   // Tối đa 50 client cùng lúc
+    private static final int DEFAULT_MAX_CLIENTS = 5000;
+    private static final int MAX_CLIENTS = Integer.getInteger("auction.server.maxClients", DEFAULT_MAX_CLIENTS);
+    private static final int SOCKET_BACKLOG = Integer.getInteger("auction.server.backlog", MAX_CLIENTS);
 
     private final int port;
     private final ExecutorService threadPool;
@@ -40,7 +42,7 @@ public class AuctionServer {
 
     public AuctionServer(int port) {
         this.port = port;
-        this.threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        this.threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
         this.connectedClients = new CopyOnWriteArrayList<>();
         this.auctionService = new AuctionService();
     }
@@ -48,11 +50,12 @@ public class AuctionServer {
     // ── Khởi động Server ──────────────────────────────────────────
     public void start() {
         try {
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(port, SOCKET_BACKLOG);
             running = true;
             System.out.println("╔══════════════════════════════════════╗");
             System.out.println("║     AUCTION SERVER STARTED           ║");
             System.out.printf("║     Listening on port: %-4d          ║%n", port);
+            System.out.printf("║     Max clients: %-5d               ║%n", MAX_CLIENTS);
             System.out.println("╚══════════════════════════════════════╝");
 
             warmUpStorage();
@@ -64,6 +67,13 @@ public class AuctionServer {
             while (running) {
                 try {
                     Socket clientSocket = serverSocket.accept();
+                    if (connectedClients.size() >= MAX_CLIENTS) {
+                        System.out.printf("[Server] Too many clients (%d/%d), rejected: %s%n",
+                                connectedClients.size(), MAX_CLIENTS, clientSocket.getRemoteSocketAddress());
+                        clientSocket.close();
+                        continue;
+                    }
+
                     ClientHandler handler = new ClientHandler(clientSocket, this);
                     connectedClients.add(handler);
                     threadPool.submit(handler);
