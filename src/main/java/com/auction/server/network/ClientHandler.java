@@ -33,19 +33,29 @@ public class ClientHandler implements Runnable {
     private ObjectOutputStream out;
 
     // Services & DAOs
-    private final AuctionService auctionService = new AuctionService();
-    private final BidService bidService = new BidService();
-    private final AuthService authService = new AuthService();
-    private final UserService userService = new UserService();
-    private final ItemService itemService = new ItemService();
+    private final AuctionService auctionService;
+    private final BidService bidService;
+    private final AuthService authService;
+    private final UserService userService;
+    private final ItemService itemService;
 
     // Thông tin client hiện tại (sau khi login)
     private User currentUser = null;
     private String auctionIdWatching = null;   // Phiên đang xem để nhận broadcast
 
     public ClientHandler(Socket socket, AuctionServer server) {
+        this(socket, server, new AuctionService(), new BidService(), new AuthService(), new UserService(), new ItemService());
+    }
+
+    ClientHandler(Socket socket, AuctionServer server, AuctionService auctionService, BidService bidService,
+                  AuthService authService, UserService userService, ItemService itemService) {
         this.socket = socket;
         this.server = server;
+        this.auctionService = auctionService;
+        this.bidService = bidService;
+        this.authService = authService;
+        this.userService = userService;
+        this.itemService = itemService;
     }
 
     // ── Vòng lặp chính ────────────────────────────────────────────
