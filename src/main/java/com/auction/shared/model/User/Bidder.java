@@ -1,11 +1,10 @@
 package com.auction.shared.model.User;
 
 public class Bidder extends User {
-    private double balance;
-    private int totalBids;
-    private int wonAuctions;
+    private static final long serialVersionUID = 1L;
 
-    public Bidder(String id, String username, String email, String fullname, String password, double balance, int totalBids, int wonAuctions) {
+    public Bidder(String id, String username, String email, String fullname, String password,
+                  double balance, int totalBids, int wonAuctions) {
         super(id, username, email, password, fullname);
         this.balance = balance;
         this.totalBids = totalBids;
@@ -17,28 +16,10 @@ public class Bidder extends User {
         return "BIDDER";
     }
 
-    public double getBalance() {
-        return balance;
-    }
-
-    public int getTotalBids() {
-        return totalBids;
-    }
-
-    public int getWonAuctions() {
-        return wonAuctions;
-    }
-
-    public void incrementBids() {
-        this.totalBids++;
-    }
-
-    public void incrementWon() {
-        this.wonAuctions++;
-    }
-
     @Override
     public String display() {
-        return super.display() + String.format(" | Balance: %.1f | Bids: %d | Won: %d", balance, totalBids, wonAuctions);
+        return super.display() + String.format(
+                " | Balance: %.1f | Bids: %d | Won: %d | Items: %d | Revenue: %.1f",
+                balance, totalBids, wonAuctions, totalItemslisted, totalRevenue);
     }
 }

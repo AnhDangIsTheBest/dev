@@ -39,6 +39,8 @@ public class MainController {
     @FXML private StackPane   rootPane;
     @FXML private BorderPane  mainPane;
     @FXML private VBox        sidebar;
+    @FXML private VBox        chatPanel;
+    @FXML private Button      chatToggleButton;
 
     @FXML private Button btnDashboard;
     @FXML private Button btnMyBids;
@@ -57,11 +59,16 @@ public class MainController {
     private static final String INACTIVE_STYLE =
             "-fx-background-color: transparent; -fx-text-fill: #94a3b8;" +
                     "-fx-padding: 10 16; -fx-cursor: hand; " +
-            "-fx-alignment: CENTER_LEFT; -fx-font-size: 13;";
+                    "-fx-alignment: CENTER_LEFT; -fx-font-size: 13;";
+    private static final Duration CHAT_ANIMATION_DURATION = Duration.millis(220);
     private static final Duration CONTENT_ANIMATION_DURATION = Duration.millis(150);
     private static final Duration BUTTON_ANIMATION_DURATION = Duration.millis(90);
     private static final String BUTTON_ANIMATION_KEY = "auction.buttonAnimationInstalled";
     private static final String BUTTON_SCALE_TRANSITION_KEY = "auction.buttonScaleTransition";
+
+    private ParallelTransition chatAnimation;
+    private ParallelTransition toggleAnimation;
+    private boolean chatVisible;
 
     @FXML
     public void initialize() {
@@ -72,6 +79,7 @@ public class MainController {
             userRoleLabel.setText(formatRole(user));
         }
 
+        setupChatbotAnimationState();
         installButtonFeedback(rootPane);
 
         btnAdmin.setVisible(user instanceof Admin);
@@ -137,6 +145,11 @@ public class MainController {
     }
 
     @FXML
+    private void toggleChatbot(ActionEvent event) {
+        setChatbotVisible(!chatVisible);
+    }
+
+    @FXML
     private void handleLogout(ActionEvent event) {
         new Thread(() -> {
             ClientContext.getInstance().logout();
@@ -167,6 +180,133 @@ public class MainController {
         if (activeBtn != null) activeBtn.setStyle(INACTIVE_STYLE);
         activeBtn = btn;
         if (btn != null) btn.setStyle(ACTIVE_STYLE);
+    }
+
+    private void setChatbotVisible(boolean visible) {
+        if (chatPanel == null || visible == chatVisible) {
+            return;
+        }
+
+        chatVisible = visible;
+        if (chatAnimation != null) {
+            chatAnimation.stop();
+        }
+
+        chatPanel.setManaged(true);
+        chatPanel.setVisible(true);
+        chatPanel.setMouseTransparent(!visible);
+
+        if (visible) {
+            chatPanel.toFront();
+            animateChatPanel(1.0, 1.0, 0, () -> {
+                if (chatToggleButton != null) {
+                    chatToggleButton.setVisible(false);
+                    chatToggleButton.setManaged(false);
+                    chatToggleButton.setDisable(false);
+                }
+            });
+            animateToggleButton(false);
+        } else {
+            if (chatToggleButton != null) {
+                chatToggleButton.setManaged(true);
+                chatToggleButton.setVisible(true);
+                chatToggleButton.setDisable(true);
+                chatToggleButton.setOpacity(0);
+                chatToggleButton.setScaleX(0.82);
+                chatToggleButton.setScaleY(0.82);
+                chatToggleButton.toFront();
+            }
+            chatPanel.toFront();
+            animateChatPanel(0, 0.94, 18, () -> {
+                chatPanel.setVisible(false);
+                chatPanel.setManaged(false);
+                chatPanel.setMouseTransparent(true);
+                animateToggleButton(true);
+            });
+        }
+    }
+
+    private void setupChatbotAnimationState() {
+        chatVisible = false;
+        if (chatPanel != null) {
+            chatPanel.setManaged(false);
+            chatPanel.setVisible(false);
+            chatPanel.setMouseTransparent(true);
+            chatPanel.setOpacity(0);
+            chatPanel.setScaleX(0.94);
+            chatPanel.setScaleY(0.94);
+            chatPanel.setTranslateY(18);
+            chatPanel.setCache(true);
+            chatPanel.setCacheHint(CacheHint.SPEED);
+        }
+        if (chatToggleButton != null) {
+            chatToggleButton.setManaged(true);
+            chatToggleButton.setVisible(true);
+            chatToggleButton.setOpacity(1);
+            chatToggleButton.setScaleX(1);
+            chatToggleButton.setScaleY(1);
+            chatToggleButton.setDisable(false);
+        }
+    }
+
+    private void animateChatPanel(double opacity, double scale, double translateY, Runnable onFinished) {
+        FadeTransition fade = new FadeTransition(CHAT_ANIMATION_DURATION, chatPanel);
+        fade.setToValue(opacity);
+        fade.setInterpolator(Interpolator.EASE_BOTH);
+
+        ScaleTransition scaleTransition = new ScaleTransition(CHAT_ANIMATION_DURATION, chatPanel);
+        scaleTransition.setToX(scale);
+        scaleTransition.setToY(scale);
+        scaleTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+        TranslateTransition translate = new TranslateTransition(CHAT_ANIMATION_DURATION, chatPanel);
+        translate.setToY(translateY);
+        translate.setInterpolator(Interpolator.EASE_BOTH);
+
+        chatAnimation = new ParallelTransition(fade, scaleTransition, translate);
+        chatAnimation.setOnFinished(event -> {
+            chatAnimation = null;
+            if (onFinished != null) {
+                onFinished.run();
+            }
+        });
+        chatAnimation.play();
+    }
+
+    private void animateToggleButton(boolean visible) {
+        if (chatToggleButton == null) {
+            return;
+        }
+        if (toggleAnimation != null) {
+            toggleAnimation.stop();
+        }
+
+        if (visible) {
+            chatToggleButton.setManaged(true);
+            chatToggleButton.setVisible(true);
+            chatToggleButton.setDisable(true);
+            chatToggleButton.toFront();
+        }
+
+        FadeTransition fade = new FadeTransition(Duration.millis(140), chatToggleButton);
+        fade.setToValue(visible ? 1 : 0);
+        fade.setInterpolator(Interpolator.EASE_BOTH);
+
+        ScaleTransition scale = new ScaleTransition(Duration.millis(140), chatToggleButton);
+        scale.setToX(visible ? 1 : 0.82);
+        scale.setToY(visible ? 1 : 0.82);
+        scale.setInterpolator(Interpolator.EASE_BOTH);
+
+        toggleAnimation = new ParallelTransition(fade, scale);
+        toggleAnimation.setOnFinished(event -> {
+            toggleAnimation = null;
+            chatToggleButton.setDisable(false);
+            if (!visible) {
+                chatToggleButton.setVisible(false);
+                chatToggleButton.setManaged(false);
+            }
+        });
+        toggleAnimation.play();
     }
 
     private void animateContentIn(Node content) {

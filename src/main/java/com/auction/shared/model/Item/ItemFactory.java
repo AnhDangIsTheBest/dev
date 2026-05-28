@@ -4,33 +4,33 @@ import java.util.UUID;
 
 public class ItemFactory {
 
-    public enum ItemType {
-        ELECTRONICS, ART, VEHICLE, OTHERITEM;
+    public enum ItemType{
+        ELECTRONICS,ART,VEHICLE,OTHERITEM;
     }
 
     // Tao san pham
 
-    public static Electronics createElectronics(String name, String description, double startingPrice, String status, double currentPrice, String brand, int warranty, String model) {
-        String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        return new Electronics(id, name, description, startingPrice, status, currentPrice, brand, warranty, model);
+    public static Electronics createElectronics(String name, String description, double startingPrice,String status,double currentPrice, String brand, int warranty, String model){
+        String id = UUID.randomUUID().toString().substring(0,8).toUpperCase();
+        return new Electronics(id,name,description,startingPrice,status,currentPrice,brand,warranty,model);
     }
 
     public static Art createArt(String name, double startingPrice, double currentPrice, String status, String description,
-                                String artist, int yearCreated, String material) {
-        String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        return new Art(id, name, startingPrice, currentPrice, status, description, artist, yearCreated, material);
+                                String artist, int yearCreated, String material){
+        String id = UUID.randomUUID().toString().substring(0,8).toUpperCase();
+        return new Art(id,name,startingPrice,currentPrice,status,description,artist,yearCreated,material);
     }
 
-    public static Vehicle createVehicle(String name, double startingPrice, double currentPrice, String status, String description,
-                                        String brand, String vehicleModel, int year, int mileage, String vehicleType) {
-        String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        return new Vehicle(id, name, startingPrice, currentPrice, status, description, brand, vehicleModel, year, mileage, vehicleType);
+    public static Vehicle createVehicle(String name, double  startingPrice, double currentPrice, String status, String description,
+                                        String brand, String vehicleModel, int year, int mileage, String vehicleType){
+        String id = UUID.randomUUID().toString().substring(0,8).toUpperCase();
+        return new Vehicle(id,name,startingPrice,currentPrice,status,description,brand,vehicleModel,year,mileage,vehicleType);
     }
 
     public static OtherItem createOtherItem(String name, double startingPrice, double currentPrice, String status, String description,
-                                            String category) {
-        String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        return new OtherItem(id, name, startingPrice, currentPrice, status, description, category);
+                                            String category){
+        String id = UUID.randomUUID().toString().substring(0,8).toUpperCase();
+        return new OtherItem(id,name,startingPrice,currentPrice,status,description,category);
     }
 
     // Tao item theo tung type
@@ -97,6 +97,7 @@ public class ItemFactory {
                 throw new IllegalArgumentException("Unknown type: " + type);
         }
     }
+
 
 
 }

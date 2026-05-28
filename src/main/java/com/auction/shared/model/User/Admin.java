@@ -1,19 +1,18 @@
 package com.auction.shared.model.User;
 
 
-public class Admin extends User {
-    public Admin(String id, String username, String email, String password, String fullname) {
-        super(id, username, email, password, fullname);
-    }
+public class Admin extends User{
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    public String getRole() {
-        return "ADMIN";
+    public Admin(String id, String username, String email, String password, String fullname){
+        super(id,username,email,password,fullname);
     }
-
     @Override
-    public String display() {
+    public String getRole(){ return "ADMIN";}
+
+    @Override 
+    public String display(){
         return super.display() + " | ADMIN";
-
+        
     }
 }
